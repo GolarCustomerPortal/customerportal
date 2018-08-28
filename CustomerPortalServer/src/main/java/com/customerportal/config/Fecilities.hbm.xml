@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+ <class name="com.customerportal.bean.Fecilities" table="Facility_Management__c">
+  <id name="externalId">
+   <column name="External_ID__c"  />
+  </id>
+  <property name="contact" column="Contact__c" />
+  <property name="address" column="Facility_Address__c"/>	
+  <property name="company" column="Company__c" />
+  <property name="fecilityId" column="Facility__c"/>
+  <property name="fid" column="FID__c"/>
+  <property name="tankPaidService" column="Golars_Tank_Paid_Service__c"/>
+  <property name="name" column="Name"/>
+  <property name="paidService" column="USSBOA_Paid_Service__c" />
+ </class>
+</hibernate-mapping>

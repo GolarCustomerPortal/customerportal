@@ -1,0 +1,431 @@
+<i class="fa fa-bars nav-bar-bars"  (click)="visibleSidebar=true"></i>
+<p-sidebar [(visible)]="visibleSidebar" position="left" [baseZIndex]="10000">
+  &nbsp;
+  <p-accordion id="leftpanel">
+    <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">
+    </p-accordionTab>
+    <p-accordionTab header="Fecilities" (click)="onFecilitiesDataSelect(null);showFecilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFecilities()==false">
+    </p-accordionTab>
+    <p-accordionTab header="Companies" (click)="onCompaniesDataSelect(null);showCompanies=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
+    </p-accordionTab>
+    <p-accordionTab header="Fecilities in Compliance" (click)="onComplianceDataSelect(null);showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
+    </p-accordionTab>
+    <p-accordionTab header="USSBOA Vendors">
+    </p-accordionTab>
+  </p-accordion>
+</p-sidebar>
+<split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="grey">
+  <split-area [visible]="area.leftVisible" [size]="area.left" order="1">
+    <div class="ui-g-12  margin-top" style="cursor: pointer;">
+      <i *ngIf="showBack" i class="fa fa-arrow-left" aria-hidden="true" style="font-size: 20px;color:#89DF93" title="Back to show all"
+        aria-hidden="true" (click)="showAll()"></i>
+      <i class="fa fa-refresh pull-right" style="font-size: 20px;color:#89DF93" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues()"></i>
+    </div>
+    <div class="ui-g-12 margin-top" style="cursor: pointer;">
+      <div [ngClass]="fecilitiesClass" *ngIf="showFecilities">
+        <div class="ui-g-12 dashboard-boder">
+          <p class="dash-board-heading">Facilities total -- {{totalFecilities}}</p>
+          <p-chart type="doughnut" [data]="fecilitiesdata" (onDataSelect)="onFecilitiesDataSelect($event)" [options]="options"></p-chart>
+        </div>
+      </div>
+      <div [ngClass]="companiesClass" *ngIf="showCompanies">
+        <div class="ui-g-12 dashboard-boder">
+          <p class="dash-board-heading">Companies</p>
+          <p-chart type="pie" [data]="companiesdata" (onDataSelect)="onCompaniesDataSelect($event)" [options]="options"></p-chart>
+        </div>
+      </div>
+    </div>
+    <div class="ui-g-12 margin-top" style="cursor: pointer;">
+
+      <div [ngClass]="complianceClass" *ngIf="showCompliance">
+        <div class="ui-g-12 dashboard-boder">
+          <p class="dash-board-heading">Facilities in Compliance total -- {{totalCompliance}}</p>
+          <p-chart type="doughnut" [data]="complianceData" (onDataSelect)="onComplianceDataSelect($event)" [options]="options"></p-chart>
+        </div>
+      </div>
+      <div [ngClass]="reportClass" *ngIf="showConsolidateReport">
+        <div class="ui-g-12 dashboard-boder">
+          <p class="dash-board-heading">Consolidate report of all stations (Gallons)</p>
+          <p-chart type="bar" [data]="consolidateReportdata" (onDataSelect)="onConsolidateDataSelect($event)" [options]="noLegendtOptions"></p-chart>
+        </div>
+      </div>
+    </div>
+  </split-area>
+  <split-area [visible]="area.centerVisible" [size]="area.center" order="2">
+    <div *ngIf="newsFeedVisible==true">
+      news Feed
+      </div>
+    <div *ngIf="newsFeedVisible==false">
+      <p-panel id="rightPanel" header="{{rightPanelTitle}}" styleClass="height-center" *ngIf="showRightContent">
+        <div style="height:calc(100vh - 150px);overflow-y: auto">
+          <div *ngIf="fecilitiesRightdata.length>0">
+            <div *ngFor="let fdata of fecilitiesRightdata; let i = index; let even = even;" style="padding:10px;">
+              <div *ngIf="even" class="ui-g-12">
+                <div class="{{middlePaneClass}}" (click)="showSpecificFecilityDetails(fecilitiesRightdata[i])" style="cursor: pointer;" title="Click for more details">
+                  <p-card>
+                    <p-header>
+                      {{fecilitiesRightdata[i].name}}
+                      <img style="height:30px;width:30px;float:right" src="{{getImage(fecilitiesRightdata[i])}}" />
+                    </p-header>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Name:</div>
+                      <div class="ui-g-8">{{fecilitiesRightdata[i].name}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Fid:</div>
+                      <div class="ui-g-8">{{fecilitiesRightdata[i].fid}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Address:</div>
+                      <div class="ui-g-8">{{fecilitiesRightdata[i].address}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Compliance:</div>
+                      <div class="ui-g-8">
+                        <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="fecilitiesRightdata[i].compliance" [disabled]="true"></p-inputSwitch>
+                      </div>
+                    </div>
+                  </p-card>
+                </div>
+                <div class="{{middlePaneClass}}" *ngIf="fecilitiesRightdata[i+1] != null && fecilitiesRightdata[i+1] != undefined" (click)="showSpecificFecilityDetails(fecilitiesRightdata[i+1])"
+                  style="cursor: pointer;" title="Click for more details">
+                  <p-card>
+                    <p-header>
+                      {{fecilitiesRightdata[i+1].name}}
+                      <img style="height:30px;width:30px;float:right" src="{{getImage(fecilitiesRightdata[i+1])}}" />
+                    </p-header>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Name:</div>
+                      <div class="ui-g-8">{{fecilitiesRightdata[i+1].name}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Fid:</div>
+                      <div class="ui-g-8">{{fecilitiesRightdata[i+1].fid}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Address:</div>
+                      <div class="ui-g-8">{{fecilitiesRightdata[i+1].address}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Compliance:</div>
+                      <div class="ui-g-8">
+                        <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="fecilitiesRightdata[i+1].compliance" [disabled]="true"></p-inputSwitch>
+                      </div>
+                    </div>
+                  </p-card>
+                </div>
+              </div>
+            </div>
+          </div>
+<!-- companies start -->
+<div *ngIf="companiesRightdata.length>0">
+<p-accordion>
+  <p-accordionTab header="{{companyData.name}}" *ngFor="let companyData of companiesRightdata;">
+    <div *ngIf="companyData.fecilities.length>0">
+      <div *ngFor="let fdata of companyData.fecilities; let i = index; let even = even;" style="padding:10px;">
+        <div *ngIf="even" class="ui-g-12">
+          <div class="{{middlePaneClass}}" (click)="showSpecificFecilityDetails(companyData.fecilities[i])" style="cursor: pointer;" title="Click for more details">
+            <p-card>
+              <p-header>
+                {{companyData.fecilities[i].name}}
+                <img style="height:30px;width:30px;float:right" src="{{getImage(companyData.fecilities[i])}}" />
+              </p-header>
+              <div class="ui-g">
+                <div class="ui-g-4"> Name:</div>
+                <div class="ui-g-8">{{companyData.fecilities[i].name}}</div>
+              </div>
+              <div class="ui-g">
+                <div class="ui-g-4"> Fid:</div>
+                <div class="ui-g-8">{{companyData.fecilities[i].fid}}</div>
+              </div>
+              <div class="ui-g">
+                <div class="ui-g-4"> Address:</div>
+                <div class="ui-g-8">{{companyData.fecilities[i].address}}</div>
+              </div>
+              <div class="ui-g">
+                <div class="ui-g-4"> Compliance:</div>
+                <div class="ui-g-8">
+                  <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.fecilities[i].compliance" [disabled]="true"></p-inputSwitch>
+                </div>
+              </div>
+            </p-card>
+          </div>
+          <div class="{{middlePaneClass}}" *ngIf="companyData.fecilities[i+1] != null && companyData.fecilities[i+1] != undefined" (click)="showSpecificFecilityDetails(companyData.fecilities[i+1])"
+            style="cursor: pointer;" title="Click for more details">
+            <p-card>
+              <p-header>
+                {{companyData.fecilities[i+1].name}}
+                <img style="height:30px;width:30px;float:right" src="{{getImage(companyData.fecilities[i+1])}}" />
+              </p-header>
+              <div class="ui-g">
+                <div class="ui-g-4"> Name:</div>
+                <div class="ui-g-8">{{companyData.fecilities[i+1].name}}</div>
+              </div>
+              <div class="ui-g">
+                <div class="ui-g-4"> Fid:</div>
+                <div class="ui-g-8">{{companyData.fecilities[i+1].fid}}</div>
+              </div>
+              <div class="ui-g">
+                <div class="ui-g-4"> Address:</div>
+                <div class="ui-g-8">{{companyData.fecilities[i+1].address}}</div>
+              </div>
+              <div class="ui-g">
+                <div class="ui-g-4"> Compliance:</div>
+                <div class="ui-g-8">
+                  <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.fecilities[i+1].compliance" [disabled]="true"></p-inputSwitch>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-accordionTab>
+</p-accordion>
+</div>
+<!-- companies end -->
+          <!-- compliance start -->
+          <div *ngIf="complianceRightdata.length>0">
+            <div *ngFor="let fdata of complianceRightdata; let i = index; let even = even;" style="padding:10px;">
+              <!-- <button type="button" style="cursor: pointer;" class="btn btn-primary"(click)="showSpecificFecilityDetails(fdata)" >{{fdata.label}}
+                      <img style="height:30px;width:30px" src="{{getImage(fdata)}}" />
+                    </button> -->
+              <div *ngIf="even" class="ui-g-12">
+                <div class="{{middlePaneClass}}" (click)="showSpecificComplianceDetails(complianceRightdata[i])" style="cursor: pointer;" title="Click for more details">
+                  <p-card>
+                    <p-header>
+                      {{complianceRightdata[i].name}}
+                      <img style="height:30px;width:30px;float:right" src="{{getImage(complianceRightdata[i])}}" />
+                    </p-header>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Name:</div>
+                      <div class="ui-g-8">{{complianceRightdata[i].name}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Fid:</div>
+                      <div class="ui-g-8">{{complianceRightdata[i].fid}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Address:</div>
+                      <div class="ui-g-8">{{complianceRightdata[i].address}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Compliance:</div>
+                      <div class="ui-g-8">
+                        <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i].compliance" [disabled]="true"></p-inputSwitch>
+                      </div>
+                    </div>
+                  </p-card>
+                </div>
+                <div class="{{middlePaneClass}}" *ngIf="complianceRightdata[i+1] != null && complianceRightdata[i+1] != undefined" (click)="showSpecificComplianceDetails(complianceRightdata[i+1])"
+                  style="cursor: pointer;" title="Click for more details">
+                  <p-card>
+                    <p-header>
+                      {{complianceRightdata[i+1].name}}
+                      <img style="height:30px;width:30px;float:right" src="{{getImage(complianceRightdata[i+1])}}" />
+                    </p-header>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Name:</div>
+                      <div class="ui-g-8">{{complianceRightdata[i+1].name}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Fid:</div>
+                      <div class="ui-g-8">{{complianceRightdata[i+1].fid}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Address:</div>
+                      <div class="ui-g-8">{{complianceRightdata[i+1].address}}</div>
+                    </div>
+                    <div class="ui-g">
+                      <div class="ui-g-4"> Compliance:</div>
+                      <div class="ui-g-8">
+                        <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+1].compliance" [disabled]="true"></p-inputSwitch>
+                      </div>
+                    </div>
+                  </p-card>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-panel>
+    </div>
+
+
+    <!-- <div class="col-md-12 text-center" style="margin-top: 10px;height: 50%">
+                <button (click)="randomizeType()" style="display: inline-block">Refresh Data</button>
+              </div> -->
+  </split-area>
+  <split-area [visible]="area.rightVisible" [size]="area.right" order="3" style="overflow: hidden;">
+    <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
+      <p-header>
+        {{rightPaneDetailslTitle}}
+        <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
+      </p-header>
+      <div style="height:calc(100vh - 185px);overflow-y: auto">
+        <div class="ui-g-12">
+          <p-card>
+            <p-header>
+              {{rightDetailsContent.name}}
+              <img style="height:30px;width:30px;float:right" src="{{getImage(rightDetailsContent)}}" />
+            </p-header>
+            <div class="ui-g">
+              <div class="ui-g-4"> Name:</div>
+              <div class="ui-g-8">{{rightDetailsContent.name}}</div>
+            </div>
+            <div class="ui-g">
+              <div class="ui-g-4"> Fid:</div>
+              <div class="ui-g-8">{{rightDetailsContent.fid}}</div>
+            </div>
+            <div class="ui-g">
+              <div class="ui-g-4"> Address:</div>
+              <div class="ui-g-8">{{rightDetailsContent.address}}</div>
+            </div>
+            <div class="ui-g">
+              <div class="ui-g-4"> Compliance:</div>
+              <div class="ui-g-8">
+                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
+              </div>
+            </div>
+          </p-card>
+        </div>
+        <div class="ui-g-12 margin-top" >
+          <p-card>
+            <p-header>
+              Consolidate report of Gas station (Gallons)
+            </p-header>
+              <p-chart [width]="400" [height]="400" type="bar" [data]="consolidateReportdata" [options]="noLegendtRightOptions"></p-chart>
+
+          </p-card>
+        </div>
+        <div class="ui-g-12 margin-top">
+          <div class="ui-g-4">
+            <button type="button" class="btn btn-default btn-circle btn-lg" data-toggle="modal" data-target="#notificationFormModal">Notification
+              <br>Form</button>
+          </div>
+          <div class="ui-g-4">
+            <button type="button" class="btn btn-default btn-circle btn-lg">Compliance
+              <br>Section</button>
+          </div>
+          <div class="ui-g-4">
+            <button type="button" class="btn btn-default btn-circle btn-lg">Cirtification</button>
+          </div>
+        </div>
+
+      </div>
+    </p-panel>
+
+  </split-area>
+</split>
+
+
+<div class="modal fade" id="notificationFormModal" tabindex="-1" role="dialog" aria-labelledby="notificationFormModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Notification form</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body file-upload-model">
+        <form name="form" #notificationForm novalidate>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Fecilities Operator</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="fOperatorFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #fOperatorfileUpload customUpload="true" (onSelect)="fileSelected($event,'fecilitiesOperator'); fOperatorFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{fOperatorFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Property Owner</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="pOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #pOwnerfileUpload
+                customUpload="true" (onSelect)="fileSelected($event,'propertyOwner'); ownerFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{ownerFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">UST Owner POA</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="usetOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #usetOwnerfileUpload customUpload="true" (onSelect)="fileSelected($event,'ustOwner'); usetOwnerFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{usetOwnerFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Operator Lease Agree</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="operatorLeaseFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #operatorLeasefileUpload customUpload="true" (onSelect)="fileSelected($event,'operatorLease'); operatorLeaseFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{operatorLeaseFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Notification Form Due Date</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="notificationDueDateFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #notificationDueDatefileUpload customUpload="true" (onSelect)="fileSelected($event,'notificationForm'); notificationDueDateFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{notificationDueDateFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Operator Affidavit of Lease</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="operatoraffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #operatoraffidavitUpload customUpload="true" (onSelect)="fileSelected($event,'operatorAffidavit'); operatoraffidavitFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{operatoraffidavitFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Owner Affidavit Of Lease</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="ownerAffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #ownerAffidavitfileUpload customUpload="true" (onSelect)="fileSelected($event,'ownerAffidivit'); ownerAffidavitFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{ownerAffidavitFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Deed or Land Contract</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="deedLandFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #deedLandfileUpload
+                customUpload="true" (onSelect)="fileSelected($event,'deedOrLand'); deedLandFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{deedLandFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Tax ID Information</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="taxIdFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #taxIdfileUpload
+                customUpload="true" (onSelect)="fileSelected($event,'taxIdInformation'); taxIdFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{taxIdFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Notification form Submitted</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="notificationFormSubmittedFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #notificationFormSubmittedfileUpload customUpload="true" (onSelect)="fileSelected($event,'notificationFormSubmitted'); notificationFormSubmittedFileName=$event.files[0].name">
+              </p-fileUpload>
+              <span class="file-upload-font">{{notificationFormSubmittedFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-8">Notification form Approved</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="notificationFormApprovedFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #notificationFormApprovedfileUpload customUpload="true" (onSelect)="fileSelected($event,'notificationFormApproved'); notificationFormApprovedFileName=$event.files[0].name"></p-fileUpload>
+              <span class="file-upload-font">{{notificationFormApprovedFileName}}</span>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>

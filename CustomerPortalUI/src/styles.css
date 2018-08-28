@@ -1,0 +1,171 @@
+/* You can add global styles to this file, and also import other style files */
+.full-height-width{
+    height: 100%;
+    width: 100%;
+}
+.nav-background-color{
+    background-color: #89DF93 !important; 
+}
+#leftpanel .ui-accordion .ui-accordion-content{
+    padding:0px !important;
+}
+a{
+    text-decoration: none !important;
+}
+#leftpanel .ui-accordion .ui-accordion-header.ui-state-active{
+background: #d7f0da
+}
+.dashboard-boder{
+    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+    -webkit-transition: box-shadow .1s ease,-webkit-transform .1s ease;
+}
+.margin-top{
+    margin-top:10px
+}
+.dash-board-heading{
+    font-size: 20px;
+    border-bottom: 1px solid #d4d4d5;
+}
+#leftpanel .pi {
+    display: none !important;
+  }
+  .height-center{
+    height:100%;
+    text-align: center;
+}
+#rightPanel .ui-panel .ui-panel-content{
+    padding: 0px;
+}
+#rightPanel .ui-panel .ui-panel-footer{
+    padding: 0px;  
+}
+.ui-card-header{
+    border-bottom: 1px solid #D5D5D5;
+    height: 40px;
+    padding-top: 5px;
+}
+.ui-card-header {
+    background-color: #ededed;
+    /* text-align: center; */
+    /* border: 1px solid #fafafa; */
+}
+.ui-inputswitch{
+    border-radius: 30px;
+}
+ .ui-inputswitch-off span
+{
+    background-color: red;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.ui-inputswitch-on span
+{
+    background-color: green;
+}
+.ui-inputswitch{
+    border: 1px solid #495057 !important;
+    /* font-size: 12px; */
+}
+.ui-state-disabled, .ui-widget:disabled {
+    opacity: 1 !important;
+}
+.btn-circle {
+    width: 130px;
+    height: 130px;
+    padding: 6px 0px;
+    border-radius: 65px !important; 
+    text-align: center;
+    font-size: 12px;
+    background-color: #89DF93 !important; 
+    line-height: 1.42857;
+}
+#leftpanel .fa {
+    display: none !important;
+  }
+  .navbar-nav>li>a.profile-image {
+     
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.profile-image{
+    height: 40px;
+    width: 40px;
+}
+.form-upload-padding{
+    padding: 5px !important;
+}
+.nav-bar-bars{
+    font-size:24px;
+    cursor: pointer;
+    color:white;
+    position: absolute;
+    top: 30px;
+    left: 20px;
+}
+.split-pane-class{
+    height: calc(100% - 105px) !important;
+}
+.search-margin{
+    margin-left: 30%;
+}
+.file-upload-font{
+    font-size: 12px;
+}
+.file-upload-model{
+    max-height: calc(100vh - 170px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.center_div{
+    background-color: #fff;
+    position: relative;
+    left: 0%;
+    top: 25%;
+    bottom: 0;
+    margin: auto;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    width: 50%;
+}
+
+.company-logo{
+    height: 101px;
+    width: 201px;
+    margin: 10px auto 30px;
+ }
+
+.login-form {
+    width: 340px;
+    margin: 50px auto;
+}
+.login-form form {
+    margin-bottom: 15px;
+    background: #f7f7f7;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+}
+.login-form h2 {
+    margin: 0 0 15px;
+}
+.form-control, .btn {
+    min-height: 38px;
+    border-radius:4px;
+}
+.form-control, .input{
+    min-height: 40px;
+    border-radius:4px;
+}
+.btn {        
+    font-size: 15px;
+    font-weight: bold;
+}
+#companies-accordian .ui-accordion .ui-accordion-content{
+overflow: auto !important;
+}
+.text-align-center{
+text-align: left;
+}
+.register-search-padding{
+    padding: 5px !important;
+}

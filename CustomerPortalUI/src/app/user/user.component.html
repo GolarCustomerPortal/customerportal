@@ -1,0 +1,111 @@
+<div *ngIf="showSearch && !isEdit" class="register-search-padding">
+    <div class="col-md-12 register-search-padding">
+        <p-dropdown [options]="dropdownSearch" placeholder="Select Option" optionLabel="name" [(ngModel)]="selectedDropdownOption"></p-dropdown>
+    </div>
+    <label for="firstName" class="register-search-padding">Enter Search String:</label>
+    <div class="col-md-12 register-search-padding">
+        <input type="text" [(ngModel)]="searchString" [disabled]="selectedDropdownOption==null" />
+    </div>
+
+    <div class="col-md-12 register-search-padding">
+        <button class="btn btn-primary" [disabled]="selectedDropdownOption==null || searchString == null || searchString.trim().length==0"
+            (click)="searchUsers()">Search</button>
+    </div>
+    <div *ngIf="userList.length>0" class="register-search-padding">
+        <label class="first">Select User:</label>
+        <div class="ui-g" style="width:250px;margin-bottom:10px">
+            <div class="ui-g-12" *ngFor="let user of userList;let i = index;">
+                <p-radioButton name="group1" value="user" label="{{user.firstName+' '+user.lastName}}" (click)="setUser(userList[i])"></p-radioButton>
+            </div>
+        </div>
+        <button class="btn btn-primary" (click)="showRegister=true;showSearch=false;populateFields();">Register</button>
+    </div>
+
+</div>
+<div *ngIf="showRegister || isEdit" class="col-md-6 col-md-offset-3">
+
+    <div class="alert alert-success" [hidden]='!showSuccessMessage'>
+        <strong>Success!</strong> {{successMessage}}
+    </div>
+    <div [hidden]='!showFailureMessage' class="alert alert-danger" role="alert">
+        {{failureMessage}}
+    </div>
+    <div class="ui-g-12  margin-top" style="cursor: pointer;" *ngIf="!isEdit">
+            <i class="fa fa-arrow-left" aria-hidden="true" style="font-size: 20px;color:#89DF93" title="Back to search" aria-hidden="true"
+                (click)="showRegister=false;showSearch=true;resetSuccessAndFailureMessages()"></i>
+        </div>
+    <form name="form" (ngSubmit)="f.form.valid && register()" #f="ngForm" novalidate>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
+            <label for="firstName">First Name</label>
+            <input type="text" [ngClass]="{ 'is-invalid': f.submitted && !firstName.valid }" class="form-control" name="firstName" [(ngModel)]="model.firstName"
+                #firstName="ngModel" required maxlength="50" (keypress)="resetSuccessAndFailureMessages()" />
+            <div *ngIf="f.submitted && !firstName.valid" class="help-block text-danger">First Name is required</div>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" [ngClass]="{ 'is-invalid': f.submitted && !lastName.valid }" name="lastName" [(ngModel)]="model.lastName"
+                #lastName="ngModel" required maxlength="50" (keypress)="resetSuccessAndFailureMessages()" />
+            <div *ngIf="f.submitted && !lastName.valid" class="help-block text-danger">Last Name is required</div>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+            <label for="email">Email Address</label>
+            <input type="text" [ngClass]="{ 'is-invalid': f.submitted && !email.valid }" class="form-control" name="email" [(ngModel)]="model.email"
+                #email="ngModel" required maxlength="50" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" (keypress)="resetSuccessAndFailureMessages()"
+            />
+            <div *ngIf="f.submitted && !email.valid" class="help-block text-danger">
+                <span *ngIf="email.errors?.required">Email Address is required</span>
+                <span *ngIf="email.errors?.pattern">Invalid Email Address</span>
+            </div>
+        </div>
+        <div *ngIf="isEdit">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="fecilities" [(ngModel)]="model.fecilities" #admin="ngModel" style="margin-right: 5px"
+                    />Facilities</label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="companies" [(ngModel)]="model.companies" #admin="ngModel" style="margin-right: 5px"
+                    />Companies</label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="compliance" [(ngModel)]="model.compliance" #admin="ngModel" style="margin-right: 5px"
+                    />Facilities in Compliance</label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="consolidate" [(ngModel)]="model.consolidate" #admin="ngModel" style="margin-right: 5px"
+                    />Consolidate report of all stations</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="image">Profile Image</label>
+            <div>
+                <input type="file" id="image" accept="image/*" (change)="handleInputChange($event)" />
+            </div>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="admin" [(ngModel)]="model.admin" #admin="ngModel" style="margin-right: 5px" />Is Admin</label>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !username.valid  && !isEdit}">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username" [ngClass]="{ 'is-invalid': (f.submitted && !username.valid && !isEdit) }"
+                [disabled]="isEdit" [(ngModel)]="model.username" #username="ngModel" required minlength="5" maxlength="30" (keypress)="resetSuccessAndFailureMessages()"
+            />
+            <div *ngIf="f.submitted && !username.valid && !isEdit" class="help-block text-danger"> Username is required (minimum 5 characters).</div>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" name="password" [ngClass]="{ 'is-invalid': f.submitted && !password.valid }"
+                [(ngModel)]="model.password" #password="ngModel" required (keypress)="resetSuccessAndFailureMessages()" />
+            <div *ngIf="f.submitted && !password.valid" class="help-block text-danger">Password is required</div>
+        </div>
+        <div class="form-group">
+            <button *ngIf="!isEdit" class="btn btn-primary" [disabled]="disableRegisterButton">Register</button>
+            <button *ngIf="isEdit" class="btn btn-primary">Update</button>
+            <a (click)="cancelClick()" class="btn btn-link">Cancel</a>
+        </div>
+    </form>
+</div>

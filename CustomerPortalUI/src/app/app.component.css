@@ -1,0 +1,17 @@
+.navbar-height{
+    height: 80px;
+}
+.split-pane-class{
+    height: calc(100% - 125px) !important;
+}
+.search-margin{
+    margin-left: 30%;
+}
+.file-upload-font{
+    font-size: 12px;
+}
+.file-upload-model{
+    max-height: calc(100vh - 170px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
