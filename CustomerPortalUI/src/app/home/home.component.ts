@@ -109,6 +109,7 @@ notificationFormApprovedFileName;
     this.dashboardService.getDashboardData(this.commonService.getUserName()) // retrieve all thd parent folders
     .subscribe(
         dashboardData => {
+          this.resetLeftSideData();
           this.getFecilitiesData(dashboardData.fecilitiesData);
           this.getCompanies(dashboardData.companiesData);
           this.getConsolidateReport(dashboardData.consolidateReportData);
@@ -474,6 +475,13 @@ notificationFormApprovedFileName;
     this.area.left = 50;
     this.area.center = 50;
     this.area.right = 0;
+  }
+  resetLeftSideData() {
+    this.fecilitiesArray = [];
+    this.fecilitiesLabel = [];
+    this.companiesArray = [];
+    this.complianceArray = [];
+    this.complianceLabel = [];
   }
   resetrightSideData() {
     this.fecilitiesRightdata = [];

@@ -160,7 +160,7 @@ background: #d7f0da
     font-size: 15px;
     font-weight: bold;
 }
-#companies-accordian .ui-accordion .ui-accordion-content{
+.ui-accordion .ui-accordion-content{
 overflow: auto !important;
 }
 .text-align-center{
