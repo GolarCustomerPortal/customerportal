@@ -64,21 +64,22 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response fecilitiesData(@QueryParam("userId") String userId,@QueryParam("fecilitiesType") String fecilitiesType) {
-		List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
-		for (int i = 0; i < 10; i++) {
-			Fecilities fecilities = new Fecilities();
-			fecilities.setName("Fecilities Name "+i);
-			fecilities.setCompany("company "+i);
-			fecilities.setAddress("address "+i);
-			fecilities.setContact(" contact "+i);
-			fecilities.setFid("fid "+i);
-			fecilities.setTankPaidService(false);
-			fecilities.setState("state "+i);
-			fecilities.setStreet("street "+i);
-			fecilities.setZip("zip "+i);
-			fecilities.setPaidService(true);
-			fecilitiesList.add(fecilities);
-		}
+		List<Fecilities> fecilitiesList = DBUtil.getInstance().getSpecificFecilitiesForUser(userId,fecilitiesType);
+//		List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+//		for (int i = 0; i < 10; i++) {
+//			Fecilities fecilities = new Fecilities();
+//			fecilities.setName("Fecilities Name "+i);
+//			fecilities.setCompany("company "+i);
+//			fecilities.setAddress("address "+i);
+//			fecilities.setContact(" contact "+i);
+//			fecilities.setFid("fid "+i);
+//			fecilities.setTankPaidService(false);
+//			fecilities.setState("state "+i);
+//			fecilities.setStreet("street "+i);
+//			fecilities.setZip("zip "+i);
+//			fecilities.setPaidService(true);
+//			fecilitiesList.add(fecilities);
+//		}
 
 		return Response.status(200).entity(fecilitiesList).build();
 
