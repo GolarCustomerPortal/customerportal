@@ -7,6 +7,7 @@ public class User {
 	private String emailAddress;
 	private String username;
 	private String password;
+	private String id;
 	private boolean admin;
 	private boolean newlyCreated;
 	private boolean active;
@@ -17,6 +18,12 @@ public class User {
 	private String fullName;
 	private String permission;
 
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getId() {
+		return id;
+	}
 	public String getFirstName() {
 		return firstName;
 	}

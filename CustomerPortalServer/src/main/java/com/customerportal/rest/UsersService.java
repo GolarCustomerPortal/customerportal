@@ -10,6 +10,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.customerportal.bean.ChangePassword;
 import com.customerportal.bean.User;
 import com.customerportal.util.DBUtil;
 
@@ -50,6 +51,19 @@ public class UsersService {
 //			new MailUtil().sendEmail(userobj,user.isEdit());
 //		}
 		return Response.status(201).entity(userobj).build();
+	}
+	@POST
+	@Path("/changepassword")
+	@Produces(MediaType.APPLICATION_JSON)
+	
+	public Response changePassword(ChangePassword changePasswordObj) {
+		boolean result;
+		if(changePasswordObj.isReset())
+			result = DBUtil.getInstance().resetPassword(changePasswordObj);
+		else
+		result = DBUtil.getInstance().changePassword(changePasswordObj);
+		
+		return Response.status(201).entity(result).build();
 	}
 	
 		

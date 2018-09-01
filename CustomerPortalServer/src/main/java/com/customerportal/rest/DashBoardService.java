@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.customerportal.bean.Companies;
+import com.customerportal.bean.Company;
 import com.customerportal.bean.Fecilities;
 import com.customerportal.util.DBUtil;
 
@@ -41,10 +42,12 @@ public class DashBoardService {
 		resultMap.put("fecilitiesData", dashboardMap);
 		// companiesData
 		dashboardMap = new HashMap<String, Integer>();
-		dashboardMap.put("companies", 10);
+		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
+		dashboardMap.put("companies", companiesList.size());
 		resultMap.put("companiesData", dashboardMap);
 		//compliance
 		dashboardMap = new HashMap<String, Integer>();
+		List<Fecilities> fecilitiesComplianceList = DBUtil.getInstance().fetchComplianceFecilities(userId);
 		dashboardMap.put("compliance", 20);
 		dashboardMap.put("noncompliance", 20);
 		resultMap.put("complianceData", dashboardMap);
@@ -88,7 +91,7 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response companiesData(@QueryParam("userId") String userId) {
-		List<Companies> companiesList = new ArrayList<Companies>();
+/*		List<Companies> companiesList = new ArrayList<Companies>();
 		for (int index = 0; index < 10; index++) {
 			Companies companies = new Companies();
 			companies.setName("companies "+index);
@@ -110,8 +113,14 @@ public class DashBoardService {
 		}
 		companies.setFecilities(fecilitiesList);
 		companiesList.add(companies);
+		}*/
+		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
+		for (Company company : companiesList) {
+			
+			List<Fecilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
+			company.setFecilities(fecilitiesList);	
+			
 		}
-
 		return Response.status(200).entity(companiesList).build();
 
 	}

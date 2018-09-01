@@ -15,5 +15,7 @@
 		<property name="connection.pool_size">100</property>
 		<mapping resource="com/customerportal/config/Fecilities.hbm.xml" />
 		<mapping resource="com/customerportal/config/User.hbm.xml" />
+		<mapping resource="com/customerportal/config/Contact.hbm.xml" />
+		<mapping resource="com/customerportal/config/Companies.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 
