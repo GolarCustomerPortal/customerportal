@@ -44,6 +44,7 @@ export class UserComponent implements OnInit {
     }
   }
   populateFields() {
+    this.model.id = this.user.id;
     this.model.firstName = this.user.firstName;
     this.model.lastName = this.user.lastName;
     this.model.email = this.user.emailAddress;

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 import { URLConstants } from '../constants/urlconstants';
 import { CommonService } from './common.service';
 import { Router } from '@angular/router';
+import { CRMConstants } from '../constants/crmconstants';
 
 @Injectable()
 export class AuthenticationService {
@@ -42,5 +43,18 @@ export class AuthenticationService {
             location.reload();
         }
     }
+    changePassword(modal){
+        return this.http.post<any>(URLConstants.USER_CHANGE_PASSWORD_URL, { username: modal.username, password: modal.password, updatedPassword:modal.confirmPassword,reset:modal.reset })
+        .map(successMessage => {
+            // Change password response
+            return successMessage;
+        });
+    
+      }
+      private getDeleteUserOptions(username) {
+        return {
+          params: new HttpParams().set(CRMConstants.USER_ID,username)
+        };
+      }
    
 }

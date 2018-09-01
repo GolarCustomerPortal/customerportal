@@ -264,10 +264,10 @@ notificationFormApprovedFileName;
           companiesList => {
             for(var i=0;i<companiesList.length;i++){
               var feciData =  companiesList[i];
-            for(var j=0;j<feciData.fecilities.length;j++){
-              var image =  this.commonService.gasStationImage(feciData.fecilities[j].gasStation)
-              feciData.fecilities[j].img = image;
-            }
+            // for(var j=0;j<feciData.fecilities.length;j++){
+            //   var image =  this.commonService.gasStationImage(feciData.fecilities[j].gasStation)
+            //   feciData.fecilities[j].img = image;
+            // }
               this.companiesRightdata.push(feciData);
             }
             

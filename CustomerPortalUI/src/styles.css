@@ -31,7 +31,7 @@ background: #d7f0da
   }
   .height-center{
     height:100%;
-    text-align: center;
+    /* text-align: center; */
 }
 #rightPanel .ui-panel .ui-panel-content{
     padding: 0px;
@@ -168,4 +168,7 @@ text-align: left;
 }
 .register-search-padding{
     padding: 5px !important;
+}
+.header-padding-left{
+    padding-left: 20px !important;
 }

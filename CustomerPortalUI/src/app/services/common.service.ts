@@ -19,17 +19,20 @@ export class CommonService {
     var user;
     if (localStorage.getItem('secondaryUser')) {
       user = localStorage.getItem('secondaryUser');
-      if (user != null && user != undefined) {
-        var localuser = JSON.parse(user);
-        return localuser.username;
-      }
-    }
-    else
+      var localuser = JSON.parse(user);
+      // return localuser.username;
+      if(user.id == null)
+      return "0033600000M1YNjAAN";
+      return user.id;
+
+    }else
       user = localStorage.getItem('primaryUser');
     if (user != null && user != undefined) {
       var localuser = JSON.parse(user);
       // return localuser.username;
+      if(user.id == null)
       return "0033600000M1YNjAAN";
+      return user.id;
 
     }
   }
