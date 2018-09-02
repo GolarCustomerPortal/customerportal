@@ -4,7 +4,7 @@
           "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<property name="connection.url">jdbc:mysql://localhost/golarsdev?autoReconnect=true
+		<property name="connection.url">jdbc:mysql://localhost/customerportaldb?autoReconnect=true
 		</property>
 		<property name="connection.username">golars</property>
 		<property name="connection.password">golars</property>

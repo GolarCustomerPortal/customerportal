@@ -127,7 +127,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Name,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
+					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
 							+ userId + "'",
 					Fecilities.class);
 			List lst = query.list();
@@ -164,7 +164,7 @@ public class DBUtil {
 								"SELECT Email__c,Existing_Client__c,External_ID__c,FirstName,Id,LastName,MailingAddress,MailingCity,MailingCountry"
 										+ ",MailingPostalCode,MailingState,MailingStreet,Member_ID__c,MiddleName,MobilePhone,Name,"
 										+ "Phone,Phone__c,Profession__c,Salutation,Tax_ID__c,Title F"
-										+ "ROM golarsdev.Contact c where c.FirstName LIKE :searchString",
+										+ "ROM Contact c where c.FirstName LIKE :searchString",
 								Contact.class);
 
 			} else if (searchOption.equalsIgnoreCase("lname")) {
@@ -172,7 +172,7 @@ public class DBUtil {
 						"SELECT Email__c,Existing_Client__c,External_ID__c,FirstName,Id,LastName,MailingAddress,MailingCity,MailingCountry"
 								+ ",MailingPostalCode,MailingState,MailingStreet,Member_ID__c,MiddleName,MobilePhone,Name,"
 								+ "Phone,Phone__c,Profession__c,Salutation,Tax_ID__c,Title F"
-								+ "ROM golarsdev.Contact c where c.LastName LIKE :searchString",
+								+ "ROM Contact c where c.LastName LIKE :searchString",
 						Contact.class);
 			}
 			if (searchOption.equalsIgnoreCase("email")) {
@@ -180,7 +180,7 @@ public class DBUtil {
 						"SELECT Email__c,Existing_Client__c,External_ID__c,FirstName,Id,LastName,MailingAddress,MailingCity,MailingCountry"
 								+ ",MailingPostalCode,MailingState,MailingStreet,Member_ID__c,MiddleName,MobilePhone,Name,"
 								+ "Phone,Phone__c,Profession__c,Salutation,Tax_ID__c,Title F"
-								+ "ROM golarsdev.Contact c where c.Email__c LIKE :searchString",
+								+ "ROM Contact c where c.Email__c LIKE :searchString",
 						Contact.class);
 			}
 			query.setString("searchString", "%" + searchString + "%");
@@ -209,7 +209,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Name,"
+					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,"
 							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Golars_Tank_Paid_Service__c =:tankService",
 					Fecilities.class);
@@ -249,7 +249,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM golarsdev.affiliate_company__c where Company_Owner__c= '0033600000M1YNjAAN'",
+					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c= '0033600000M1YNjAAN'",
 					Company.class);
 //			query.setString("contactId", userId);
 			List lst = query.list();
@@ -275,7 +275,7 @@ public class DBUtil {
 
 	}
 
-	public List<Fecilities> fetchComplianceFecilities(String userId) {
+	public int fetchComplianceFecilities(String userId,String fecilitiesIdString, boolean compliance) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
@@ -283,13 +283,11 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Name,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
-							+ userId + "'",
-					Fecilities.class);
-			List lst = query.list();
+					"Select count(*) from Account WHERE Compliant__c="+compliance+" and id in ("+fecilitiesIdString+" )");
+			int size = ((Number) query.uniqueResult()).intValue();
 			trx.commit();
 			session.close();
-			return lst;
+			return size;
 		} catch (
 
 		Exception exception)
@@ -300,7 +298,7 @@ public class DBUtil {
 				trx.rollback();
 			if (session != null)
 				session.close();
-			return null;
+			return 0;
 		} finally
 
 		{
@@ -366,7 +364,7 @@ public class DBUtil {
 				try {
 					// Transaction t = session.beginTransaction();
 					Query query = session.createNativeQuery(
-							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Name,"
+							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,"
 									+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 									+ "FROM Facility_Management__c f where f.company__c =:companyName",
 							Fecilities.class);

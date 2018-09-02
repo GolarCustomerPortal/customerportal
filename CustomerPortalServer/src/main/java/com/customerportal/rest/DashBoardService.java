@@ -28,15 +28,19 @@ public class DashBoardService {
 		Map<String, Integer> dashboardMap = new HashMap<String, Integer>();
 		List<Fecilities> fecilitiesList = DBUtil.getInstance().fetchFecilities(userId);
 		int fecilitiesSigned=0,fecilitiesUnsigned=0;
-		if(fecilitiesList != null)
+		String fecilitiesIdString = "";
+		if(fecilitiesList != null){
 		for (Fecilities fecilitiy : fecilitiesList) {
+			fecilitiesIdString += "'"+fecilitiy.getFecilityId()+"',";
 			if(fecilitiy.isTankPaidService())
 				fecilitiesSigned++;
 			else
 				fecilitiesUnsigned++;
 			
 		}
-		
+		}
+		if(fecilitiesIdString.endsWith(","))
+			fecilitiesIdString = fecilitiesIdString.substring(0, fecilitiesIdString.length()-1);
 		dashboardMap.put("signed", fecilitiesSigned);
 		dashboardMap.put("unsigned", fecilitiesUnsigned);
 		resultMap.put("fecilitiesData", dashboardMap);
@@ -47,9 +51,10 @@ public class DashBoardService {
 		resultMap.put("companiesData", dashboardMap);
 		//compliance
 		dashboardMap = new HashMap<String, Integer>();
-		List<Fecilities> fecilitiesComplianceList = DBUtil.getInstance().fetchComplianceFecilities(userId);
-		dashboardMap.put("compliance", 20);
-		dashboardMap.put("noncompliance", 20);
+		int fecilitiesCompliancesize = DBUtil.getInstance().fetchComplianceFecilities(userId,fecilitiesIdString,true);
+		int fecilitiesNonCompliancesize = DBUtil.getInstance().fetchComplianceFecilities(userId,fecilitiesIdString,false);
+		dashboardMap.put("compliance", fecilitiesCompliancesize);
+		dashboardMap.put("noncompliance", fecilitiesNonCompliancesize);
 		resultMap.put("complianceData", dashboardMap);
 		
 		//consolidated report
@@ -128,7 +133,7 @@ public class DashBoardService {
 	@Path("/compliance")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response complianceData(String userId,String signedType) {
+	public Response complianceData(@QueryParam("userId") String userId,@QueryParam("fecilitiesType") String fecilitiesType) {
 		List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		for (int i = 0; i < 30; i++) {
 			Fecilities fecilities = new Fecilities();

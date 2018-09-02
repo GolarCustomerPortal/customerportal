@@ -13,7 +13,7 @@
   <property name="fecilityId" column="Facility__c"/>
   <property name="fid" column="FID__c"/>
   <property name="tankPaidService" column="Golars_Tank_Paid_Service__c"/>
-  <property name="name" column="Name"/>
+  <property name="name" column="Facility_Name__c"/>
   <property name="paidService" column="USSBOA_Paid_Service__c" />
  </class>
 </hibernate-mapping>
