@@ -199,7 +199,7 @@ notificationFormApprovedFileName;
     this.rightDetailsContent.fid = fdata.fid;
     this.rightDetailsContent.img = fdata.img;
     this.rightDetailsContent.address = fdata.address;
-    this.rightDetailsContent.compliance = fdata.compliance;
+    this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
     this.rightDetailsContent.storeManager = fdata.storeManager;
     this.rightDetailsContent.tankPm = fdata.tankPm;
   }
@@ -320,7 +320,7 @@ notificationFormApprovedFileName;
 
   onComplianceDataSelect($event) {
     var event ;
-    if($event == null || event == undefined)
+    if($event == null || $event == undefined)
       event =0;// left overlaypanel clicked
     else
       event = $event.element._index
@@ -346,7 +346,7 @@ notificationFormApprovedFileName;
     //     complianceObj.compliance = false;
     //     this.complianceRightdata.push(complianceObj);
     // }
-    this.dashboardService.getComplianceList(this.commonService.getUserName(),this.fecilitiesLabel[event]) // retrieve all thd parent folders
+    this.dashboardService.getComplianceList(this.commonService.getUserName(),this.complianceLabel[event]) // retrieve all thd parent folders
     .subscribe(
       complianceList => {
           for(var i=0;i<complianceList.length;i++){
