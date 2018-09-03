@@ -127,7 +127,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
+					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
 							+ userId + "'",
 					Fecilities.class);
 			List lst = query.list();
@@ -159,13 +159,12 @@ public class DBUtil {
 			// Transaction t = session.beginTransaction();
 			Query query = null;
 			if (searchOption.equalsIgnoreCase("fname")) {
-				query = session
-						.createNativeQuery(
-								"SELECT Email__c,Existing_Client__c,External_ID__c,FirstName,Id,LastName,MailingAddress,MailingCity,MailingCountry"
-										+ ",MailingPostalCode,MailingState,MailingStreet,Member_ID__c,MiddleName,MobilePhone,Name,"
-										+ "Phone,Phone__c,Profession__c,Salutation,Tax_ID__c,Title F"
-										+ "ROM Contact c where c.FirstName LIKE :searchString",
-								Contact.class);
+				query = session.createNativeQuery(
+						"SELECT Email__c,Existing_Client__c,External_ID__c,FirstName,Id,LastName,MailingAddress,MailingCity,MailingCountry"
+								+ ",MailingPostalCode,MailingState,MailingStreet,Member_ID__c,MiddleName,MobilePhone,Name,"
+								+ "Phone,Phone__c,Profession__c,Salutation,Tax_ID__c,Title F"
+								+ "ROM Contact c where c.FirstName LIKE :searchString",
+						Contact.class);
 
 			} else if (searchOption.equalsIgnoreCase("lname")) {
 				query = session.createNativeQuery(
@@ -209,7 +208,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,"
+					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Golars_Tank_Paid_Service__c =:tankService",
 					Fecilities.class);
@@ -251,7 +250,7 @@ public class DBUtil {
 			Query query = session.createNativeQuery(
 					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c= '0033600000M1YNjAAN'",
 					Company.class);
-//			query.setString("contactId", userId);
+			// query.setString("contactId", userId);
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -275,15 +274,15 @@ public class DBUtil {
 
 	}
 
-	public int fetchComplianceFecilities(String userId,String fecilitiesIdString, boolean compliance) {
+	public int fetchComplianceFecilities(String userId, String fecilitiesIdString, boolean compliance) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery(
-					"Select count(*) from Account WHERE Compliant__c="+compliance+" and id in ("+fecilitiesIdString+" )");
+			Query query = session.createNativeQuery("Select count(*) from Account WHERE Compliant__c=" + compliance
+					+ " and id in (" + fecilitiesIdString + " )");
 			int size = ((Number) query.uniqueResult()).intValue();
 			trx.commit();
 			session.close();
@@ -299,6 +298,118 @@ public class DBUtil {
 			if (session != null)
 				session.close();
 			return 0;
+		} finally
+
+		{
+
+		}
+
+	}
+
+	public List<Fecilities> fecilityNotificationFormList( String fecilitiesIdString) {
+
+		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"Select id from Account WHERE (((Facility_Operator_POA__c = 'Missing' OR "
+					+ "Property_Owner_POA__c = 'Missing' OR UST_Owner_POA__c = 'Missing' OR "
+					+ "Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR "
+					+ "SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or "
+					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or "
+					+ "Tax_ID_Information__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing'))) and id in ("
+							+ fecilitiesIdString + " )");
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+
+	}
+	
+	public List<Fecilities> fecilityComplianceList( String fecilitiesIdString) {
+
+		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"Select id from Account WHERE ((MGT_Paid_Service__c = true  and Notification_form_Submitted__c = null) OR"
+					+ " (((Line_and_Leak_Detector_Test__c = null AND Is_LnL_Detr_Tst_requrd__c = TRUE)  OR "
+					+ "(Cathodic_Protection__c = null AND Is_CP_required__c = TRUE)  OR "
+					+ "(Tank_Testing_Report__c = null AND Is_Tank_Testing_Report_Required__c = TRUE ) OR "
+					+ "(Repair_Documents__c = null AND Are_Repair_Documents_Required__c = TRUE) OR "
+					+ "(Release_Detection_Report__c = null AND Is_Release_Detection_Report_Required__c = TRUE) OR "
+					+ "(Internal_Lining_Inspection__c = NULL AND Is_IL_Inspection_Required__c = TRUE) ) AND MGT_Paid_Service__c = true and Do_not_Trigger_emails__c = false )) "
+					+ "and id in ("+ fecilitiesIdString + " )");
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+
+	}
+	
+	public List<Fecilities> fecilityCertificationList( String fecilitiesIdString) {
+
+		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"Select id from Account WHERE  MGT_Paid_Service__c = true "
+					+ "and (Operator_A_certificate__c = null  OR Operator_B_certificate__c = null  "
+					+ "OR Operator_C_certificate__c = null) and id in ("
+							+ fecilitiesIdString + " )");
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
 		} finally
 
 		{
@@ -359,39 +470,80 @@ public class DBUtil {
 
 	public List<Fecilities> fetchFecilitiesForCompany(String companyName, String companyOwner) {
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
-				Session session = HibernateUtil.getSession();
-				Transaction trx = session.beginTransaction();
-				try {
-					// Transaction t = session.beginTransaction();
-					Query query = session.createNativeQuery(
-							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,"
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session
+					.createNativeQuery(
+							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 									+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 									+ "FROM Facility_Management__c f where f.company__c =:companyName",
 							Fecilities.class);
-//					query.setString("userId", companyOwner);
-					
-						query.setString("companyName", companyName);
-					List lst = query.list();
-					trx.commit();
-					session.close();
-					return lst;
-				} catch (
+			// query.setString("userId", companyOwner);
 
-				Exception exception)
+			query.setString("companyName", companyName);
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
 
-				{
-					exception.printStackTrace();
-					System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
-					if (trx != null)
-						trx.rollback();
-					if (session != null)
-						session.close();
-					return null;
-				} finally
+		Exception exception)
 
-				{
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
 
-				}
+		{
+
+		}
+
+	}
+
+	public List<Fecilities>  fetchFecilitiesFCompliance(String userId, String compliance) {
+
+		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,"
+					+ "Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
+					+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM "
+					+ "Facility_Management__c where Compliant__c =:compliance",
+					Fecilities.class);
+			if(compliance.equalsIgnoreCase("compliance")){
+				query.setBoolean("compliance", true);
+			}else
+				query.setBoolean("compliance", false);
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
 
 	}
 }

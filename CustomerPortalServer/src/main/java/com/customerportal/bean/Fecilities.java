@@ -15,6 +15,10 @@ public class Fecilities {
 	private String zip;
 	private boolean paidService;
 	private String name;
+	private String brand;
+	private boolean notificationFormButtonEnable;
+	private boolean complianceButtonEnable;
+	private boolean certificationButtonEnable;
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
@@ -118,6 +122,36 @@ public class Fecilities {
 
 	public void setPaidService(boolean paidService) {
 		this.paidService = paidService;
+	}
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+	public String getBrand() {
+		return brand;
+	}
+
+	public boolean isNotificationFormButtonEnable() {
+		return notificationFormButtonEnable;
+	}
+
+	public void setNotificationFormButtonEnable(boolean notificationFormButtonEnable) {
+		this.notificationFormButtonEnable = notificationFormButtonEnable;
+	}
+
+	public boolean isComplianceButtonEnable() {
+		return complianceButtonEnable;
+	}
+
+	public void setComplianceButtonEnable(boolean complianceButtonEnable) {
+		this.complianceButtonEnable = complianceButtonEnable;
+	}
+
+	public boolean isCertificationButtonEnable() {
+		return certificationButtonEnable;
+	}
+
+	public void setCertificationButtonEnable(boolean certificationButtonEnable) {
+		this.certificationButtonEnable = certificationButtonEnable;
 	}
 
 }

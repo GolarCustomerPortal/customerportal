@@ -14,6 +14,7 @@
   <property name="fid" column="FID__c"/>
   <property name="tankPaidService" column="Golars_Tank_Paid_Service__c"/>
   <property name="name" column="Facility_Name__c"/>
+   <property name="brand" column="Facility_Brand__c"/>
   <property name="paidService" column="USSBOA_Paid_Service__c" />
  </class>
 </hibernate-mapping>
