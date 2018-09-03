@@ -15,16 +15,16 @@ export class HomeComponent implements OnInit {
     $('#notificationFormModal').on('hidden.bs.modal', function (e) {
       $(this).find('form')[0].reset();
     })
-    if(this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'fecilities'){
+    if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'fecilities') {
       this.onFecilitiesDataSelect(null);
       this.commonService.resetselectedLeftTab();
-    }else if(this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'companies'){
+    } else if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'companies') {
       this.onCompaniesDataSelect(null);
       this.commonService.resetselectedLeftTab();
-    }else if(this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'compliance'){
+    } else if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'compliance') {
       this.onComplianceDataSelect(null);
       this.commonService.resetselectedLeftTab();
-    }else if(this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'ussboa'){
+    } else if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'ussboa') {
       // this.onFecilitiesDataSelect(null);
       this.commonService.resetselectedLeftTab();
     }
@@ -36,10 +36,10 @@ export class HomeComponent implements OnInit {
   //left properties end
   //common properties start
   showBack = false;
-  newsFeedVisible=true;
+  newsFeedVisible = true;
   notificationForm;
   uploadLabel = "Browse"
-  fOperatorFile=[];
+  fOperatorFile = [];
   // fOperatorFileName;
   // commom properties end
 
@@ -47,20 +47,20 @@ export class HomeComponent implements OnInit {
   searchString;
   //search end
 
-// notification fileupload start
-fOperatorFileName;
-ownerFileName;
-usetOwnerFileName;
-operatorLeaseFileName;
-notificationDueDateFileName;
-operatoraffidavitFileName;
-ownerAffidavitFileName;
-deedLandFileName;
-taxIdFileName;
-notificationFormSubmittedFileName;
-notificationFormApprovedFileName;
+  // notification fileupload start
+  fOperatorFileName;
+  ownerFileName;
+  usetOwnerFileName;
+  operatorLeaseFileName;
+  notificationDueDateFileName;
+  operatoraffidavitFileName;
+  ownerAffidavitFileName;
+  deedLandFileName;
+  taxIdFileName;
+  notificationFormSubmittedFileName;
+  notificationFormApprovedFileName;
 
-// notification file upload end
+  // notification file upload end
 
   //rightside panel variables start
   rightPanelTitle;
@@ -100,23 +100,23 @@ notificationFormApprovedFileName;
   // left panel code end
 
   // middlepanel code start
-  constructor(public commonService:CommonService,private dashboardService:DashboardService) {
+  constructor(public commonService: CommonService, private dashboardService: DashboardService) {
     // this.loadLeftPanelData();
 
     this.fetchDashboardValues();
-}
-  fetchDashboardValues(){
+  }
+  fetchDashboardValues() {
     this.dashboardService.getDashboardData(this.commonService.getUserName()) // retrieve all thd parent folders
-    .subscribe(
+      .subscribe(
         dashboardData => {
           this.resetLeftSideData();
           this.getFecilitiesData(dashboardData.fecilitiesData);
           this.getCompanies(dashboardData.companiesData);
           this.getConsolidateReport(dashboardData.consolidateReportData);
-          this.getComplianceData(dashboardData.complianceData); 
+          this.getComplianceData(dashboardData.complianceData);
         },
         error => {
-            console.log(error);
+          console.log(error);
         });
 
   }
@@ -157,12 +157,12 @@ notificationFormApprovedFileName;
 
   }
   onFecilitiesDataSelect($event) {
-    var event ;
-    if($event == null || $event == undefined)
-      event =0;// left overlaypanel clicked
+    var event;
+    if ($event == null || $event == undefined)
+      event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
-   
+
     this.resetrightSideData();
     console.log("onFecilitiesDataSelect", this.fecilitiesLabel[event]);
     this.rightPanelTitle = "Fecilities -- " + this.fecilitiesLabel[event] + " (" + this.fecilitiesArray[event] + ")"
@@ -172,20 +172,20 @@ notificationFormApprovedFileName;
     this.fecilitiesClass = "ui-g-12";
     this.showBack = true;
     this.showRightContent = true;
-    
-    this.dashboardService.getFecilitiesList(this.commonService.getUserName(),this.fecilitiesLabel[event]) // retrieve all thd parent folders
-    .subscribe(
+
+    this.dashboardService.getFecilitiesList(this.commonService.getUserName(), this.fecilitiesLabel[event]) // retrieve all thd parent folders
+      .subscribe(
         fecilitiesList => {
-          for(var i=0;i<fecilitiesList.length;i++){
-            var feciData =  fecilitiesList[i];
-           var image =  this.commonService.gasStationImage(feciData.gasStation)
-           feciData.img = image;
+          for (var i = 0; i < fecilitiesList.length; i++) {
+            var feciData = fecilitiesList[i];
+            var image = this.commonService.gasStationImage(feciData.brand)
+            feciData.img = image;
             this.fecilitiesRightdata.push(feciData);
           }
-          
+
         },
         error => {
-            console.log(error);
+          console.log(error);
         });
 
   }
@@ -198,6 +198,9 @@ notificationFormApprovedFileName;
     this.rightDetailsContent.name = fdata.name;
     this.rightDetailsContent.fid = fdata.fid;
     this.rightDetailsContent.img = fdata.img;
+    this.rightDetailsContent.notificationFormButtonEnable = fdata.notificationFormButtonEnable;
+    this.rightDetailsContent.complianceButtonEnable = fdata.complianceButtonEnable;
+    this.rightDetailsContent.certificationButtonEnable = fdata.certificationButtonEnable;
     this.rightDetailsContent.address = fdata.address;
     this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
     this.rightDetailsContent.storeManager = fdata.storeManager;
@@ -211,7 +214,7 @@ notificationFormApprovedFileName;
   totalCompanies;
   showCompanies = this.commonService.getPreferencesOfCompanies();
   companiesArray = [];
-  companiesRightdata=[]
+  companiesRightdata = []
   companiesClass = "ui-g-6"
   getCompanies(compData) {
     this.companiesdata = {
@@ -232,49 +235,49 @@ notificationFormApprovedFileName;
     this.companiesdata.labels.push('Total -- ' + this.totalCompanies)
   }
   onCompaniesDataSelect($event) {
-    var event ;
-    if($event == null || event == undefined)
-      event =0;// left overlaypanel clicked
+    var event;
+    if ($event == null || event == undefined)
+      event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
-      this.resetrightSideData();
+    this.resetrightSideData();
     console.log("onCompaniesDataSelect", event);
     this.showFecilities = false;
     this.showCompliance = false;
     this.showConsolidateReport = false;
     this.companiesClass = "ui-g-12";
     this.showBack = true;
-    this.showRightContent=true;
+    this.showRightContent = true;
     this.rightPanelTitle = "Companies -- " + " (" + this.totalCompanies + ")";
-       // construction of fecilitiesRightdata need to get from server
-      //  for (var i = 0; i < this.companiesArray[event]; i++) {
-      //   let compObj: any = {};
-      //   compObj.name = "Gas Station name " + "_" + i;
-      //   compObj.img = 'bp.png';
-      //   compObj.fid = "FID_" + i;
-      //   compObj.address = "Gas Station Address";
-      //   if (i % 3 == 0)
-      //     compObj.compliance = true;
-      //   else
-      //     compObj.compliance = false;
-      //   this.companiesRightdata.push(compObj);
-      // }
-      this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
+    // construction of fecilitiesRightdata need to get from server
+    //  for (var i = 0; i < this.companiesArray[event]; i++) {
+    //   let compObj: any = {};
+    //   compObj.name = "Gas Station name " + "_" + i;
+    //   compObj.img = 'bp.png';
+    //   compObj.fid = "FID_" + i;
+    //   compObj.address = "Gas Station Address";
+    //   if (i % 3 == 0)
+    //     compObj.compliance = true;
+    //   else
+    //     compObj.compliance = false;
+    //   this.companiesRightdata.push(compObj);
+    // }
+    this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
-          companiesList => {
-            for(var i=0;i<companiesList.length;i++){
-              var feciData =  companiesList[i];
-            // for(var j=0;j<feciData.fecilities.length;j++){
-            //   var image =  this.commonService.gasStationImage(feciData.fecilities[j].gasStation)
-            //   feciData.fecilities[j].img = image;
-            // }
-              this.companiesRightdata.push(feciData);
+        companiesList => {
+          for (var i = 0; i < companiesList.length; i++) {
+            var feciData = companiesList[i];
+            for (var j = 0; j < feciData.fecilities.length; j++) {
+              var image = this.commonService.gasStationImage(feciData.fecilities[j].brand)
+              feciData.fecilities[j].img = image;
             }
-            
-          },
-          error => {
-              console.log(error);
-          });
+            this.companiesRightdata.push(feciData);
+          }
+
+        },
+        error => {
+          console.log(error);
+        });
   }
   // companies end
 
@@ -319,9 +322,9 @@ notificationFormApprovedFileName;
   }
 
   onComplianceDataSelect($event) {
-    var event ;
-    if($event == null || $event == undefined)
-      event =0;// left overlaypanel clicked
+    var event;
+    if ($event == null || $event == undefined)
+      event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
     this.resetrightSideData();
@@ -333,7 +336,7 @@ notificationFormApprovedFileName;
     this.showBack = true;
     this.rightPanelTitle = "Compliance -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
     this.showRightContent = true;
-     // construction of fecilitiesRightdata need to get from server
+    // construction of fecilitiesRightdata need to get from server
     //  for (var i = 0; i < this.complianceArray[event]; i++) {
     //   let complianceObj: any = {};
     //   complianceObj.name = "Compliance name " + "_" + i;
@@ -346,19 +349,19 @@ notificationFormApprovedFileName;
     //     complianceObj.compliance = false;
     //     this.complianceRightdata.push(complianceObj);
     // }
-    this.dashboardService.getComplianceList(this.commonService.getUserName(),this.complianceLabel[event]) // retrieve all thd parent folders
-    .subscribe(
-      complianceList => {
-          for(var i=0;i<complianceList.length;i++){
-            var feciData =  complianceList[i];
-           var image =  this.commonService.gasStationImage(feciData.gasStation)
-           feciData.img = image;
+    this.dashboardService.getComplianceList(this.commonService.getUserName(), this.complianceLabel[event]) // retrieve all thd parent folders
+      .subscribe(
+        complianceList => {
+          for (var i = 0; i < complianceList.length; i++) {
+            var feciData = complianceList[i];
+            var image = this.commonService.gasStationImage(feciData.brand)
+            feciData.img = image;
             this.complianceRightdata.push(feciData);
           }
-          
+
         },
         error => {
-            console.log(error);
+          console.log(error);
         });
   }
 
@@ -405,7 +408,7 @@ notificationFormApprovedFileName;
             "#36A2EB",
             "#89DF93",
             "#36A2EB"
-          ] 
+          ]
         }]
     };
 
@@ -432,11 +435,11 @@ notificationFormApprovedFileName;
   }
   //consolidateReport end
   constructPercentage(value1, value2) {
-    var value ="0";
-    if(value1 == 0 && value1 == 0){
+    var value = "0";
+    if (value1 == 0 && value1 == 0) {
       value = "0";
-    }else 
-        value = ((value1 / (value1 + value2)) * 100).toFixed(2);
+    } else
+      value = ((value1 / (value1 + value2)) * 100).toFixed(2);
     value = value.replace(".00", '');
     value = '(' + value + "%)";
     return value;
@@ -495,7 +498,7 @@ notificationFormApprovedFileName;
     this.area.right = 0;
   }
   getImage(fdata) {
-    return "assets/images/" + fdata.img;
+    return "assets/images/gasstation/" + fdata.img;
   }
   showRightDetailPanel() {
     this.middlePaneClass = "ui-g-12";
@@ -512,16 +515,31 @@ notificationFormApprovedFileName;
   showMainDashBoard() {
     console.log("showDashBoard");
   }
- 
-  getFileName(fileArray){
-    if(fileArray != null && fileArray[0] != null)
-    return fileArray[0];
+
+  getFileName(fileArray) {
+    if (fileArray != null && fileArray[0] != null)
+      return fileArray[0];
     return "";
   }
-  fileSelected($event,fileupdateName) {
+  fileSelected($event, fileupdateName) {
     // var files = $event.files;
     // var file = files[0];
     // this.fOperatorFileName = file.name;
   }
 
+  getNotificationFormButtonClass(rightDetailsContent) {
+    if ((rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == true))
+      return 'fecility-button-background-red'
+    return ""
+  }
+  getComplianceButtonClass(rightDetailsContent) {
+    if ((rightDetailsContent.complianceButtonEnable != null && rightDetailsContent.complianceButtonEnable == true))
+      return 'fecility-button-background-red'
+    return ""
+  }
+  getCertificationButtonClass(rightDetailsContent) {
+    if ((rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == true))
+      return 'fecility-button-background-red'
+    return ""
+  }
 }

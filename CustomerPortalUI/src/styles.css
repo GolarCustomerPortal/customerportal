@@ -76,8 +76,12 @@ background: #d7f0da
     border-radius: 65px !important; 
     text-align: center;
     font-size: 12px;
-    background-color: #89DF93 !important; 
     line-height: 1.42857;
+    background-color: #89DF93 !important; 
+}
+
+.fecility-button-background-red{
+    background-color: red !important; 
 }
 #leftpanel .fa {
     display: none !important;

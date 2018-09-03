@@ -2,6 +2,7 @@ import { Subject } from "rxjs";
 
 
 export class CommonService {
+  gasStationImages={'bp':'bp.png','shell':'shell.png'}
   loginSuccessful = false;;
   checkValidLogin() {
     if (localStorage.getItem('loginSuccessful') == "true")
@@ -194,7 +195,7 @@ export class CommonService {
     }
   }
   gasStationImage(gasStation){
-    return "bp.png"
+    return this.gasStationImages[gasStation.toLowerCase()];
   }
 
 }
