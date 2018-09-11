@@ -5,4 +5,5 @@ export class CRMConstants {
     public static FECILITIES_TYPE = 'fecilitiesType';
     public static USER_SEARCH_TYPE = 'searchOption';
     public static USER_SEARCH_Value = 'searchString';
+    public static FECILITIES_ID = 'fecilitiesId';
 }

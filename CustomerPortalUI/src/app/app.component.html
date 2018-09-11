@@ -8,7 +8,7 @@
         </form>
     </div>
     <ul class="navbar-nav" style="margin-left: auto!important;">
-        <li class="nav-item dropdown" [hidden]="!isAdmin" style="margin-top: 10px;margin-right: 20px">
+        <li class="nav-item dropdown" [hidden]="!commonService.isAdmin()" style="margin-top: 10px;margin-right: 20px">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">
                 Users

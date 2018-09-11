@@ -9,16 +9,15 @@ import { AuthenticationService } from './services/authentication.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
-  isAdmin=true;
   visibleSidebar=false;
   constructor(private router: Router,public commonService: CommonService,public  authService:AuthenticationService){
-   
   }
   searchString;
   ngOnInit(){
     this.commonService.removeEditUser();
     if(!this.commonService.checkValidLogin())
      this.router.navigate(['/login']);
+    
   }
   showAll(){
     this.router.navigate(['/']);

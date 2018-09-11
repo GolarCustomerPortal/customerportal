@@ -198,4 +198,16 @@ export class CommonService {
     return this.gasStationImages[gasStation.toLowerCase()];
   }
 
+  isAdmin(){
+    if (localStorage.getItem('secondaryUser')) {
+      return false;
+    }
+    var user = localStorage.getItem('primaryUser');
+    if (user != null && user != undefined) {
+      var localuser = JSON.parse(user);
+      return localuser.admin;
+
+    }
+  }
+
 }

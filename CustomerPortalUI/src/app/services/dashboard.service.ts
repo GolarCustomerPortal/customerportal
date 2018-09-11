@@ -32,6 +32,13 @@ getCompaniesList(userId) {
 }
 getComplianceList(userId,type) {
   return this.http.get<any>(URLConstants.COMPLIANCE_URL,this.getFecilitiesOptions(userId,type))
+      .map(fecilityNotificationData => {
+          
+          return fecilityNotificationData;
+      });
+}
+getNotifictionUploadData(fecilitiesId){
+  return this.http.get<any>(URLConstants.FECILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FECILITIES_ID,fecilitiesId))
       .map(fecilitiesData => {
           
           return fecilitiesData;

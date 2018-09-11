@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+.body-background-color{
+    background-color: #E9FFD0 !important;
+}
 .full-height-width{
     height: 100%;
     width: 100%;
@@ -175,4 +178,36 @@ text-align: left;
 }
 .header-padding-left{
     padding-left: 20px !important;
+}
+.ui-card-shadow{
+    background-color: #d7f0da!important;
+    border-radius: 15px;
+    min-height: 200px;
+}
+#individual-chart .ui-card-shadow{
+    background-color: #ffffff;
+    color: #222222;
+    border-radius: 15px;
+}
+#individual-chart .ui-card-header{
+    background-color: #ffffff;
+    color: #222222;
+}
+.ui-card-header{
+    background-color: #89df93!important;
+    border: 1px solid transparent;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.card-image{
+    height:30px;
+    width:30px !important;
+    float:right;
+    margin-right: 10px;
+}
+.no-padding{
+    padding: 0px !important;
+}
+.ui-state-disabled{
+    opacity: 0.7 !important;
 }

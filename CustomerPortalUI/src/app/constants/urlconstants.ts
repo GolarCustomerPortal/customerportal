@@ -17,5 +17,6 @@ export class URLConstants {
     public static FECILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/fecilities';
     public static COMPANIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies';
     public static COMPLIANCE_URL = environment.server+'/CustomerPortalServer/rest/dashboard/compliance';
+    public static  FECILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
 
 }

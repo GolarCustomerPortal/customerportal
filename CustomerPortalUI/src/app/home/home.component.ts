@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
   // notification fileupload start
   fOperatorFileName;
   ownerFileName;
-  usetOwnerFileName;
+  ustOwnerFileName;
   operatorLeaseFileName;
   notificationDueDateFileName;
   operatoraffidavitFileName;
@@ -61,6 +61,20 @@ export class HomeComponent implements OnInit {
   notificationFormApprovedFileName;
 
   // notification file upload end
+  //certification file upload start
+  operatorAcertificateFileNme;
+  operatorBcertificateFileName;
+  operatorCcertificateFileName;
+  //certification file upload end
+
+  // compliance fileupload start
+  lineLeakFileName;
+  cathodicProtectionFileName;
+  tankTestingReportFileName;
+  repairDocumentsFileName;
+  releaseDetectionFileName;
+  internalLiningFileName;
+  // compliance fileupload end
 
   //rightside panel variables start
   rightPanelTitle;
@@ -135,12 +149,12 @@ export class HomeComponent implements OnInit {
         {
           data: [],
           backgroundColor: [
-            "#89DF93",
-            "#cfb337"
+            "#3C7240",
+            "#E14944"
           ],
           hoverBackgroundColor: [
-            "#89DF93",
-            "#cfb337"
+            "#3C7240",
+            "#E14944"
           ]
         }]
     };
@@ -194,6 +208,7 @@ export class HomeComponent implements OnInit {
     this.showRightDetailPanel();
     // this.showRightContent = false;
     this.showRightDetailContent = true;
+    this.rightDetailsContent.fecilityId = fdata.fecilityId;
     this.rightPaneDetailslTitle = fdata.name;
     this.rightDetailsContent.name = fdata.name;
     this.rightDetailsContent.fid = fdata.fid;
@@ -223,10 +238,10 @@ export class HomeComponent implements OnInit {
         {
           data: [],
           backgroundColor: [
-            "#89DF93"
+            "#55793B"
           ],
           hoverBackgroundColor: [
-            "#89DF93"
+            "#55793B"
           ]
         }]
     };
@@ -299,12 +314,12 @@ export class HomeComponent implements OnInit {
         {
           data: [],
           backgroundColor: [
-            "#89DF93",
-            "#EF3F36"
+            "#23437F",
+            "#D8A540"
           ],
           hoverBackgroundColor: [
-            "#89DF93",
-            "#EF3F36"
+            "#23437F",
+            "#D8A540"
           ]
         }]
     };
@@ -365,20 +380,20 @@ export class HomeComponent implements OnInit {
         });
   }
 
-  showSpecificComplianceDetails(fdata) {
-    console.log(fdata);
-    this.showRightDetailPanel();
-    // this.showRightContent = false;
-    this.showRightDetailContent = true;
-    this.rightPaneDetailslTitle = fdata.name;
-    this.rightDetailsContent.name = fdata.name;
-    this.rightDetailsContent.fid = fdata.fid;
-    this.rightDetailsContent.img = fdata.img;
-    this.rightDetailsContent.address = fdata.address;
-    this.rightDetailsContent.compliance = fdata.compliance;
-    this.rightDetailsContent.storeManager = fdata.storeManager;
-    this.rightDetailsContent.tankPm = fdata.tankPm;
-  }
+  // showSpecificComplianceDetails(fdata) {
+  //   console.log(fdata);
+  //   this.showRightDetailPanel();
+  //   // this.showRightContent = false;
+  //   this.showRightDetailContent = true;
+  //   this.rightPaneDetailslTitle = fdata.name;
+  //   this.rightDetailsContent.name = fdata.name;
+  //   this.rightDetailsContent.fid = fdata.fid;
+  //   this.rightDetailsContent.img = fdata.img;
+  //   this.rightDetailsContent.address = fdata.address;
+  //   this.rightDetailsContent.compliance = fdata.compliance;
+  //   this.rightDetailsContent.storeManager = fdata.storeManager;
+  //   this.rightDetailsContent.tankPm = fdata.tankPm;
+  // }
   // compliance end
 
 
@@ -390,36 +405,39 @@ export class HomeComponent implements OnInit {
   midGrade;
   premium;
   diesel;
-
+  totalGallons = 1000;
   getConsolidateReport(consolidateData) {
-    this.consolidateReportdata = {
-      labels: [],
-      datasets: [
-        {
-          data: [],
-          backgroundColor: [
-            "#89DF93",
-            "#36A2EB",
-            "#89DF93",
-            "#36A2EB"
-          ],
-          hoverBackgroundColor: [
-            "#89DF93",
-            "#36A2EB",
-            "#89DF93",
-            "#36A2EB"
-          ]
-        }]
-    };
-
     this.regular = consolidateData.regular;
     this.midGrade = consolidateData.midgrade;
     this.premium = consolidateData.premium;
     this.diesel = consolidateData.diesel;
-    this.consolidateReportdata.datasets[0].data.push(this.regular);
-    this.consolidateReportdata.datasets[0].data.push(this.midGrade);
-    this.consolidateReportdata.datasets[0].data.push(this.premium);
-    this.consolidateReportdata.datasets[0].data.push(this.diesel);
+    this.consolidateReportdata = {
+      labels: [],
+
+
+      datasets: [
+        {
+          label: 'Remaining',
+          data: [this.regular, this.midGrade, this.premium, this.diesel],
+          backgroundColor: '#E14944',
+          hoverBackgroundColor: '#E14944'
+
+        }, {
+          label: 'Total',
+          data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
+          backgroundColor: '#3C7240',
+          hoverBackgroundColor: '#3C7240'
+         
+        }]
+    };
+
+
+    // this.consolidateReportdata.datasets[0].data.push([100],[900]);
+    // this.consolidateReportdata.datasets[0].data.push([900]);
+    // this.consolidateReportdata.datasets[0].data.push(this.totalGallons);
+    // this.consolidateReportdata.datasets[0].data.push(this.midGrade);
+    // this.consolidateReportdata.datasets[0].data.push(this.premium);
+    // this.consolidateReportdata.datasets[0].data.push(this.diesel);
     this.consolidateReportdata.labels.push('Regular')
     this.consolidateReportdata.labels.push('Mid Grade');
     this.consolidateReportdata.labels.push('Premium');
@@ -452,12 +470,23 @@ export class HomeComponent implements OnInit {
     legend: { position: 'bottom' }
   }
   private noLegendtOptions = {
-    legend: { display: false }
+    legend: { display: false },
+    responsive: false,
+    maintainAspectRatio: false,
+
+    scales: {
+      xAxes: [{
+        stacked: true // this should be set to make the bars stacked
+      }],
+      yAxes: [{
+        stacked: true // this also..
+      }]
+    }
   }
   private noLegendtRightOptions = {
     legend: { display: false },
     responsive: false,
-    maintainAspectRatio: false
+    maintainAspectRatio: false,
   }
   showAll() {
     this.showBack = false;
@@ -490,7 +519,7 @@ export class HomeComponent implements OnInit {
     this.fecilitiesRightdata = [];
     this.complianceRightdata = [];
     this.companiesRightdata = [];
-    this.middlePaneClass = "ui-g-6"
+    this.middlePaneClass = "ui-g-4"
     this.showRightDetailContent = false;
     this.newsFeedVisible = false;
     this.area.left = 20;
@@ -510,7 +539,7 @@ export class HomeComponent implements OnInit {
     this.area.left = 20;
     this.area.center = 80;
     this.area.right = 0;
-    this.middlePaneClass = "ui-g-6"
+    this.middlePaneClass = "ui-g-4"
   }
   showMainDashBoard() {
     console.log("showDashBoard");
@@ -525,6 +554,22 @@ export class HomeComponent implements OnInit {
     // var files = $event.files;
     // var file = files[0];
     // this.fOperatorFileName = file.name;
+  }
+  modalData
+  getNotificationModalData(fecilitiesId) {
+    this.dashboardService.getNotifictionUploadData(fecilitiesId) // retrieve all thd parent folders
+      .subscribe(
+        modalData => {
+          this.modalData = modalData;
+          // this.resetLeftSideData();
+          // this.getFecilitiesData(dashboardData.fecilitiesData);
+          // this.getCompanies(dashboardData.companiesData);
+          // this.getConsolidateReport(dashboardData.consolidateReportData);
+          // this.getComplianceData(dashboardData.complianceData);
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   getNotificationFormButtonClass(rightDetailsContent) {
@@ -541,5 +586,18 @@ export class HomeComponent implements OnInit {
     if ((rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == true))
       return 'fecility-button-background-red'
     return ""
+  }
+  getFecilitiesSubList(fecilitiesRightdata, i) {
+    var subList = [];
+    if (fecilitiesRightdata != null) {
+      if (fecilitiesRightdata[i] != null)
+        subList.push(fecilitiesRightdata[i]);
+      if (fecilitiesRightdata[i] + 1 != null)
+        subList.push(fecilitiesRightdata[i + 1]);
+      if (fecilitiesRightdata[i + 2] != null)
+        subList.push(fecilitiesRightdata[i + 2]);
+    }
+    return subList;
+
   }
 }

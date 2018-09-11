@@ -12,6 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Fecilities;
 import com.customerportal.util.DBUtil;
@@ -57,10 +58,10 @@ public class DashBoardService {
 		
 		//consolidated report
 		dashboardMap = new HashMap<String, Integer>();
-		dashboardMap.put("regular", 20);
-		dashboardMap.put("midgrade", 15);
-		dashboardMap.put("premium", 10);
-		dashboardMap.put("diesel", 5);
+		dashboardMap.put("regular", 200);
+		dashboardMap.put("midgrade", 150);
+		dashboardMap.put("premium", 310);
+		dashboardMap.put("diesel", 500);
 		resultMap.put("consolidateReportData", dashboardMap);
 
 		return Response.status(200).entity(resultMap).build();
@@ -130,6 +131,16 @@ public class DashBoardService {
 		List<Fecilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesFCompliance(userId,fecilitiesType);
 		getActualFecilitiesList(fecilitiesList);
 		return Response.status(200).entity(fecilitiesList).build();
+
+	}
+	
+	@Path("/notificationdetails")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response complianceData(@QueryParam("fecilitiesId") String fecilitiesId) {
+		Account account = DBUtil.getInstance().fetchFecilitiesNotificationData(fecilitiesId);
+//		getActualFecilitiesList(fecilitiesList);
+		return Response.status(200).entity(account).build();
 
 	}
 
