@@ -154,20 +154,6 @@ export class HomeComponent implements OnInit {
   }
   //app component code end
 
-  // left panel code start
-  // loadLeftPanelData() {
-  //   this.items = [
-  //     {
-  //       label: 'User Name',
-  //       items: [{ label: 'Edit Profile', icon: 'fa fa-edit' },
-  //       { separator: true },
-  //       { label: 'Logout', icon: 'fa fa-sign-out' }
-  //       ]
-  //     }
-  //   ];
-  // }
-  // left panel code end
-
   // middlepanel code start
   constructor(public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
@@ -330,19 +316,6 @@ export class HomeComponent implements OnInit {
     this.showBack = true;
     this.showRightContent = true;
     this.rightPanelTitle = "Companies -- " + " (" + this.totalCompanies + ")";
-    // construction of fecilitiesRightdata need to get from server
-    //  for (var i = 0; i < this.companiesArray[event]; i++) {
-    //   let compObj: any = {};
-    //   compObj.name = "Gas Station name " + "_" + i;
-    //   compObj.img = 'bp.png';
-    //   compObj.fid = "FID_" + i;
-    //   compObj.address = "Gas Station Address";
-    //   if (i % 3 == 0)
-    //     compObj.compliance = true;
-    //   else
-    //     compObj.compliance = false;
-    //   this.companiesRightdata.push(compObj);
-    // }
     this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         companiesList => {
@@ -417,19 +390,6 @@ export class HomeComponent implements OnInit {
     this.showBack = true;
     this.rightPanelTitle = "Compliance -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
     this.showRightContent = true;
-    // construction of fecilitiesRightdata need to get from server
-    //  for (var i = 0; i < this.complianceArray[event]; i++) {
-    //   let complianceObj: any = {};
-    //   complianceObj.name = "Compliance name " + "_" + i;
-    //   complianceObj.img = 'bp.png';
-    //   complianceObj.fid = "FID_" + i;
-    //   complianceObj.address = "Compliance";
-    //   if (i % 3 == 0)
-    //     complianceObj.compliance = true;
-    //   else
-    //     complianceObj.compliance = false;
-    //     this.complianceRightdata.push(complianceObj);
-    // }
     this.dashboardService.getComplianceList(this.commonService.getUserName(), this.complianceLabel[event]) // retrieve all thd parent folders
       .subscribe(
         complianceList => {
@@ -446,21 +406,7 @@ export class HomeComponent implements OnInit {
         });
   }
 
-  // showSpecificComplianceDetails(fdata) {
-  //   console.log(fdata);
-  //   this.showRightDetailPanel();
-  //   // this.showRightContent = false;
-  //   this.showRightDetailContent = true;
-  //   this.rightPaneDetailslTitle = fdata.name;
-  //   this.rightDetailsContent.name = fdata.name;
-  //   this.rightDetailsContent.fid = fdata.fid;
-  //   this.rightDetailsContent.img = fdata.img;
-  //   this.rightDetailsContent.address = fdata.address;
-  //   this.rightDetailsContent.compliance = fdata.compliance;
-  //   this.rightDetailsContent.storeManager = fdata.storeManager;
-  //   this.rightDetailsContent.tankPm = fdata.tankPm;
-  // }
-  // compliance end
+    // compliance end
 
 
   //consolidateReport start
@@ -497,14 +443,7 @@ export class HomeComponent implements OnInit {
         }]
     };
 
-
-    // this.consolidateReportdata.datasets[0].data.push([100],[900]);
-    // this.consolidateReportdata.datasets[0].data.push([900]);
-    // this.consolidateReportdata.datasets[0].data.push(this.totalGallons);
-    // this.consolidateReportdata.datasets[0].data.push(this.midGrade);
-    // this.consolidateReportdata.datasets[0].data.push(this.premium);
-    // this.consolidateReportdata.datasets[0].data.push(this.diesel);
-    this.consolidateReportdata.labels.push('Regular')
+  this.consolidateReportdata.labels.push('Regular')
     this.consolidateReportdata.labels.push('Mid Grade');
     this.consolidateReportdata.labels.push('Premium');
     this.consolidateReportdata.labels.push('diesel');
@@ -628,11 +567,6 @@ export class HomeComponent implements OnInit {
       .subscribe(
         modalData => {
           this.modalData = modalData;
-          // this.resetLeftSideData();
-          // this.getFecilitiesData(dashboardData.fecilitiesData);
-          // this.getCompanies(dashboardData.companiesData);
-          // this.getConsolidateReport(dashboardData.consolidateReportData);
-          // this.getComplianceData(dashboardData.complianceData);
         },
         error => {
           console.log(error);
