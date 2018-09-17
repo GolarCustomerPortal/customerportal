@@ -2,9 +2,10 @@
 
     <div class="form-inline search-margin">
         <form>
+            <p-dropdown [options]="searchOptions" [(ngModel)]="selectedSearchOption" name="selectedSearchOption" optionLabel="name" [style]="{'width': '110px'}"></p-dropdown>
             <input type="text" class="form-control" name="searchString" [(ngModel)]="searchString" />
 
-            <button class="btn btn-primary search-icon-color">Search</button>
+            <button class="btn btn-primary search-icon-color" (click) ="fetchSearchResults()">Search</button>
         </form>
     </div>
     <ul class="navbar-nav" style="margin-left: auto!important;">
@@ -25,7 +26,7 @@
                 <b class="caret"></b>
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a *ngIf="!commonService.isSecondaryUserPresent()" class="dropdown-item" href="#"  (click)="editUser()">Edit Profile</a>
+                <a *ngIf="!commonService.isSecondaryUserPresent()" class="dropdown-item" href="#"  (click)="editUser('editprofile')">Edit Profile</a>
                 <a class="dropdown-item" href="#" (click)="authService.logout()">Logout</a>
             </div>
         </li>

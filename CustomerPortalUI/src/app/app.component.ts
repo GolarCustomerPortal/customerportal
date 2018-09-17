@@ -12,6 +12,13 @@ export class AppComponent implements OnInit{
   visibleSidebar=false;
   constructor(private router: Router,public commonService: CommonService,public  authService:AuthenticationService){
   }
+  searchOptions = [
+    {name: 'All', code: 'all'},
+    {name: 'Name', code: 'name'},
+    {name: 'FID', code: 'fid'},
+    {name: 'Address ', code: 'address'}
+];
+selectedSearchOption = this.searchOptions[0];
   searchString;
   ngOnInit(){
     this.commonService.removeEditUser();
@@ -35,9 +42,12 @@ export class AppComponent implements OnInit{
     this.router.navigate(['/']);
   }
   editUser(){
-    this.commonService.updateUser();
+    this.commonService.updateUserforEdit(this.commonService.getPrimaryUser());
     setTimeout(() => {
       this.router.navigate(['newuser']);
     }, 50);
+  }
+  fetchSearchResults(){
+    console.log(this.searchString+"  ",this.selectedSearchOption)
   }
 }

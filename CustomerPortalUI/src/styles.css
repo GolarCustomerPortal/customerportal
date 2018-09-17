@@ -1,6 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
-.body-background-color{
+/* .body-background-color{
     background-color: #E9FFD0 !important;
+} */
+.form-control{
+    min-height: 38px !important; 
 }
 .full-height-width{
     height: 100%;
@@ -210,4 +213,7 @@ text-align: left;
 }
 .ui-state-disabled{
     opacity: 0.7 !important;
+}
+.success{
+    color:#89DF93 !important;
 }

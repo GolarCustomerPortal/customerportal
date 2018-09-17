@@ -6,7 +6,7 @@ public class Fecilities {
 	private String contact;
 	private String address;
 	private String company;
-	private String fecilityId;
+	private String facilityId;
 	private String fid;
 	private boolean tankPaidService;
 	private String state;
@@ -36,12 +36,12 @@ public class Fecilities {
 		return name;
 	}
 
-	public String getFecilityId() {
-		return fecilityId;
+	public String getFacilityId() {
+		return facilityId;
 	}
 
-	public void setFecilityId(String fecilityId) {
-		this.fecilityId = fecilityId;
+	public void setFacilityId(String facilityId) {
+		this.facilityId = facilityId;
 	}
 
 	public String getCompany() {

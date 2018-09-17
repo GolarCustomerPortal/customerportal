@@ -128,7 +128,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
+					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
 							+ userId + "'",
 					Fecilities.class);
 			List lst = query.list();
@@ -210,7 +210,7 @@ public class DBUtil {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
 					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
+							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Golars_Tank_Paid_Service__c =:tankService",
 					Fecilities.class);
 			query.setString("userId", userId);
@@ -476,7 +476,7 @@ public class DBUtil {
 			Query query = session
 					.createNativeQuery(
 							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-									+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
+									+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 									+ "FROM Facility_Management__c f where f.company__c =:companyName",
 							Fecilities.class);
 			// query.setString("userId", companyOwner);
@@ -516,7 +516,7 @@ public class DBUtil {
 			Query query = session.createNativeQuery(
 					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,"
 							+ "Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM "
+							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM "
 							+ "Facility_Management__c where Compliant__c =:compliance",
 					Fecilities.class);
 			if (compliance.equalsIgnoreCase("compliance")) {
@@ -583,5 +583,36 @@ public class DBUtil {
 
 		}
 
+	}
+
+	public void updateFileLabelMissing(String fileuploadlabel, String facilityId) {
+
+		Session session = null;
+
+		Transaction trx = null;
+		try {
+			// stub
+				session = HibernateUtil.getSession();
+
+				trx = session.beginTransaction();// TODO Auto-generated method
+				Query query = null;
+					query = session.createNativeQuery("UPDATE Account a SET a."+fileuploadlabel+"='Received' WHERE a.Id =:facilityId");
+					query.setString("facilityId", facilityId);
+					int result = query.executeUpdate();
+				trx.commit();
+				session.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred while updating user Preferences : " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+
+		}
+		// User user = (User) session.get(User.class, username);
+
+	
+		
 	}
 }

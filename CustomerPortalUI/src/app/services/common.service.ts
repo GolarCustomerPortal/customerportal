@@ -57,6 +57,10 @@ export class CommonService {
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondaryfecilities') != null)
         fecilities = localStorage.getItem('secondaryfecilities')
+    }else  
+    if (this.isEditUserPresent()) {
+      if (localStorage.getItem('editfecilities') != null)
+        fecilities = localStorage.getItem('editfecilities')
     } else if (localStorage.getItem('primaryfecilities') != null)
       fecilities = localStorage.getItem('primaryfecilities');
     if (fecilities != null && fecilities === "false")
@@ -69,7 +73,11 @@ export class CommonService {
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondarycompanies') != null)
         fecilities = localStorage.getItem('secondarycompanies')
-    } else if (localStorage.getItem('primarycompanies') != null)
+    }else  
+    if (this.isEditUserPresent()) {
+      if (localStorage.getItem('editcompanies') != null)
+        fecilities = localStorage.getItem('editcompanies')
+    }  else if (localStorage.getItem('primarycompanies') != null)
       fecilities = localStorage.getItem('primarycompanies');
     if (fecilities != null && fecilities === "false")
       return false;
@@ -81,7 +89,11 @@ export class CommonService {
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondarycompliance') != null)
         fecilities = localStorage.getItem('secondarycompliance')
-    } else if (localStorage.getItem('primarycompliance') != null)
+    }else  
+    if (this.isEditUserPresent()) {
+      if (localStorage.getItem('editcompliance') != null)
+        fecilities = localStorage.getItem('editcompliance')
+    }  else if (localStorage.getItem('primarycompliance') != null)
       fecilities = localStorage.getItem('primarycompliance');
     if (fecilities != null && fecilities === "false")
       return false;
@@ -93,22 +105,26 @@ export class CommonService {
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondaryconsolidate') != null)
         fecilities = localStorage.getItem('secondaryconsolidate')
-    } else if (localStorage.getItem('primaryconsolidate') != null)
+    }else  
+    if (this.isEditUserPresent()) {
+      if (localStorage.getItem('editconsolidate') != null)
+        fecilities = localStorage.getItem('editconsolidate')
+    }   else if (localStorage.getItem('primaryconsolidate') != null)
       fecilities = localStorage.getItem('primaryconsolidate');
     if (fecilities != null && fecilities === "false")
       return false;
     return true;
 
   }
-  addSecondaryUser(user) {
-    localStorage.setItem('secondaryUser', JSON.stringify(user));
+  addUserPreferences(user,usertype,type) {
+    localStorage.setItem(usertype, JSON.stringify(user));
     var permission = user.permission;
     if (permission !== null && permission !== undefined) {
       var permissionArray = permission.split("__##__");
       for (var i = 0; i < permissionArray.length; i++) {
         var indPermission = permissionArray[i];
         var indPermissionArray = indPermission.split(":");
-        localStorage.setItem("secondary" + indPermissionArray[0], indPermissionArray[1]);
+        localStorage.setItem(type + indPermissionArray[0], indPermissionArray[1]);
       }
       // localStorage.setItem('secondaryusername', user.username);
       // localStorage.setItem('secondaryuserfullname', user.firstName+" "+user.lastName);
@@ -117,6 +133,11 @@ export class CommonService {
   }
   isSecondaryUserPresent() {
     if (localStorage.getItem('secondaryUser') != null)
+      return true;
+    return false;
+  }
+  isEditUserPresent() {
+    if (localStorage.getItem('editUser') != null)
       return true;
     return false;
   }
@@ -141,6 +162,10 @@ export class CommonService {
     else if (localStorage.getItem('primaryUser')) {
       localStorage.setItem('editUser', localStorage.getItem('primaryUser'));
     }
+  }
+  updateUserforEdit(user){
+    localStorage.setItem('editUser', JSON.stringify(user));
+    this.addUserPreferences(user,'editUser','edit')
   }
   getEditUser() {
     if (localStorage.getItem("editUser") !== null)
@@ -209,5 +234,14 @@ export class CommonService {
 
     }
   }
-
+  getPrimaryUser() {
+    if (localStorage.getItem('primaryUser')) {
+      var localuser = localStorage.getItem('primaryUser');
+      if (localuser != null && localuser != undefined) {
+        var userObj = JSON.parse(localuser);
+          return userObj;
+      }
+    }
+    return null;
+  }
 }

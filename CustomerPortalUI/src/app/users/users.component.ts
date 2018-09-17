@@ -38,10 +38,15 @@ export class UsersComponent implements OnInit {
     return resultData;
   }
   loginWithUser(user){
-    this.commonService.addSecondaryUser(user);
+    this.commonService.addUserPreferences(user,'secondaryUser','secondary');
     this.router.navigate(['/']);
   }
-
+  editUser(user){
+      this.commonService.updateUserforEdit(user);
+      setTimeout(() => {
+        this.router.navigate(['newuser']);
+      }, 50);
+  }
 }
 
 

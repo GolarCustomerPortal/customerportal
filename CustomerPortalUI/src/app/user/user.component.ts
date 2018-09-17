@@ -103,7 +103,8 @@ var self=this;
               // if(this.commonService.isSecondaryUserPresent())
               // this.commonService.addSecondaryUser(user)
               // else
-              this.commonService.addPrimaryUser(user);
+              if(this.commonService.checkForSameUser(user))
+                this.commonService.addPrimaryUser(user);
               this.commonService.removeEditUser();
             }else
 

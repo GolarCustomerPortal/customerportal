@@ -28,6 +28,7 @@ import {FieldsetModule} from 'primeng/fieldset';
 import { DashboardService } from './services/dashboard.service';
 import {DropdownModule} from 'primeng/dropdown';
 import {RadioButtonModule} from 'primeng/radiobutton';
+import { ImportService } from './services/import.service';
 
 
 @NgModule({
@@ -41,7 +42,6 @@ import {RadioButtonModule} from 'primeng/radiobutton';
   imports: [
     routing,
     BrowserModule, 
-    FormsModule,
     ChartModule,
     BrowserAnimationsModule,
     AngularSplitModule,
@@ -65,6 +65,7 @@ import {RadioButtonModule} from 'primeng/radiobutton';
     CommonService,
     AuthenticationService,
     DashboardService,
+    ImportService,
     {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
   bootstrap: [AppComponent]

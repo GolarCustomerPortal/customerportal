@@ -71,7 +71,7 @@ public class DashBoardService {
 		String fecilitiesIdString = "";
 		if(fecilitiesList != null){
 		for (Fecilities fecilitiy : fecilitiesList) {
-			fecilitiesIdString += "'"+fecilitiy.getFecilityId()+"',";
+			fecilitiesIdString += "'"+fecilitiy.getFacilityId()+"',";
 		}
 		}
 		if(fecilitiesIdString.endsWith(","))
@@ -95,15 +95,15 @@ public class DashBoardService {
 		List<Fecilities> certificationList = DBUtil.getInstance().fecilityCertificationList(fecilitiesIdString);
 		
 		for (Fecilities fecilities : fecilitiesList) {
-			if(notificationFormList.contains(fecilities.getFecilityId())){
+			if(notificationFormList.contains(fecilities.getFacilityId())){
 				fecilities.setNotificationFormButtonEnable(true);
 			}else
 				fecilities.setNotificationFormButtonEnable(false);
-			if(complianceList.contains(fecilities.getFecilityId()))
+			if(complianceList.contains(fecilities.getFacilityId()))
 				fecilities.setComplianceButtonEnable(true);
 			else
 				fecilities.setCertificationButtonEnable(false);
-			if(certificationList.contains(fecilities.getFecilityId()))
+			if(certificationList.contains(fecilities.getFacilityId()))
 				fecilities.setCertificationButtonEnable(true);
 			else
 				fecilities.setCertificationButtonEnable(false);
