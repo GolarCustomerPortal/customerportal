@@ -32,9 +32,9 @@ getCompaniesList(userId) {
 }
 getComplianceList(userId,type) {
   return this.http.get<any>(URLConstants.COMPLIANCE_URL,this.getFecilitiesOptions(userId,type))
-      .map(fecilityNotificationData => {
+      .map(facilityNotificationData => {
           
-          return fecilityNotificationData;
+          return facilityNotificationData;
       });
 }
 getNotifictionUploadData(fecilitiesId){
