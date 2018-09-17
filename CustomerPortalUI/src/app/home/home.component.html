@@ -197,12 +197,12 @@
         <div class="ui-g-12">
             <p-card styleClass="ui-card-shadow">
             <p-header ngClass="header-padding-left">
-              {{rightDetailsContent.name}}
+              {{rightDetailsContent.fecilityName}}
               <img class="card-image" src="{{getImage(rightDetailsContent)}}" />
             </p-header>
             <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Name:</div>
-              <div class="ui-g-8 no-padding">{{rightDetailsContent.name}}</div>
+              <div class="ui-g-8 no-padding">{{rightDetailsContent.fecilityName}}</div>
             </div>
             <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Fid:</div>
@@ -439,8 +439,8 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click) ="importComplianceDocuments()">Close</button>
-          <button type="button" class="btn btn-primary">Upload</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"  (click) ="importComplianceDocuments()">Close</button>
+          <button type="button" class="btn btn-primary" [disabled]="!enableComplianceuploadButton">Upload</button>
         </div>
       </div>
     </div>
@@ -490,8 +490,8 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Upload</button>
+          <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" [disabled]="!enableCertificationuploadButton">Upload</button>
         </div>
       </div>
     </div>
