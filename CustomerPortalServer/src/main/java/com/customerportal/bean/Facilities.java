@@ -1,6 +1,6 @@
 package com.customerportal.bean;
 
-public class Fecilities {
+public class Facilities {
 
 	private String externalId;
 	private String contact;

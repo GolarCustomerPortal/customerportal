@@ -27,7 +27,7 @@ public class UsersService {
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response retrieveAllUsersWIthSearch(@QueryParam("searchOption") String searchOption,@QueryParam("searchString") String searchString) {
+	public Response retrieveAllUsersWIthSearch(@QueryParam("userSearchOption") String searchOption,@QueryParam("userSearchString") String searchString) {
 
 		List<User> userList = DBUtil.getInstance().getAllUsers(searchOption,searchString);
 		return Response.status(201).entity(userList).build();

@@ -11,7 +11,7 @@ public class Company {
 	private String externalID;
 	private String name;
 	private String ownerName;
-	List<Fecilities> fecilities = new ArrayList<Fecilities>();
+	List<Facilities> fecilities = new ArrayList<Facilities>();
 	public String getCompanyOwner() {
 		return companyOwner;
 	}
@@ -49,10 +49,10 @@ public class Company {
 		this.ownerName = ownerName;
 	}
 
-	public void setFecilities(List<Fecilities> fecilities) {
+	public void setFecilities(List<Facilities> fecilities) {
 		this.fecilities = fecilities;
 	}
-	public List<Fecilities> getFecilities() {
+	public List<Facilities> getFecilities() {
 		return fecilities;
 	}
 }

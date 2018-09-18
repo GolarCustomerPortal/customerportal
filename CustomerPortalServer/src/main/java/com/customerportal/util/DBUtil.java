@@ -11,7 +11,8 @@ import com.customerportal.bean.Account;
 import com.customerportal.bean.ChangePassword;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Contact;
-import com.customerportal.bean.Fecilities;
+import com.customerportal.bean.Facilities;
+import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.User;
 
 public class DBUtil {
@@ -121,7 +122,7 @@ public class DBUtil {
 		}
 	}
 
-	public List<Fecilities> fetchFecilities(String userId) {
+	public List<Facilities> fetchFecilities(String userId) {
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
@@ -130,7 +131,7 @@ public class DBUtil {
 			Query query = session.createNativeQuery(
 					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM Facility_Management__c where Contact__c= '"
 							+ userId + "'",
-					Fecilities.class);
+					Facilities.class);
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -201,7 +202,7 @@ public class DBUtil {
 		}
 	}
 
-	public List<Fecilities> getSpecificFecilitiesForUser(String userId, String fecilitiesType) {
+	public List<Facilities> getSpecificFecilitiesForUser(String userId, String fecilitiesType) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
@@ -212,7 +213,7 @@ public class DBUtil {
 					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Golars_Tank_Paid_Service__c =:tankService",
-					Fecilities.class);
+					Facilities.class);
 			query.setString("userId", userId);
 			if (fecilitiesType.equalsIgnoreCase("signed"))
 				query.setBoolean("tankService", true);
@@ -307,7 +308,7 @@ public class DBUtil {
 
 	}
 
-	public List<Fecilities> fecilityNotificationFormList(String fecilitiesIdString) {
+	public List<Facilities> fecilityNotificationFormList(String fecilitiesIdString) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
@@ -345,7 +346,7 @@ public class DBUtil {
 
 	}
 
-	public List<Fecilities> fecilityComplianceList(String fecilitiesIdString) {
+	public List<Facilities> fecilityComplianceList(String fecilitiesIdString) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
@@ -384,7 +385,7 @@ public class DBUtil {
 
 	}
 
-	public List<Fecilities> fecilityCertificationList(String fecilitiesIdString) {
+	public List<Facilities> fecilityCertificationList(String fecilitiesIdString) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
@@ -467,7 +468,7 @@ public class DBUtil {
 		}
 	}
 
-	public List<Fecilities> fetchFecilitiesForCompany(String companyName, String companyOwner) {
+	public List<Facilities> fetchFecilitiesForCompany(String companyName, String companyOwner) {
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
@@ -478,7 +479,7 @@ public class DBUtil {
 							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,GOLARS_Project__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 									+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c "
 									+ "FROM Facility_Management__c f where f.company__c =:companyName",
-							Fecilities.class);
+							Facilities.class);
 			// query.setString("userId", companyOwner);
 
 			query.setString("companyName", companyName);
@@ -506,7 +507,7 @@ public class DBUtil {
 
 	}
 
-	public List<Fecilities> fetchFecilitiesFCompliance(String userId, String compliance) {
+	public List<Facilities> fetchFecilitiesFCompliance(String userId, String compliance) {
 
 		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
@@ -518,7 +519,7 @@ public class DBUtil {
 							+ "Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 							+ "Operator_Company__c,OwnerId,PERC_Concentration__c,Property_Owner__c,State__c,Street__c,City__c,USSBOA_Paid_Service__c,UST_Owner_Company__c FROM "
 							+ "Facility_Management__c where Compliant__c =:compliance",
-					Fecilities.class);
+					Facilities.class);
 			if (compliance.equalsIgnoreCase("compliance")) {
 				query.setBoolean("compliance", true);
 			} else
@@ -614,5 +615,11 @@ public class DBUtil {
 
 	
 		
+	}
+
+	public SearchResults retrieveSearchResults(String searchType, String searchString, String username,
+			boolean isadmin) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

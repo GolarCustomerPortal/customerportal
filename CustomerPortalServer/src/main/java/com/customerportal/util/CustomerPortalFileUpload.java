@@ -7,7 +7,7 @@ import java.util.Random;
 
 import javax.ws.rs.core.MediaType;
 
-import com.customerportal.bean.Fecilities;
+import com.customerportal.bean.Facilities;
 import com.customerportal.bean.KeyValue;
 import com.google.gson.Gson;
 import com.sforce.soap.enterprise.Connector;
@@ -49,7 +49,7 @@ public class CustomerPortalFileUpload {
 		PASSWORD = urlProperties.getProperty("password");
 		KeyValue keyValue[] = new Gson().fromJson(fileuploadlabel, KeyValue[].class);
 		List<KeyValue> resultList = new ArrayList<KeyValue>();
-		Fecilities facilities = new Gson().fromJson(documentProperties,Fecilities.class);
+		Facilities facilities = new Gson().fromJson(documentProperties,Facilities.class);
 		try {
 			for (BodyPart part : body.getParent().getBodyParts()) {
 

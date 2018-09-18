@@ -14,7 +14,8 @@ import javax.ws.rs.core.Response;
 
 import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
-import com.customerportal.bean.Fecilities;
+import com.customerportal.bean.Facilities;
+import com.customerportal.bean.SearchResults;
 import com.customerportal.util.DBUtil;
 
 @Path("/dashboard")
@@ -26,11 +27,11 @@ public class DashBoardService {
 		Map<String, Map<String, Integer>> resultMap= new HashMap<String, Map<String,Integer>>();
 		//fecilities data
 		Map<String, Integer> dashboardMap = new HashMap<String, Integer>();
-		List<Fecilities> fecilitiesList = DBUtil.getInstance().fetchFecilities(userId);
+		List<Facilities> fecilitiesList = DBUtil.getInstance().fetchFecilities(userId);
 		int fecilitiesSigned=0,fecilitiesUnsigned=0;
 		String fecilitiesIdString = getFecilitiesIdString(fecilitiesList);
 		if(fecilitiesList != null){
-		for (Fecilities fecilitiy : fecilitiesList) {
+		for (Facilities fecilitiy : fecilitiesList) {
 			if(fecilitiy.isTankPaidService())
 				fecilitiesSigned++;
 			else
@@ -67,10 +68,10 @@ public class DashBoardService {
 		return Response.status(200).entity(resultMap).build();
 
 	}
-	private String getFecilitiesIdString(List<Fecilities> fecilitiesList) {
+	private String getFecilitiesIdString(List<Facilities> fecilitiesList) {
 		String fecilitiesIdString = "";
 		if(fecilitiesList != null){
-		for (Fecilities fecilitiy : fecilitiesList) {
+		for (Facilities fecilitiy : fecilitiesList) {
 			fecilitiesIdString += "'"+fecilitiy.getFacilityId()+"',";
 		}
 		}
@@ -82,19 +83,19 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response fecilitiesData(@QueryParam("userId") String userId,@QueryParam("fecilitiesType") String fecilitiesType) {
-		List<Fecilities> fecilitiesList = DBUtil.getInstance().getSpecificFecilitiesForUser(userId,fecilitiesType);
+		List<Facilities> fecilitiesList = DBUtil.getInstance().getSpecificFecilitiesForUser(userId,fecilitiesType);
 		getActualFecilitiesList(fecilitiesList);
 
 		return Response.status(200).entity(fecilitiesList).build();
 
 	}
-	private void getActualFecilitiesList(List<Fecilities> fecilitiesList) {
+	private void getActualFecilitiesList(List<Facilities> fecilitiesList) {
 		String fecilitiesIdString = getFecilitiesIdString(fecilitiesList);
-		List<Fecilities> notificationFormList = DBUtil.getInstance().fecilityNotificationFormList(fecilitiesIdString);
-		List<Fecilities> complianceList = DBUtil.getInstance().fecilityComplianceList(fecilitiesIdString);
-		List<Fecilities> certificationList = DBUtil.getInstance().fecilityCertificationList(fecilitiesIdString);
+		List<Facilities> notificationFormList = DBUtil.getInstance().fecilityNotificationFormList(fecilitiesIdString);
+		List<Facilities> complianceList = DBUtil.getInstance().fecilityComplianceList(fecilitiesIdString);
+		List<Facilities> certificationList = DBUtil.getInstance().fecilityCertificationList(fecilitiesIdString);
 		
-		for (Fecilities fecilities : fecilitiesList) {
+		for (Facilities fecilities : fecilitiesList) {
 			if(notificationFormList.contains(fecilities.getFacilityId())){
 				fecilities.setNotificationFormButtonEnable(true);
 			}else
@@ -116,7 +117,7 @@ public class DashBoardService {
 	public Response companiesData(@QueryParam("userId") String userId) {
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
 		for (Company company : companiesList) {
-			List<Fecilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
+			List<Facilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
 			getActualFecilitiesList(fecilitiesList);
 			company.setFecilities(fecilitiesList);	
 		}
@@ -128,7 +129,7 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response complianceData(@QueryParam("userId") String userId,@QueryParam("fecilitiesType") String fecilitiesType) {
-		List<Fecilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesFCompliance(userId,fecilitiesType);
+		List<Facilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesFCompliance(userId,fecilitiesType);
 		getActualFecilitiesList(fecilitiesList);
 		return Response.status(200).entity(fecilitiesList).build();
 
@@ -142,6 +143,15 @@ public class DashBoardService {
 //		getActualFecilitiesList(fecilitiesList);
 		return Response.status(200).entity(account).build();
 
+	}
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchSearchResults(@QueryParam("searchType") String searchType,@QueryParam("searchString") String searchString, @QueryParam("username") String username,
+			@QueryParam("isAdmin") boolean isadmin) {
+			SearchResults result = DBUtil.getInstance().retrieveSearchResults(searchType,searchString,username, isadmin);
+
+		return Response.status(200).entity(result).build();
 	}
 
 

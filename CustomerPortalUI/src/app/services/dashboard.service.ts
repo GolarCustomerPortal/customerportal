@@ -44,7 +44,18 @@ getNotifictionUploadData(fecilitiesId){
           return fecilitiesData;
       });
 }
-
+searchResults(searchType:string,searchString: string,username: string,isadmin:boolean) {
+    return this.http.get<any>(URLConstants.SEARCH_URL,this.getSearchOptions(searchType,searchString,username,isadmin))
+        .map(folder => {
+            
+            return folder;
+        });
+}
+private getSearchOptions(searchType,searchString,username,isadmin) {
+    return {
+      params: new HttpParams().set(CRMConstants.SEARCH_TYPE,searchType).set(CRMConstants.SEARCH_STRING,searchString).set(CRMConstants.USER_ID,username).set(CRMConstants.ISADMIN,isadmin)
+    };
+  }
   private getDashboardOptions(key,userId) {
     return {
       params: new HttpParams().set(key,userId)

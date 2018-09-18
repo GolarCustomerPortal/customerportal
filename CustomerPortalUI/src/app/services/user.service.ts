@@ -47,7 +47,7 @@ export class UserService {
   }
   private getSearchOptions(type,value) {
     return {
-      params: new HttpParams().set(CRMConstants.USER_SEARCH_TYPE,type).set(CRMConstants.USER_SEARCH_Value,value)
+      params: new HttpParams().set(CRMConstants.USER_SEARCH_TYPE,type).set(CRMConstants.USER_SEARCH_VALUE,value)
     };
   }   
 }
