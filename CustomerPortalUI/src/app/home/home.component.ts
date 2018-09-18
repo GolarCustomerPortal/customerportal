@@ -15,15 +15,15 @@ export class HomeComponent implements OnInit {
     var self = this;
     $('#notificationFormModal').on('hidden.bs.modal', function (e) {
       $(this).find('form')[0].reset();
-      self.resetNotificationForm();
+      self.resetNotificationForm(true);
     })
     $('#complianceFormModal').on('hidden.bs.modal', function (e) {
       $(this).find('form')[0].reset();
-      self.resetComplianceForm();
+      self.resetComplianceForm(true);
     })
     $('#certificationFormModal').on('hidden.bs.modal', function (e) {
       $(this).find('form')[0].reset();
-      self.resetCertificationForm();
+      self.resetCertificationForm(true);
     })
     if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'fecilities') {
       this.onFecilitiesDataSelect(null);
@@ -60,34 +60,34 @@ export class HomeComponent implements OnInit {
   // notification fileupload start
   fOperatorFileName;
   fOperatorfile;
-  fOperatorfileSuccess = false;
+  fOperatorfileSuccess = "false";
   ownerFileName;
   ownerFile;
-  ownerFileSuccess = false;
+  ownerFileSuccess = "false";
   ustOwnerFileName;
   ustOwnerFile;
-  ustOwnerFileSuccess = false;
+  ustOwnerFileSuccess = "false";
   operatorLeaseFileName;
   operatorLeaseFile;
-  operatorLeaseFileSuccess = false;
+  operatorLeaseFileSuccess = "false";
   notificationDueDateFileName;
   notificationDueDateFile;
-  notificationDueDateFileSuccess = false;
+  notificationDueDateFileSuccess = "false";
   operatoraffidavitFileName;
   operatoraffidavitFile;
-  operatoraffidavitFileSuccess = false;
+  operatoraffidavitFileSuccess = "false";
   ownerAffidavitFileName;
   ownerAffidavitFile;
-  ownerAffidavitFileSuccess = false;
+  ownerAffidavitFileSuccess = "false";
   deedLandFileName;
   deedLandFile;
-  deedLandFileSuccess = false;
+  deedLandFileSuccess = "false";
   taxIdFileName;
   taxIdFile;
-  taxIdFileSuccess = false;
+  taxIdFileSuccess = "false";
   notificationFormSubmittedFileName;
   notificationFormSubmittedFile;
-  notificationFormSubmittedFileSuccess = false;
+  notificationFormSubmittedFileSuccess = "false";
   enableNotificationuploadButton = false;
   notificationResultList = [];
 
@@ -95,13 +95,13 @@ export class HomeComponent implements OnInit {
   //certification file upload start
   operatorAcertificateFileName;
   operatorAcertificateFile;
-  operatorAcertificateFileSuccess = false;
+  operatorAcertificateFileSuccess = "false";
   operatorBcertificateFileName;
   operatorBcertificateFile;
-  operatorBcertificateFileSuccess = false;
+  operatorBcertificateFileSuccess = "false";
   operatorCcertificateFileName;
   operatorCcertificateFile;
-  operatorCcertificateFileSuccess = false;
+  operatorCcertificateFileSuccess = "false";
   enableCertificationuploadButton = false;
   certificationResultList = [];
   //certification file upload end
@@ -109,22 +109,22 @@ export class HomeComponent implements OnInit {
   // compliance fileupload start
   lineLeakFileName;
   lineLeakFile;
-  lineLeakFileSuccess = false;
+  lineLeakFileSuccess = "false";
   cathodicProtectionFileName;
   cathodicProtectionFile;
-  cathodicProtectionFileSuccess = false;
+  cathodicProtectionFileSuccess = "false";
   tankTestingReportFileName;
   tankTestingReportFile;
-  tankTestingReportFileSuccess = false;
+  tankTestingReportFileSuccess = "false";
   repairDocumentsFileName;
   repairDocumentsFile;
-  repairDocumentsFileSuccess = false;
+  repairDocumentsFileSuccess = "false";
   releaseDetectionFileName;
   releaseDetectionFile;
-  releaseDetectionFileSuccess = false;
+  releaseDetectionFileSuccess = "false";
   internalLiningFileName;
   internalLiningFile;
-  internalLiningFileSuccess = false;
+  internalLiningFileSuccess = "false";
   enableComplianceuploadButton = false;
   complianceResultList = [];
 
@@ -682,7 +682,7 @@ export class HomeComponent implements OnInit {
             }
 
             //notification form start
-            this.resetNotificationForm();
+            this.resetNotificationForm(false);
             //notification form end
           }
         },
@@ -691,7 +691,7 @@ export class HomeComponent implements OnInit {
         });
 
   }
-  resetNotificationForm() {
+  resetNotificationForm(clearTick) {
     this.fOperatorFileName = "";
     this.ownerFileName = "";
     this.ustOwnerFileName = "";
@@ -702,13 +702,24 @@ export class HomeComponent implements OnInit {
     this.deedLandFileName = "";
     this.taxIdFileName = "";
     this.notificationFormSubmittedFileName = "";
+    if(clearTick){
+    this.fOperatorfileSuccess = "false";
+    this.ownerFileSuccess = "false";
+    this.ustOwnerFileSuccess = "false";
+    this.operatorLeaseFileSuccess = "false";
+    this.notificationDueDateFileSuccess = "false";
+    this.operatoraffidavitFileSuccess = "false";
+    this.ownerAffidavitFileSuccess = "false";
+    this.deedLandFileSuccess = "false";
+    this.taxIdFileSuccess = "false";
+  }
     this.enableNotificationuploadButton = false;
   }
   //import notification files end
 
 
   //import compliance files start
-  importComplianeDocuments() {
+  importComplianceDocuments() {
     // console.log(this.fileInput.files.length)
     var frmData = new FormData();
 
@@ -762,7 +773,7 @@ export class HomeComponent implements OnInit {
             }
 
             //notification form start
-            this.resetComplianceForm();
+            this.resetComplianceForm(false);
             //notification form end
           }
         },
@@ -771,13 +782,21 @@ export class HomeComponent implements OnInit {
         });
 
   }
-  resetComplianceForm() {
+  resetComplianceForm(clearTick) {
     this.lineLeakFileName = "";
     this.cathodicProtectionFile = "";
     this.tankTestingReportFileName = "";
     this.repairDocumentsFileName = "";
     this.releaseDetectionFile = "";
     this.internalLiningFileName = "";
+    if(clearTick){
+    this.lineLeakFileSuccess = "false";
+    this.cathodicProtectionFileSuccess = "false";
+    this.tankTestingReportFileSuccess = "false";
+    this.repairDocumentsFileSuccess = "false";
+    this.releaseDetectionFileSuccess = "false";
+    this.internalLiningFileSuccess = "false";
+  }
   }
   //import compliance end
 
@@ -819,7 +838,7 @@ export class HomeComponent implements OnInit {
               if (result[i].key == 'operatorCcertificate')
                 this.operatorCcertificateFileSuccess = result[i].value;
             }
-            this.resetCertificationForm();
+            this.resetCertificationForm(false);
           }
         },
         error => {
@@ -827,10 +846,15 @@ export class HomeComponent implements OnInit {
         });
 
   }
-  resetCertificationForm() {
+  resetCertificationForm(clearCheck) {
     this.operatorAcertificateFileName = "";
     this.operatorBcertificateFileName = "";
     this.operatorCcertificateFileName = "";
+    if(clearCheck){
+    this.operatorAcertificateFileSuccess = "false";
+    this.operatorBcertificateFileSuccess = "false";
+    this.operatorCcertificateFileSuccess = "false";
+  }
   }
   //import compliance end
 

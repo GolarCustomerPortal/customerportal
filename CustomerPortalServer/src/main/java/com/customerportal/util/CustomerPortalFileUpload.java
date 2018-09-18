@@ -35,7 +35,7 @@ public class CustomerPortalFileUpload {
 	void fetchURLProperties() {
 
 		try {
-			urlProperties.load(CustomerPortalFileUpload.class.getResourceAsStream("/url.properties"));
+			urlProperties.load(CustomerPortalFileUpload.class.getResourceAsStream("/customerportal.properties"));
 		} catch (Exception e1) {
 			System.out.println("url.properties file not found" + e1.getMessage());
 		}
