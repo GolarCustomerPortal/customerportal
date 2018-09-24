@@ -3,7 +3,7 @@
           "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
           "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
- <class name="com.customerportal.bean.Fecilities" table="Facility_Management__c">
+ <class name="com.customerportal.bean.Facilities" table="Facility_Management__c">
   <id name="externalId">
    <column name="External_ID__c"  />
   </id>

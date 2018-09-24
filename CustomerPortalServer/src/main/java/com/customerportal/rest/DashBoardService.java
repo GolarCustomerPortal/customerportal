@@ -1,6 +1,5 @@
 package com.customerportal.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,25 +24,24 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dashboardContent(@QueryParam("userId") String userId) {
 		Map<String, Map<String, Integer>> resultMap= new HashMap<String, Map<String,Integer>>();
-		//fecilities data
 		Map<String, Integer> dashboardMap = new HashMap<String, Integer>();
-		List<Facilities> fecilitiesList = DBUtil.getInstance().fetchFecilities(userId);
-		int fecilitiesSigned=0,fecilitiesUnsigned=0;
-		String fecilitiesIdString = getFecilitiesIdString(fecilitiesList);
-		if(fecilitiesList != null){
-		for (Facilities fecilitiy : fecilitiesList) {
-			if(fecilitiy.isTankPaidService())
-				fecilitiesSigned++;
+		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
+		int facilitiesSigned=0,facilitiesUnsigned=0;
+		String facilitiesIdString = getfacilitiesIdString(facilitiesList);
+		if(facilitiesList != null){
+		for (Facilities facilitiy : facilitiesList) {
+			if(facilitiy.isTankPaidService())
+				facilitiesSigned++;
 			else
-				fecilitiesUnsigned++;
+				facilitiesUnsigned++;
 			
 		}
 		}
-		if(fecilitiesIdString.endsWith(","))
-			fecilitiesIdString = fecilitiesIdString.substring(0, fecilitiesIdString.length()-1);
-		dashboardMap.put("signed", fecilitiesSigned);
-		dashboardMap.put("unsigned", fecilitiesUnsigned);
-		resultMap.put("fecilitiesData", dashboardMap);
+		if(facilitiesIdString.endsWith(","))
+			facilitiesIdString = facilitiesIdString.substring(0, facilitiesIdString.length()-1);
+		dashboardMap.put("signed", facilitiesSigned);
+		dashboardMap.put("unsigned", facilitiesUnsigned);
+		resultMap.put("facilitiesData", dashboardMap);
 		// companiesData
 		dashboardMap = new HashMap<String, Integer>();
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
@@ -51,10 +49,10 @@ public class DashBoardService {
 		resultMap.put("companiesData", dashboardMap);
 		//compliance
 		dashboardMap = new HashMap<String, Integer>();
-		int fecilitiesCompliancesize = DBUtil.getInstance().fetchComplianceFecilities(userId,fecilitiesIdString,true);
-		int fecilitiesNonCompliancesize = DBUtil.getInstance().fetchComplianceFecilities(userId,fecilitiesIdString,false);
-		dashboardMap.put("compliance", fecilitiesCompliancesize);
-		dashboardMap.put("noncompliance", fecilitiesNonCompliancesize);
+		int facilitiesCompliancesize = DBUtil.getInstance().fetchComplianceFacilities(userId,facilitiesIdString,true);
+		int facilitiesNonCompliancesize = DBUtil.getInstance().fetchComplianceFacilities(userId,facilitiesIdString,false);
+		dashboardMap.put("compliance", facilitiesCompliancesize);
+		dashboardMap.put("noncompliance", facilitiesNonCompliancesize);
 		resultMap.put("complianceData", dashboardMap);
 		
 		//consolidated report
@@ -68,46 +66,46 @@ public class DashBoardService {
 		return Response.status(200).entity(resultMap).build();
 
 	}
-	private String getFecilitiesIdString(List<Facilities> fecilitiesList) {
-		String fecilitiesIdString = "";
-		if(fecilitiesList != null){
-		for (Facilities fecilitiy : fecilitiesList) {
-			fecilitiesIdString += "'"+fecilitiy.getFacilityId()+"',";
+	private String getfacilitiesIdString(List<Facilities> facilitiesList) {
+		String facilitiesIdString = "";
+		if(facilitiesList != null){
+		for (Facilities facilitiy : facilitiesList) {
+			facilitiesIdString += "'"+facilitiy.getFacilityId()+"',";
 		}
 		}
-		if(fecilitiesIdString.endsWith(","))
-			fecilitiesIdString = fecilitiesIdString.substring(0, fecilitiesIdString.length()-1);
-		return fecilitiesIdString;
+		if(facilitiesIdString.endsWith(","))
+			facilitiesIdString = facilitiesIdString.substring(0, facilitiesIdString.length()-1);
+		return facilitiesIdString;
 	}
-	@Path("/fecilities")
+	@Path("/facilities")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response fecilitiesData(@QueryParam("userId") String userId,@QueryParam("fecilitiesType") String fecilitiesType) {
-		List<Facilities> fecilitiesList = DBUtil.getInstance().getSpecificFecilitiesForUser(userId,fecilitiesType);
-		getActualFecilitiesList(fecilitiesList);
+	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
+		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
+		getActualFacilitiesList(facilitiesList);
 
-		return Response.status(200).entity(fecilitiesList).build();
+		return Response.status(200).entity(facilitiesList).build();
 
 	}
-	private void getActualFecilitiesList(List<Facilities> fecilitiesList) {
-		String fecilitiesIdString = getFecilitiesIdString(fecilitiesList);
-		List<Facilities> notificationFormList = DBUtil.getInstance().fecilityNotificationFormList(fecilitiesIdString);
-		List<Facilities> complianceList = DBUtil.getInstance().fecilityComplianceList(fecilitiesIdString);
-		List<Facilities> certificationList = DBUtil.getInstance().fecilityCertificationList(fecilitiesIdString);
+	private void getActualFacilitiesList(List<Facilities> facilitiesList) {
+		String facilitiesIdString = getfacilitiesIdString(facilitiesList);
+		List<Facilities> notificationFormList = DBUtil.getInstance().facilityNotificationFormList(facilitiesIdString);
+		List<Facilities> complianceList = DBUtil.getInstance().facilityComplianceList(facilitiesIdString);
+		List<Facilities> certificationList = DBUtil.getInstance().facilityCertificationList(facilitiesIdString);
 		
-		for (Facilities fecilities : fecilitiesList) {
-			if(notificationFormList.contains(fecilities.getFacilityId())){
-				fecilities.setNotificationFormButtonEnable(true);
+		for (Facilities facilities : facilitiesList) {
+			if(notificationFormList.contains(facilities.getFacilityId())){
+				facilities.setNotificationFormButtonEnable(true);
 			}else
-				fecilities.setNotificationFormButtonEnable(false);
-			if(complianceList.contains(fecilities.getFacilityId()))
-				fecilities.setComplianceButtonEnable(true);
+				facilities.setNotificationFormButtonEnable(false);
+			if(complianceList.contains(facilities.getFacilityId()))
+				facilities.setComplianceButtonEnable(true);
 			else
-				fecilities.setCertificationButtonEnable(false);
-			if(certificationList.contains(fecilities.getFacilityId()))
-				fecilities.setCertificationButtonEnable(true);
+				facilities.setCertificationButtonEnable(false);
+			if(certificationList.contains(facilities.getFacilityId()))
+				facilities.setCertificationButtonEnable(true);
 			else
-				fecilities.setCertificationButtonEnable(false);
+				facilities.setCertificationButtonEnable(false);
 			
 		}
 	}
@@ -117,9 +115,9 @@ public class DashBoardService {
 	public Response companiesData(@QueryParam("userId") String userId) {
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
 		for (Company company : companiesList) {
-			List<Facilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
-			getActualFecilitiesList(fecilitiesList);
-			company.setFecilities(fecilitiesList);	
+			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
+			getActualFacilitiesList(facilitiesList);
+			company.setFacilities(facilitiesList);	
 		}
 		return Response.status(200).entity(companiesList).build();
 
@@ -128,19 +126,18 @@ public class DashBoardService {
 	@Path("/compliance")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response complianceData(@QueryParam("userId") String userId,@QueryParam("fecilitiesType") String fecilitiesType) {
-		List<Facilities> fecilitiesList = DBUtil.getInstance().fetchFecilitiesFCompliance(userId,fecilitiesType);
-		getActualFecilitiesList(fecilitiesList);
-		return Response.status(200).entity(fecilitiesList).build();
+	public Response complianceData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
+		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesFCompliance(userId,facilitiesType);
+		getActualFacilitiesList(facilitiesList);
+		return Response.status(200).entity(facilitiesList).build();
 
 	}
 	
 	@Path("/notificationdetails")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response complianceData(@QueryParam("fecilitiesId") String fecilitiesId) {
-		Account account = DBUtil.getInstance().fetchFecilitiesNotificationData(fecilitiesId);
-//		getActualFecilitiesList(fecilitiesList);
+	public Response complianceData(@QueryParam("facilitiesId") String facilitiesId) {
+		Account account = DBUtil.getInstance().fetchFacilitiesNotificationData(facilitiesId);
 		return Response.status(200).entity(account).build();
 
 	}

@@ -16,11 +16,11 @@ export class DashboardService {
           });
   }
   
-  getFecilitiesList(userId,type) {
-    return this.http.get<any>(URLConstants.FECILITIES_URL,this.getFecilitiesOptions(userId,type))
-        .map(fecilitiesData => {
+  getFacilitiesList(userId,type) {
+    return this.http.get<any>(URLConstants.FaCILITIES_URL,this.getFacilitiesOptions(userId,type))
+        .map(FacilitiesData => {
             
-            return fecilitiesData;
+            return FacilitiesData;
         });
 }
 getCompaniesList(userId) {
@@ -31,17 +31,17 @@ getCompaniesList(userId) {
       });
 }
 getComplianceList(userId,type) {
-  return this.http.get<any>(URLConstants.COMPLIANCE_URL,this.getFecilitiesOptions(userId,type))
+  return this.http.get<any>(URLConstants.COMPLIANCE_URL,this.getFacilitiesOptions(userId,type))
       .map(facilityNotificationData => {
           
           return facilityNotificationData;
       });
 }
-getNotifictionUploadData(fecilitiesId){
-  return this.http.get<any>(URLConstants.FECILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FECILITIES_ID,fecilitiesId))
-      .map(fecilitiesData => {
+getNotifictionUploadData(FacilitiesId){
+  return this.http.get<any>(URLConstants.FaCILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
+      .map(FacilitiesData => {
           
-          return fecilitiesData;
+          return FacilitiesData;
       });
 }
 searchResults(searchType:string,searchString: string,username: string,isadmin:boolean) {
@@ -61,9 +61,9 @@ private getSearchOptions(searchType,searchString,username,isadmin) {
       params: new HttpParams().set(key,userId)
     };
   }  
-  private getFecilitiesOptions(userId,type) {
+  private getFacilitiesOptions(userId,type) {
     return {
-      params: new HttpParams().set(CRMConstants.USER_ID,userId).set(CRMConstants.FECILITIES_TYPE,type)
+      params: new HttpParams().set(CRMConstants.USER_ID,userId).set(CRMConstants.FACILITIES_TYPE,type)
     };
   }  
 }

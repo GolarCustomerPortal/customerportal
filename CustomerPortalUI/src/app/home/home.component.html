@@ -4,28 +4,28 @@
   <p-accordion id="leftpanel">
     <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">
     </p-accordionTab>
-    <p-accordionTab header="Fecilities" (click)="onFecilitiesDataSelect(null);showFecilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFecilities()==false">
+    <p-accordionTab header="facilities" (click)="onFacilitiesDataSelect(null);showFacilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFacilities()==false">
     </p-accordionTab>
     <p-accordionTab header="Companies" (click)="onCompaniesDataSelect(null);showCompanies=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
     </p-accordionTab>
-    <p-accordionTab header="Fecilities in Compliance" (click)="onComplianceDataSelect(null);showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
+    <p-accordionTab header="facilities in Compliance" (click)="onComplianceDataSelect(null);showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
     </p-accordionTab>
     <p-accordionTab header="USSBOA Vendors">
     </p-accordionTab>
   </p-accordion>
 </p-sidebar>
-<split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="grey">
+<split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}">
   <split-area [visible]="area.leftVisible" [size]="area.left" order="1">
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
-      <i *ngIf="showBack" i class="fa fa-arrow-left" aria-hidden="true" style="font-size: 20px;color:#89DF93" title="Back to show all"
+      <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to show all"
         aria-hidden="true" (click)="showAll()"></i>
-      <i class="fa fa-refresh pull-right" style="font-size: 20px;color:#89DF93" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues()"></i>
+      <i class="fa fa-refresh pull-right back-refresh-button" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues()"></i>
     </div>
     <div class="ui-g-12 margin-top" style="cursor: pointer;">
-      <div [ngClass]="fecilitiesClass" *ngIf="showFecilities">
+      <div [ngClass]="facilitiesClass" *ngIf="showFacilities">
         <div class="ui-g-12 dashboard-boder">
           <p class="dash-board-heading">My Facilities</p>
-          <p-chart type="doughnut" [data]="fecilitiesdata" (onDataSelect)="onFecilitiesDataSelect($event)" [options]="options"></p-chart>
+          <p-chart type="doughnut" [data]="facilitiesdata" (onDataSelect)="onFacilitiesDataSelect($event)" [options]="options"></p-chart>
         </div>
       </div>
       <div [ngClass]="companiesClass" *ngIf="showCompanies">
@@ -53,37 +53,37 @@
   </split-area>
   <split-area [visible]="area.centerVisible" [size]="area.center" order="2">
     <div *ngIf="newsFeedVisible==true">
-      news Feed
+      <!-- news Feed -->
       </div>
     <div *ngIf="newsFeedVisible==false">
       <p-panel id="rightPanel" header="{{rightPanelTitle}}" styleClass="height-center" *ngIf="showRightContent">
-        <div style="height:calc(100vh - 150px);overflow-y: auto">
-          <div *ngIf="fecilitiesRightdata.length>0">
-            <div *ngFor="let fdata of fecilitiesRightdata; let i = index;" style="padding:10px;">
+        <div style="height:calc(100vh - 164px);overflow-y: auto">
+          <div *ngIf="facilitiesRightdata.length>0">
+            <div *ngFor="let fdata of facilitiesRightdata; let i = index;" style="padding:10px;">
               <div *ngIf="i%3 == 0" class="ui-g-12">
                   <div *ngFor="let number of [0,1,2] let j = index;">
-                      <div *ngIf="fecilitiesRightdata[i+j] != null && fecilitiesRightdata[i+j] != undefined"  class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(fecilitiesRightdata[i+j])" style="cursor: pointer;" title="Click for more details">
+                      <div *ngIf="facilitiesRightdata[i+j] != null && facilitiesRightdata[i+j] != undefined"  class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(facilitiesRightdata[i+j])" style="cursor: pointer;" title="Click for more details">
                           <p-card styleClass="ui-card-shadow">
-                            <p-header ngClass="header-padding-left">
-                              {{fecilitiesRightdata[i+j].name}}
-                              <img class="card-image" src="{{getImage(fecilitiesRightdata[i+j])}}" />
-                            </p-header>
+                            <div style="width: 100%">
+                             <div> <div ngClass="header-padding-left ui-card-header">{{facilitiesRightdata[i+j].name}}</div>
+                              <img class="card-image" src="{{facilitiesRightdata[i+j].image}}" /></div>
+                          </div>
                             <div class="ui-g no-padding">
                               <div class="ui-g-4 no-padding"> Name:</div>
-                              <div class="ui-g-8 no-padding">{{fecilitiesRightdata[i+j].name}}</div>
+                              <div class="ui-g-8 no-padding">{{facilitiesRightdata[i+j].name}}</div>
                             </div>
                             <div class="ui-g no-padding">
                               <div class="ui-g-4 no-padding"> Fid:</div>
-                              <div class="ui-g-8 no-padding">{{fecilitiesRightdata[i+j].fid}}</div>
+                              <div class="ui-g-8 no-padding">{{facilitiesRightdata[i+j].fid}}</div>
                             </div>
                             <div class="ui-g no-padding">
                               <div class="ui-g-4 no-padding"> Address:</div>
-                              <div class="ui-g-8 no-padding">{{fecilitiesRightdata[i+j].address}}</div>
+                              <div class="ui-g-8 no-padding">{{facilitiesRightdata[i+j].address}}</div>
                             </div>
                             <div class="ui-g no-padding">
                               <div class="ui-g-4 no-padding"> Compliance:</div>
                               <div class="ui-g-8 no-padding">
-                                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="fecilitiesRightdata[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="facilitiesRightdata[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
                               </div>
                             </div>
                           </p-card>
@@ -98,32 +98,32 @@
 <div *ngIf="companiesRightdata.length>0">
 <p-accordion>
   <p-accordionTab header="{{companyData.name}}" *ngFor="let companyData of companiesRightdata;">
-    <div *ngIf="companyData.fecilities.length>0">
-      <div *ngFor="let fdata of companyData.fecilities; let i = index; let even = even;" style="padding:10px;">
+    <div *ngIf="companyData.facilities.length>0">
+      <div *ngFor="let fdata of companyData.facilities; let i = index; let even = even;" style="padding:10px;">
           <div *ngIf="i%3 == 0" class="ui-g-12">
               <div *ngFor="let number of [0,1,2] let j = index;">
-                  <div *ngIf="companyData.fecilities[i+j] != null && companyData.fecilities[i+j] != undefined" class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(companyData.fecilities[i+j])" style="cursor: pointer;" title="Click for more details">
+                  <div *ngIf="companyData.facilities[i+j] != null && companyData.facilities[i+j] != undefined" class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(companyData.facilities[i+j])" style="cursor: pointer;" title="Click for more details">
                       <p-card styleClass="ui-card-shadow">
-                        <p-header ngClass="header-padding-left">
-                          {{companyData.fecilities[i+j].name}}
-                          <img class="card-image" src="{{getImage(companyData.fecilities[i+j])}}" />
-                        </p-header>
+                         <div style="width: 100%">
+                             <div> <div ngClass="header-padding-left ui-card-header"> {{companyData.facilities[i+j].name}}</div>
+                              <img class="card-image" src="{{companyData.facilities[i+j].image}}" /></div>
+                          </div>
                         <div class="ui-g no-padding">
                           <div class="ui-g-4 no-padding"> Name:</div>
-                          <div class="ui-g-8 no-padding">{{companyData.fecilities[i+j].name}}</div>
+                          <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].name}}</div>
                         </div>
                         <div class="ui-g no-padding">
                           <div class="ui-g-4 no-padding"> Fid:</div>
-                          <div class="ui-g-8 no-padding">{{companyData.fecilities[i+j].fid}}</div>
+                          <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].fid}}</div>
                         </div>
                         <div class="ui-g no-padding">
                           <div class="ui-g-4 no-padding"> Address:</div>
-                          <div class="ui-g-8 no-padding">{{companyData.fecilities[i+j].address}}</div>
+                          <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].address}}</div>
                         </div>
                         <div class="ui-g no-padding">
                           <div class="ui-g-4 no-padding"> Compliance:</div>
                           <div class="ui-g-8 no-padding">
-                            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.fecilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
+                            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
                           </div>
                         </div>
                       </p-card>
@@ -148,10 +148,10 @@
                         <div *ngFor="let number of [0,1,2] let j = index;">
                             <div *ngIf="complianceRightdata[i+j] != null && complianceRightdata[i+j] != undefined"  class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(complianceRightdata[i+j])" style="cursor: pointer;" title="Click for more details">
                                 <p-card styleClass="ui-card-shadow">
-                                  <p-header ngClass="header-padding-left">
-                                    {{complianceRightdata[i+j].name}}
-                                    <img class="card-image" src="{{getImage(complianceRightdata[i+j])}}" />
-                                  </p-header>
+                                  <div style="width: 100%">
+                                    <div> <div ngClass="header-padding-left ui-card-header">  {{complianceRightdata[i+j].name}}</div>
+                                     <img class="card-image" src="{{complianceRightdata[i+j].image}}" /></div>
+                                 </div>
                                   <div class="ui-g no-padding">
                                     <div class="ui-g-4 no-padding"> Name:</div>
                                     <div class="ui-g-8 no-padding">{{complianceRightdata[i+j].name}}</div>
@@ -185,19 +185,20 @@
   <split-area [visible]="area.rightVisible" [size]="area.right" order="3" style="overflow: hidden;">
     <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
       <p-header ngClass="header-padding-left">
-        {{rightPaneDetailslTitle}}
+          <div style="width: 100%"> {{rightPaneDetailslTitle}}
         <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
+      </div>
       </p-header>
       <div style="height:calc(100vh - 185px);overflow-y: auto">
         <div class="ui-g-12">
             <p-card styleClass="ui-card-shadow">
-            <p-header ngClass="header-padding-left">
-              {{rightDetailsContent.fecilityName}}
-              <img class="card-image" src="{{getImage(rightDetailsContent)}}" />
-            </p-header>
+                <div style="width: 100%">
+                    <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important"> {{rightDetailsContent.facilityName}}</div>
+                     <img class="card-image" src="{{rightDetailsContent.image}}" /></div>
+                 </div>
             <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Name:</div>
-              <div class="ui-g-8 no-padding">{{rightDetailsContent.fecilityName}}</div>
+              <div class="ui-g-8 no-padding">{{rightDetailsContent.facilityName}}</div>
             </div>
             <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Fid:</div>
@@ -217,9 +218,10 @@
         </div>
         <div class="ui-g-12 margin-top" id="individual-chart">
             <p-card styleClass="ui-card-shadow">
-            <p-header ngClass="header-padding-left">
-              Consolidate report of Gas station (Gallons)
-            </p-header>
+                <div style="width: 100%">
+                    <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Consolidate report of Gas station (Gallons)</div>
+                      </div>
+                     </div>
               <p-chart [width]="400" [height]="400" type="bar" [data]="consolidateReportdata" [options]="noLegendtOptions"></p-chart>
 
           </p-card>
@@ -254,14 +256,14 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalCenterTitle">Notification Form</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  >
-          <span aria-hidden="true">&times;</span>
+        <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Notification Form</div>
+        <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
+            &times;
         </button>
       </div>
       <div class="modal-body file-upload-model">
         <form name="form" #notificationForm novalidate>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Facility Operator POA</div>
             <div class="ui-g-4">
               <p-fileUpload name="fOperatorFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -270,7 +272,7 @@
               <span *ngIf='fOperatorfileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{fOperatorFileName}}  </span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-second">
             <div class="ui-g-8">Property Owner POA</div>
             <div class="ui-g-4">
               <p-fileUpload name="pOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #pOwnerfileUpload
@@ -279,7 +281,7 @@
                 <span *ngIf='ownerFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">UST Owner POA</div>
             <div class="ui-g-4">
               <p-fileUpload name="usetOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -288,7 +290,7 @@
                 <span *ngIf='ustOwnerFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ustOwnerFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Operator Lease Agreement</div>
             <div class="ui-g-4">
               <p-fileUpload name="operatorLeaseFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -297,7 +299,7 @@
                 <span *ngIf='operatorLeaseFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorLeaseFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-second">
             <div class="ui-g-8">Notification Form Due Date</div>
             <div class="ui-g-4">
               <p-fileUpload name="notificationDueDateFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -306,7 +308,7 @@
                 <span *ngIf='notificationDueDateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{notificationDueDateFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Operator Affidavit of Lease</div>
             <div class="ui-g-4">
               <p-fileUpload name="operatoraffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -315,7 +317,7 @@
                 <span *ngIf='operatoraffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatoraffidavitFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-second">
             <div class="ui-g-8">Owner Affidavit Of Lease</div>
             <div class="ui-g-4">
               <p-fileUpload name="ownerAffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -324,7 +326,7 @@
                 <span *ngIf='ownerAffidavitFile == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Deed or Land Contract</div>
             <div class="ui-g-4">
               <p-fileUpload name="deedLandFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #deedLandfileUpload
@@ -333,7 +335,7 @@
                 <span *ngIf='deedLandFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{deedLandFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-second">
             <div class="ui-g-8">Tax ID Information</div>
             <div class="ui-g-4">
               <p-fileUpload name="taxIdFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #taxIdfileUpload
@@ -342,7 +344,7 @@
                 <span *ngIf='taxIdFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{taxIdFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding">
+          <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Notification form Submitted</div>
             <div class="ui-g-4">
               <p-fileUpload name="notificationFormSubmittedFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -370,14 +372,14 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Compliance Form</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"  >
-            <span aria-hidden="true">&times;</span>
-          </button>
+            <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Compliance Form </div>
+            <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
+                &times;
+            </button>
         </div>
         <div class="modal-body file-upload-model">
           <form name="form" #complianceForm novalidate>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Line and Leak Detector Test</div>
               <div class="ui-g-4">
                 <p-fileUpload name="fLineLeakFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -386,7 +388,7 @@
                   <span *ngIf='lineLeakFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{lineLeakFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Cathodic Protection</div>
               <div class="ui-g-4">
                 <p-fileUpload name="cathodicProtectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #athodicProtectionUpload
@@ -395,7 +397,7 @@
                   <span *ngIf='cathodicProtectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{cathodicProtectionFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Tank Testing Report</div>
               <div class="ui-g-4">
                 <p-fileUpload name="tankTestingReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -404,7 +406,7 @@
                   <span *ngIf='tankTestingReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankTestingReportFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Repair Documents (Optional)</div>
               <div class="ui-g-4">
                 <p-fileUpload name="repairDocumentsFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -413,7 +415,7 @@
                   <span *ngIf='repairDocumentsFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{repairDocumentsFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Release Detection Report</div>
               <div class="ui-g-4">
                 <p-fileUpload name="releaseDetectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -422,7 +424,7 @@
                   <span *ngIf='releaseDetectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{releaseDetectionFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Internal Lining Inspection</div>
               <div class="ui-g-4">
                 <p-fileUpload name="internalLiningFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -447,14 +449,14 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Certification Form</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"  >
-            <span aria-hidden="true">&times;</span> 
-          </button>
+            <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Certification Form</div>
+            <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
+                &times;
+            </button>
         </div>
         <div class="modal-body file-upload-model">
           <form name="form" #certificationForm novalidate>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Operator A certificate</div>
               <div class="ui-g-4">
                 <p-fileUpload name="certificateAFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -463,7 +465,7 @@
                   <span *ngIf='operatorAcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorAcertificateFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Operator B certificate</div>
               <div class="ui-g-4">
                 <p-fileUpload name="certificateBFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #certificateBFileUpload
@@ -472,7 +474,7 @@
                   <span *ngIf='operatorBcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorBcertificateFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding">
+            <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Operator C certificate</div>
               <div class="ui-g-4">
                 <p-fileUpload name="certificateCFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"

@@ -6,18 +6,18 @@ import java.util.List;
 public class Companies {
 
 	private String name;
-	List<Facilities> fecilities = new ArrayList<Facilities>();
+	List<Facilities> facilities = new ArrayList<Facilities>();
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<Facilities> getFecilities() {
-		return fecilities;
+	public List<Facilities> getFacilities() {
+		return facilities;
 	}
-	public void setFecilities(List<Facilities> fecilities) {
-		this.fecilities = fecilities;
+	public void setFacilities(List<Facilities> facilities) {
+		this.facilities = facilities;
 	}
 	
 	

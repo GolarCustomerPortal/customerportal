@@ -1,12 +1,13 @@
 <div *ngIf="showSearch && !isEdit" class="register-search-padding">
     <div class="col-md-12 register-search-padding">
-        <p-dropdown [options]="dropdownSearch" placeholder="Select Option" optionLabel="name" [(ngModel)]="selectedDropdownOption"></p-dropdown>
+            <div><label class="first">Search Option:</label></div>
+        <p-dropdown [options]="dropdownSearch" placeholder="Select Option" optionLabel="name" [(ngModel)]="selectedDropdownOption" (onChange)="showNoResultSearchMessage=false;"></p-dropdown>
     </div>
     <label for="firstName" class="register-search-padding">Enter Search String:</label>
     <div class="col-md-12 register-search-padding">
-        <input type="text" [(ngModel)]="searchString" [disabled]="selectedDropdownOption==null" />
+        <input type="text" [(ngModel)]="searchString" [disabled]="selectedDropdownOption==null" (keyup)="showNoResultSearchMessage=false;" />
     </div>
-
+<div *ngIf="showNoResultSearchMessage === true" style="padding-left: 10px; color: #721c24;">No Users found</div>
     <div class="col-md-12 register-search-padding">
         <button class="btn btn-primary" [disabled]="selectedDropdownOption==null || searchString == null || searchString.trim().length==0"
             (click)="searchUsers()">Search</button>
@@ -60,7 +61,7 @@
         <div *ngIf="isEdit">
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" name="fecilities" [(ngModel)]="model.fecilities" #admin="ngModel" style="margin-right: 5px"
+                    <input type="checkbox" name="facilities" [(ngModel)]="model.facilities" #admin="ngModel" style="margin-right: 5px"
                     />Facilities</label>
             </div>
             <div class="checkbox">

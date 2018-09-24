@@ -1,5 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light nav-background-color navbar-height" [hidden]="!commonService.checkValidLogin()">
-
+        <a class="navbar-brand "  style="text-align: center"><img src="assets/images/golars-nav-bar.jpg" style="height:65px; width:170px;" alt="Golars"> 
+        </a>
     <div class="form-inline search-margin">
         <form>
             <p-dropdown [options]="searchOptions" [(ngModel)]="selectedSearchOption" name="selectedSearchOption" optionLabel="name" [style]="{'width': '110px'}"></p-dropdown>
@@ -38,11 +39,11 @@
   <p-accordion id="leftpanel">
     <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">
     </p-accordionTab>
-    <p-accordionTab header="Fecilities" (click)="onFecilitiesDataSelect();visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFecilities()==false">
+    <p-accordionTab header="Facilities" (click)="onFacilitiesDataSelect();visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFacilities()==false">
     </p-accordionTab>
     <p-accordionTab header="Companies" (click)="onCompaniesDataSelect();visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
     </p-accordionTab>
-    <p-accordionTab header="Fecilities in Compliance" (click)="onComplianceDataSelect();;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
+    <p-accordionTab header="Facilities in Compliance" (click)="onComplianceDataSelect();;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
     </p-accordionTab>
     <p-accordionTab header="USSBOA Vendors">
     </p-accordionTab>

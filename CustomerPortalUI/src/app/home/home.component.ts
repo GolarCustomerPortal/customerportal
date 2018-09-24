@@ -25,8 +25,8 @@ export class HomeComponent implements OnInit {
       $(this).find('form')[0].reset();
       self.resetCertificationForm(true);
     })
-    if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'fecilities') {
-      this.onFecilitiesDataSelect(null);
+    if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'facilities') {
+      this.onFacilitiesDataSelect(null);
       this.commonService.resetselectedLeftTab();
     } else if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'companies') {
       this.onCompaniesDataSelect(null);
@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit {
       this.onComplianceDataSelect(null);
       this.commonService.resetselectedLeftTab();
     } else if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'ussboa') {
-      // this.onFecilitiesDataSelect(null);
+      // this.onFacilitiesDataSelect(null);
       this.commonService.resetselectedLeftTab();
     }
 
@@ -49,7 +49,9 @@ export class HomeComponent implements OnInit {
   newsFeedVisible = true;
   notificationForm;
   uploadLabel = "Browse"
-
+  FILL_COLOR="#2c347E";
+  NON_FILL_COLOR="#ef4136";
+  GUTTER_COLOR ="#d3e8c8"; 
   // fOperatorFileName;
   // commom properties end
 
@@ -165,7 +167,7 @@ export class HomeComponent implements OnInit {
       .subscribe(
         dashboardData => {
           this.resetLeftSideData();
-          this.getFecilitiesData(dashboardData.fecilitiesData);
+          this.getFacilitiesData(dashboardData.facilitiesData);
           this.getCompanies(dashboardData.companiesData);
           this.getConsolidateReport(dashboardData.consolidateReportData);
           this.getComplianceData(dashboardData.complianceData);
@@ -175,43 +177,43 @@ export class HomeComponent implements OnInit {
         });
 
   }
-  // fecilities
-  showFecilities = this.commonService.getPreferencesOfFecilities();
-  fecilitiesClass = "ui-g-6"
-  fecilitiesdata: any;
-  fecilitiesArray = [];
-  fecilitiesLabel = [];
-  totalFecilities;
-  fecilitiesRightdata = [];
-  getFecilitiesData(fecData) {
-    this.fecilitiesdata = {
+  // Facilities
+  showFacilities = this.commonService.getPreferencesOfFacilities();
+  facilitiesClass = "ui-g-6"
+  facilitiesdata: any;
+  facilitiesArray = [];
+  facilitiesLabel = [];
+  totalFacilities;
+  facilitiesRightdata = [];
+  getFacilitiesData(fecData) {
+    this.facilitiesdata = {
       labels: [],
       datasets: [
         {
           data: [],
           backgroundColor: [
-            "#3C7240",
-            "#E14944"
+            this.FILL_COLOR,
+            this.NON_FILL_COLOR
           ],
           hoverBackgroundColor: [
-            "#3C7240",
-            "#E14944"
+            this.FILL_COLOR,
+            this.NON_FILL_COLOR
           ]
         }]
     };
 
-    this.fecilitiesArray.push(fecData.signed);
-    this.fecilitiesArray.push(fecData.unsigned);
-    this.fecilitiesdata.datasets[0].data.push(this.fecilitiesArray[0]);
-    this.fecilitiesdata.datasets[0].data.push(this.fecilitiesArray[1]);
-    this.fecilitiesLabel.push("Signed");
-    this.fecilitiesLabel.push("Un signed");
-    this.fecilitiesdata.labels.push(this.fecilitiesLabel[0] + '-- ' + this.constructPercentage(this.fecilitiesArray[0], this.fecilitiesArray[1]));
-    this.fecilitiesdata.labels.push(this.fecilitiesLabel[1] + '-- ' + this.constructPercentage(this.fecilitiesArray[1], this.fecilitiesArray[0]))
-    this.totalFecilities = this.fecilitiesArray[1] + this.fecilitiesArray[0];
+    this.facilitiesArray.push(fecData.signed);
+    this.facilitiesArray.push(fecData.unsigned);
+    this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[0]);
+    this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[1]);
+    this.facilitiesLabel.push("Signed");
+    this.facilitiesLabel.push("Un signed");
+    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + '-- ' + this.constructPercentage(this.facilitiesArray[0], this.facilitiesArray[1]));
+    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + '-- ' + this.constructPercentage(this.facilitiesArray[1], this.facilitiesArray[0]))
+    this.totalFacilities = this.facilitiesArray[1] + this.facilitiesArray[0];
 
   }
-  onFecilitiesDataSelect($event) {
+  onFacilitiesDataSelect($event) {
     var event;
     if ($event == null || $event == undefined)
       event = 0;// left overlaypanel clicked
@@ -219,23 +221,24 @@ export class HomeComponent implements OnInit {
       event = $event.element._index
 
     this.resetrightSideData();
-    console.log("onFecilitiesDataSelect", this.fecilitiesLabel[event]);
-    this.rightPanelTitle = "Fecilities -- " + this.fecilitiesLabel[event] + " (" + this.fecilitiesArray[event] + ")"
+    console.log("onFacilitiesDataSelect", this.facilitiesLabel[event]);
+    this.rightPanelTitle = "Facilities -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
     this.showCompanies = false;
     this.showCompliance = false;
     this.showConsolidateReport = false;
-    this.fecilitiesClass = "ui-g-12";
+    this.facilitiesClass = "ui-g-12";
     this.showBack = true;
     this.showRightContent = true;
 
-    this.dashboardService.getFecilitiesList(this.commonService.getUserName(), this.fecilitiesLabel[event]) // retrieve all thd parent folders
+    this.dashboardService.getFacilitiesList(this.commonService.getUserName(), this.facilitiesLabel[event]) // retrieve all thd parent folders
       .subscribe(
-        fecilitiesList => {
-          for (var i = 0; i < fecilitiesList.length; i++) {
-            var feciData = fecilitiesList[i];
+        facilitiesList => {
+          for (var i = 0; i < facilitiesList.length; i++) {
+            var feciData = facilitiesList[i];
             var image = this.commonService.gasStationImage(feciData.brand)
-            feciData.img = image;
-            this.fecilitiesRightdata.push(feciData);
+            feciData.image = "assets/images/gasstation/"+image;
+            
+            this.facilitiesRightdata.push(feciData);
           }
 
         },
@@ -251,7 +254,8 @@ export class HomeComponent implements OnInit {
     this.showRightDetailContent = true;
     this.rightDetailsContent.facilityId = fdata.facilityId;
     this.rightPaneDetailslTitle = fdata.name;
-    this.rightDetailsContent.fecilityName = fdata.name;
+    this.rightDetailsContent.image = fdata.image;
+    this.rightDetailsContent.facilityName = fdata.name;
     this.rightDetailsContent.docUpdateDate = new Date();
     this.rightDetailsContent.city = fdata.city;
     this.rightDetailsContent.fid = fdata.fid;
@@ -265,7 +269,7 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.tankPm = fdata.tankPm;
     //actualServerData details.
     this.actualServerData.docUpdateDate = new Date();
-    this.actualServerData.fecilityName = fdata.name;
+    this.actualServerData.facilityName = fdata.name;
     this.actualServerData.facilityId = fdata.facilityId;
     this.actualServerData.fid = fdata.fid;
     this.actualServerData.street = fdata.street;
@@ -274,7 +278,7 @@ export class HomeComponent implements OnInit {
 
   }
 
-  //fecilities End
+  //Facilities End
 
   //companies start
   companiesdata: any;
@@ -290,10 +294,10 @@ export class HomeComponent implements OnInit {
         {
           data: [],
           backgroundColor: [
-            "#55793B"
+           this.FILL_COLOR
           ],
           hoverBackgroundColor: [
-            "#55793B"
+            this.FILL_COLOR
           ]
         }]
     };
@@ -309,7 +313,7 @@ export class HomeComponent implements OnInit {
       event = $event.element._index
     this.resetrightSideData();
     console.log("onCompaniesDataSelect", event);
-    this.showFecilities = false;
+    this.showFacilities = false;
     this.showCompliance = false;
     this.showConsolidateReport = false;
     this.companiesClass = "ui-g-12";
@@ -321,9 +325,8 @@ export class HomeComponent implements OnInit {
         companiesList => {
           for (var i = 0; i < companiesList.length; i++) {
             var feciData = companiesList[i];
-            for (var j = 0; j < feciData.fecilities.length; j++) {
-              var image = this.commonService.gasStationImage(feciData.fecilities[j].brand)
-              feciData.fecilities[j].img = image;
+            for (var j = 0; j < feciData.facilities.length; j++) {
+              feciData.facilities[j].image = "assets/images/gasstation/"+this.commonService.gasStationImage(feciData.facilities[j].brand)
             }
             this.companiesRightdata.push(feciData);
           }
@@ -353,12 +356,12 @@ export class HomeComponent implements OnInit {
         {
           data: [],
           backgroundColor: [
-            "#23437F",
-            "#D8A540"
+            this.FILL_COLOR,
+            this.NON_FILL_COLOR
           ],
           hoverBackgroundColor: [
-            "#23437F",
-            "#D8A540"
+            this.FILL_COLOR,
+            this.NON_FILL_COLOR
           ]
         }]
     };
@@ -383,7 +386,7 @@ export class HomeComponent implements OnInit {
       event = $event.element._index
     this.resetrightSideData();
     console.log("onComplianceDataSelect" + event)
-    this.showFecilities = false;
+    this.showFacilities = false;
     this.showCompanies = false;
     this.showConsolidateReport = false;
     this.complianceClass = "ui-g-12";
@@ -396,7 +399,7 @@ export class HomeComponent implements OnInit {
           for (var i = 0; i < complianceList.length; i++) {
             var feciData = complianceList[i];
             var image = this.commonService.gasStationImage(feciData.brand)
-            feciData.img = image;
+            feciData.image = "assets/images/gasstation/"+image;
             this.complianceRightdata.push(feciData);
           }
 
@@ -431,14 +434,14 @@ export class HomeComponent implements OnInit {
         {
           label: 'Remaining',
           data: [this.regular, this.midGrade, this.premium, this.diesel],
-          backgroundColor: '#E14944',
-          hoverBackgroundColor: '#E14944'
+          backgroundColor: this.NON_FILL_COLOR,
+          hoverBackgroundColor: this.NON_FILL_COLOR
 
         }, {
           label: 'Total',
           data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
-          backgroundColor: '#3C7240',
-          hoverBackgroundColor: '#3C7240'
+          backgroundColor: this.FILL_COLOR,
+          hoverBackgroundColor: this.FILL_COLOR
 
         }]
     };
@@ -450,7 +453,7 @@ export class HomeComponent implements OnInit {
   }
   onConsolidateDataSelect($event) {
     console.log("onConsolidateDataSelect" + $event.element._index)
-    this.showFecilities = false;
+    this.showFacilities = false;
     this.showCompanies = false;
     this.showCompliance = false;
     this.reportClass = "ui-g-12";
@@ -472,7 +475,8 @@ export class HomeComponent implements OnInit {
 
 
   private options: any = {
-    legend: { position: 'bottom' }
+    legend: { position: 'bottom' },
+
   }
   private noLegendtOptions = {
     legend: { display: false },
@@ -500,12 +504,12 @@ export class HomeComponent implements OnInit {
     this.resetView();
   }
   resetView() {
-    this.showFecilities = this.commonService.getPreferencesOfFecilities();
+    this.showFacilities = this.commonService.getPreferencesOfFacilities();
     this.showCompanies = this.commonService.getPreferencesOfCompanies();;
     this.showConsolidateReport = this.commonService.getPreferencesOfConsolidate();;
     this.showCompliance = this.commonService.getPreferencesOfCompliance();
     this.newsFeedVisible = true;
-    this.fecilitiesClass = "ui-g-6";
+    this.facilitiesClass = "ui-g-6";
     this.companiesClass = "ui-g-6";
     this.reportClass = "ui-g-6";
     this.complianceClass = "ui-g-6";
@@ -514,14 +518,14 @@ export class HomeComponent implements OnInit {
     this.area.right = 0;
   }
   resetLeftSideData() {
-    this.fecilitiesArray = [];
-    this.fecilitiesLabel = [];
+    this.facilitiesArray = [];
+    this.facilitiesLabel = [];
     this.companiesArray = [];
     this.complianceArray = [];
     this.complianceLabel = [];
   }
   resetrightSideData() {
-    this.fecilitiesRightdata = [];
+    this.facilitiesRightdata = [];
     this.complianceRightdata = [];
     this.companiesRightdata = [];
     this.middlePaneClass = "ui-g-4"
@@ -531,9 +535,9 @@ export class HomeComponent implements OnInit {
     this.area.center = 80;
     this.area.right = 0;
   }
-  getImage(fdata) {
-    return "assets/images/gasstation/" + fdata.img;
-  }
+  // getImage(fdata) {
+  //   return "assets/images/gasstation/" + fdata.img;
+  // }
   showRightDetailPanel() {
     this.middlePaneClass = "ui-g-12";
     this.area.center = 40;
@@ -562,8 +566,8 @@ export class HomeComponent implements OnInit {
     // this.fOperatorFileName = file.name;
   }
   modalData
-  getNotificationModalData(fecilitiesId) {
-    this.dashboardService.getNotifictionUploadData(fecilitiesId) // retrieve all thd parent folders
+  getNotificationModalData(facilitiesId) {
+    this.dashboardService.getNotifictionUploadData(facilitiesId) // retrieve all thd parent folders
       .subscribe(
         modalData => {
           this.modalData = modalData;
@@ -588,15 +592,15 @@ export class HomeComponent implements OnInit {
       return 'facility-button-background-red'
     return ""
   }
-  getFecilitiesSubList(fecilitiesRightdata, i) {
+  getFacilitiesSubList(facilitiesRightdata, i) {
     var subList = [];
-    if (fecilitiesRightdata != null) {
-      if (fecilitiesRightdata[i] != null)
-        subList.push(fecilitiesRightdata[i]);
-      if (fecilitiesRightdata[i] + 1 != null)
-        subList.push(fecilitiesRightdata[i + 1]);
-      if (fecilitiesRightdata[i + 2] != null)
-        subList.push(fecilitiesRightdata[i + 2]);
+    if (facilitiesRightdata != null) {
+      if (facilitiesRightdata[i] != null)
+        subList.push(facilitiesRightdata[i]);
+      if (facilitiesRightdata[i] + 1 != null)
+        subList.push(facilitiesRightdata[i + 1]);
+      if (facilitiesRightdata[i + 2] != null)
+        subList.push(facilitiesRightdata[i + 2]);
     }
     return subList;
 

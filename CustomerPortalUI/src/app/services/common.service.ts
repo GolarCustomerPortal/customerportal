@@ -52,66 +52,66 @@ export class CommonService {
     // localStorage.setItem('primaryuserfullname', user.username);
     localStorage.setItem('primaryadmin', user.admin);
   }
-  getPreferencesOfFecilities() {
-    var fecilities = null;
+  getPreferencesOfFacilities() {
+    var facilities = null;
     if (this.isSecondaryUserPresent()) {
-      if (localStorage.getItem('secondaryfecilities') != null)
-        fecilities = localStorage.getItem('secondaryfecilities')
+      if (localStorage.getItem('secondaryfacilities') != null)
+        facilities = localStorage.getItem('secondaryfacilities')
     }else  
     if (this.isEditUserPresent()) {
-      if (localStorage.getItem('editfecilities') != null)
-        fecilities = localStorage.getItem('editfecilities')
-    } else if (localStorage.getItem('primaryfecilities') != null)
-      fecilities = localStorage.getItem('primaryfecilities');
-    if (fecilities != null && fecilities === "false")
+      if (localStorage.getItem('editfacilities') != null)
+        facilities = localStorage.getItem('editfacilities')
+    } else if (localStorage.getItem('primaryfacilities') != null)
+      facilities = localStorage.getItem('primaryfacilities');
+    if (facilities != null && facilities === "false")
       return false;
     return true;
 
   }
   getPreferencesOfCompanies() {
-    var fecilities = null;
+    var Facilities = null;
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondarycompanies') != null)
-        fecilities = localStorage.getItem('secondarycompanies')
+        Facilities = localStorage.getItem('secondarycompanies')
     }else  
     if (this.isEditUserPresent()) {
       if (localStorage.getItem('editcompanies') != null)
-        fecilities = localStorage.getItem('editcompanies')
+        Facilities = localStorage.getItem('editcompanies')
     }  else if (localStorage.getItem('primarycompanies') != null)
-      fecilities = localStorage.getItem('primarycompanies');
-    if (fecilities != null && fecilities === "false")
+      Facilities = localStorage.getItem('primarycompanies');
+    if (Facilities != null && Facilities === "false")
       return false;
     return true;
 
   }
   getPreferencesOfCompliance() {
-    var fecilities = null;
+    var Facilities = null;
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondarycompliance') != null)
-        fecilities = localStorage.getItem('secondarycompliance')
+        Facilities = localStorage.getItem('secondarycompliance')
     }else  
     if (this.isEditUserPresent()) {
       if (localStorage.getItem('editcompliance') != null)
-        fecilities = localStorage.getItem('editcompliance')
+        Facilities = localStorage.getItem('editcompliance')
     }  else if (localStorage.getItem('primarycompliance') != null)
-      fecilities = localStorage.getItem('primarycompliance');
-    if (fecilities != null && fecilities === "false")
+      Facilities = localStorage.getItem('primarycompliance');
+    if (Facilities != null && Facilities === "false")
       return false;
     return true;
 
   }
   getPreferencesOfConsolidate() {
-    var fecilities = null;
+    var Facilities = null;
     if (this.isSecondaryUserPresent()) {
       if (localStorage.getItem('secondaryconsolidate') != null)
-        fecilities = localStorage.getItem('secondaryconsolidate')
+        Facilities = localStorage.getItem('secondaryconsolidate')
     }else  
     if (this.isEditUserPresent()) {
       if (localStorage.getItem('editconsolidate') != null)
-        fecilities = localStorage.getItem('editconsolidate')
+        Facilities = localStorage.getItem('editconsolidate')
     }   else if (localStorage.getItem('primaryconsolidate') != null)
-      fecilities = localStorage.getItem('primaryconsolidate');
-    if (fecilities != null && fecilities === "false")
+      Facilities = localStorage.getItem('primaryconsolidate');
+    if (Facilities != null && Facilities === "false")
       return false;
     return true;
 

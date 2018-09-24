@@ -22,6 +22,7 @@ export class UserComponent implements OnInit {
   searchString;
   showSearch = true;
   showRegister=false;
+  showNoResultSearchMessage = false;
   dropdownSearch  = [
     {name: 'First Name', value: 'fname'},
     {name: 'Last Name', value: 'lName'},
@@ -52,7 +53,7 @@ export class UserComponent implements OnInit {
     // this.model.active = this.user.active;
     this.model.username = this.user.username;
     this.model.password = this.user.password;
-    this.model.fecilities = this.commonService.getPreferencesOfFecilities();
+    this.model.facilities = this.commonService.getPreferencesOfFacilities();
     this.model.companies = this.commonService.getPreferencesOfCompanies();
     this.model.compliance = this.commonService.getPreferencesOfCompliance();
     this.model.consolidate = this.commonService.getPreferencesOfConsolidate();
@@ -135,6 +136,9 @@ var self=this;
     this.userService.getAllUsersWithSearch(this.selectedDropdownOption.value,this.searchString)
     .subscribe(
       userList => {
+        if(userList == null || userList.length == 0){
+          this.showNoResultSearchMessage=true;
+        }
        console.log(userList);
        this.userList = userList;
       },

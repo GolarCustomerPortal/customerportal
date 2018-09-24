@@ -32,18 +32,18 @@ export class UserService {
 
   }
   getPermission(modal){
-    var fecilities = true;
+    var facilities = true;
     var companies =true;
     var compliance =true;
     var consolidate = true;
     if(modal.edit)
     {
-      fecilities = modal.fecilities == null?false:modal.fecilities;
+      facilities = modal.facilities == null?false:modal.facilities;
        companies = modal.companies == null ?false:modal.companies;
        compliance = modal.compliance == null ? false: modal.compliance;
        consolidate = modal.consolidate == null ? false: modal.consolidate;
     }
-    return "fecilities:"+fecilities +"__##__companies:"+companies+"__##__compliance:"+ compliance+"__##__consolidate:"+ consolidate
+    return "facilities:"+facilities +"__##__companies:"+companies+"__##__compliance:"+ compliance+"__##__consolidate:"+ consolidate
   }
   private getSearchOptions(type,value) {
     return {

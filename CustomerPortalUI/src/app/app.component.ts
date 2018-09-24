@@ -30,8 +30,8 @@ selectedSearchOption = this.searchOptions[0];
   showAll(){
     this.router.navigate(['/']);
   }
-  onFecilitiesDataSelect(){
-    this.commonService.selectedLeftTab("fecilities")
+  onFacilitiesDataSelect(){
+    this.commonService.selectedLeftTab("facilities")
     this.router.navigate(['/']);
   }
   onCompaniesDataSelect(){

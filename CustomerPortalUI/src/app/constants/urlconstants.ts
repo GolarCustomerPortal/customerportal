@@ -14,9 +14,9 @@ export class URLConstants {
     public static FORGOT_PASSWORD_URL = environment.server+'/CustomerPortalServer/rest/forgotpassword';
 
     public static DASHBOARD_URL = environment.server+'/CustomerPortalServer/rest/dashboard';
-    public static FECILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/fecilities';
+    public static FaCILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilities';
     public static COMPANIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies';
     public static COMPLIANCE_URL = environment.server+'/CustomerPortalServer/rest/dashboard/compliance';
-    public static  FECILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
+    public static  FaCILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
 
 }

@@ -122,8 +122,7 @@ public class DBUtil {
 		}
 	}
 
-	public List<Facilities> fetchFecilities(String userId) {
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+	public List<Facilities> fetchFacilities(String userId) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -141,7 +140,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -202,9 +201,8 @@ public class DBUtil {
 		}
 	}
 
-	public List<Facilities> getSpecificFecilitiesForUser(String userId, String fecilitiesType) {
+	public List<Facilities> getSpecificFacilitiesForUser(String userId, String facilitiesType) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -215,7 +213,7 @@ public class DBUtil {
 							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Golars_Tank_Paid_Service__c =:tankService",
 					Facilities.class);
 			query.setString("userId", userId);
-			if (fecilitiesType.equalsIgnoreCase("signed"))
+			if (facilitiesType.equalsIgnoreCase("signed"))
 				query.setBoolean("tankService", true);
 			else
 				query.setBoolean("tankService", false);
@@ -229,7 +227,7 @@ public class DBUtil {
 
 		{
 			exception.printStackTrace();
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -244,7 +242,6 @@ public class DBUtil {
 	}
 
 	public List<Company> fetchCompanies(String userId) {
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -276,15 +273,14 @@ public class DBUtil {
 
 	}
 
-	public int fetchComplianceFecilities(String userId, String fecilitiesIdString, boolean compliance) {
+	public int fetchComplianceFacilities(String userId, String facilitiesIdString, boolean compliance) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery("Select count(*) from Account WHERE Compliant__c=" + compliance
-					+ " and id in (" + fecilitiesIdString + " )");
+					+ " and id in (" + facilitiesIdString + " )");
 			int size = ((Number) query.uniqueResult()).intValue();
 			trx.commit();
 			session.close();
@@ -294,7 +290,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -308,9 +304,8 @@ public class DBUtil {
 
 	}
 
-	public List<Facilities> fecilityNotificationFormList(String fecilitiesIdString) {
+	public List<Facilities> facilityNotificationFormList(String facilitiesIdString) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -322,7 +317,7 @@ public class DBUtil {
 							+ "SOS_Status__c = 'Missing' or "
 							+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or "
 							+ "Tax_ID_Information__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing'))) and id in ("
-							+ fecilitiesIdString + " )");
+							+ facilitiesIdString + " )");
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -332,7 +327,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -346,9 +341,8 @@ public class DBUtil {
 
 	}
 
-	public List<Facilities> fecilityComplianceList(String fecilitiesIdString) {
+	public List<Facilities> facilityComplianceList(String facilitiesIdString) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -361,7 +355,7 @@ public class DBUtil {
 							+ "(Repair_Documents__c = null AND Are_Repair_Documents_Required__c = TRUE) OR "
 							+ "(Release_Detection_Report__c = null AND Is_Release_Detection_Report_Required__c = TRUE) OR "
 							+ "(Internal_Lining_Inspection__c = NULL AND Is_IL_Inspection_Required__c = TRUE) ) AND MGT_Paid_Service__c = true and Do_not_Trigger_emails__c = false )) "
-							+ "and id in (" + fecilitiesIdString + " )");
+							+ "and id in (" + facilitiesIdString + " )");
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -371,7 +365,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -385,16 +379,15 @@ public class DBUtil {
 
 	}
 
-	public List<Facilities> fecilityCertificationList(String fecilitiesIdString) {
+	public List<Facilities> facilityCertificationList(String facilitiesIdString) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery("Select id from Account WHERE  MGT_Paid_Service__c = true "
 					+ "and (Operator_A_certificate__c = null  OR Operator_B_certificate__c = null  "
-					+ "OR Operator_C_certificate__c = null) and id in (" + fecilitiesIdString + " )");
+					+ "OR Operator_C_certificate__c = null) and id in (" + facilitiesIdString + " )");
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -404,7 +397,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -468,8 +461,7 @@ public class DBUtil {
 		}
 	}
 
-	public List<Facilities> fetchFecilitiesForCompany(String companyName, String companyOwner) {
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
+	public List<Facilities> fetchFacilitiesForCompany(String companyName, String companyOwner) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -493,7 +485,7 @@ public class DBUtil {
 
 		{
 			exception.printStackTrace();
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -507,9 +499,8 @@ public class DBUtil {
 
 	}
 
-	public List<Facilities> fetchFecilitiesFCompliance(String userId, String compliance) {
+	public List<Facilities> fetchFacilitiesFCompliance(String userId, String compliance) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -533,7 +524,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -547,18 +538,17 @@ public class DBUtil {
 
 	}
 
-	public Account fetchFecilitiesNotificationData(String fecilitiesId) {
+	public Account fetchFacilitiesNotificationData(String facilitiesId) {
 
-		// List<Fecilities> fecilitiesList = new ArrayList<Fecilities>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT id, Facility_Operator_POA__c,Property_Owner_POA__c,UST_Owner_POA__c,Notification_form_Submitted__c,Property_Deed_Land_Contract__c,Operator_Affidevit_of_Lease__c,Owner_Affidavit_Of_Lease__c,SOS_Status__c,Tax_ID_Information__c,Letter_of_Networth_Certificate_of_INsure__c,Operator_Lease_Agreement__c,Line_and_Leak_Detector_Test__c,Is_LnL_Detr_Tst_requrd__c,Cathodic_Protection__c,Is_CP_required__c,Operator_A_certificate__c,Operator_B_certificate__c,Operator_C_certificate__c,Tank_Testing_Report__c,Is_Tank_Testing_Report_Required__c,Repair_Documents__c,Are_Repair_Documents_Required__c,Release_Detection_Report__c,Is_Release_Detection_Report_Required__c,Internal_Lining_Inspection__c,Is_IL_Inspection_Required__c,MGT_Paid_Service__c ,( Due_Date__c <= CURDATE()) as due_Date_c FROM customerportaldb.Account WHERE (((Facility_Operator_POA__c = 'Missing' OR Property_Owner_POA__c = 'Missing' OR UST_Owner_POA__c = 'Missing' OR Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing') AND  MGT_Paid_Service__c = true AND  Due_Date__c <= CURDATE() AND  Notification_form_Submitted__c is NULL) OR (((Line_and_Leak_Detector_Test__c is NULL AND  Is_LnL_Detr_Tst_requrd__c = TRUE) OR (Cathodic_Protection__c is NULL AND  Is_CP_required__c = TRUE)  OR Operator_A_certificate__c is NULL  OR Operator_B_certificate__c is NULL  OR Operator_C_certificate__c is NULL  OR (Tank_Testing_Report__c is NULL AND  Is_Tank_Testing_Report_Required__c = TRUE ) OR (Repair_Documents__c is NULL AND  Are_Repair_Documents_Required__c = TRUE) OR (Release_Detection_Report__c is NULL AND  Is_Release_Detection_Report_Required__c = TRUE) OR (Internal_Lining_Inspection__c is NULL AND  Is_IL_Inspection_Required__c = TRUE) ) AND  MGT_Paid_Service__c = true )) and  id =:fecilitiesId",
+					"SELECT id, Facility_Operator_POA__c,Property_Owner_POA__c,UST_Owner_POA__c,Notification_form_Submitted__c,Property_Deed_Land_Contract__c,Operator_Affidevit_of_Lease__c,Owner_Affidavit_Of_Lease__c,SOS_Status__c,Tax_ID_Information__c,Letter_of_Networth_Certificate_of_INsure__c,Operator_Lease_Agreement__c,Line_and_Leak_Detector_Test__c,Is_LnL_Detr_Tst_requrd__c,Cathodic_Protection__c,Is_CP_required__c,Operator_A_certificate__c,Operator_B_certificate__c,Operator_C_certificate__c,Tank_Testing_Report__c,Is_Tank_Testing_Report_Required__c,Repair_Documents__c,Are_Repair_Documents_Required__c,Release_Detection_Report__c,Is_Release_Detection_Report_Required__c,Internal_Lining_Inspection__c,Is_IL_Inspection_Required__c,MGT_Paid_Service__c ,( Due_Date__c <= CURDATE()) as due_Date_c FROM customerportaldb.Account WHERE (((Facility_Operator_POA__c = 'Missing' OR Property_Owner_POA__c = 'Missing' OR UST_Owner_POA__c = 'Missing' OR Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing') AND  MGT_Paid_Service__c = true AND  Due_Date__c <= CURDATE() AND  Notification_form_Submitted__c is NULL) OR (((Line_and_Leak_Detector_Test__c is NULL AND  Is_LnL_Detr_Tst_requrd__c = TRUE) OR (Cathodic_Protection__c is NULL AND  Is_CP_required__c = TRUE)  OR Operator_A_certificate__c is NULL  OR Operator_B_certificate__c is NULL  OR Operator_C_certificate__c is NULL  OR (Tank_Testing_Report__c is NULL AND  Is_Tank_Testing_Report_Required__c = TRUE ) OR (Repair_Documents__c is NULL AND  Are_Repair_Documents_Required__c = TRUE) OR (Release_Detection_Report__c is NULL AND  Is_Release_Detection_Report_Required__c = TRUE) OR (Internal_Lining_Inspection__c is NULL AND  Is_IL_Inspection_Required__c = TRUE) ) AND  MGT_Paid_Service__c = true )) and  id =:facilitiesId",
 					Account.class);
 
-			query.setString("fecilitiesId", fecilitiesId);
+			query.setString("facilitiesId", facilitiesId);
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -572,7 +562,7 @@ public class DBUtil {
 		{
 			
 			exception.printStackTrace();
-			System.out.println("Exception occred while fetchFecilities: " + exception.getMessage());
+			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
