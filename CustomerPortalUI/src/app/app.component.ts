@@ -49,9 +49,12 @@ selectedSearchOption = this.searchOptions[0];
     }, 50);
   }
   fetchSearchResults(){
+    this.commonService.setSearchString(this.searchString);
     console.log(this.searchString+"  ",this.selectedSearchOption)
     this.dashboardService.searchResults(this.selectedSearchOption.value,this.searchString,this.commonService.getUserName(),this.commonService.isAdmin()) .subscribe(
       searchResultList => {
+        this.commonService.storeSearchResult(JSON.stringify(searchResultList));
+        this.router.navigate(['/#']);
         console.log(searchResultList)
       },
       error => {

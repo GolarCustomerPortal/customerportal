@@ -47,6 +47,10 @@ console.log("login init")
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
         data => {
+          if(data == null){
+            this.loginErrorMessage = "Invalid Username or Password";
+            return;
+          }
           if(data.newlyCreated != null && data.newlyCreated === true){
           this.newlyCretedUser = true;
           this.username = data.username;

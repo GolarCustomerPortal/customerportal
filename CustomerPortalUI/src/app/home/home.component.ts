@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonService } from '../services/common.service';
 import { DashboardService } from '../services/dashboard.service';
 import { ImportService } from '../services/import.service';
+import { AppComponent } from '../app.component';
 declare var $: any;
 @Component({
   selector: 'crm-home',
@@ -25,6 +26,14 @@ export class HomeComponent implements OnInit {
       $(this).find('form')[0].reset();
       self.resetCertificationForm(true);
     })
+//searchResults
+  if (this.commonService.getSearchResult() != null) {
+    var resultObj = JSON.parse(this.commonService.getSearchResult())
+    this.handleSearchResults(resultObj);
+    this.commonService.resetSearchResult();
+  }
+//searchRestults
+
     if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'facilities') {
       this.onFacilitiesDataSelect(null);
       this.commonService.resetselectedLeftTab();
@@ -52,11 +61,13 @@ export class HomeComponent implements OnInit {
   FILL_COLOR="#2c347E";
   NON_FILL_COLOR="#ef4136";
   GUTTER_COLOR ="#d3e8c8"; 
+  showSearchResults=false;
   // fOperatorFileName;
   // commom properties end
 
   //search start
   searchString;
+  searchResult={};
   //search end
 
   // notification fileupload start
@@ -157,7 +168,7 @@ export class HomeComponent implements OnInit {
   //app component code end
 
   // middlepanel code start
-  constructor(public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
+  constructor(public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
 
     this.fetchDashboardValues();
@@ -219,7 +230,7 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
-
+    this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onFacilitiesDataSelect", this.facilitiesLabel[event]);
     this.rightPanelTitle = "Facilities -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
@@ -310,7 +321,8 @@ export class HomeComponent implements OnInit {
     if ($event == null || event == undefined)
       event = 0;// left overlaypanel clicked
     else
-      event = $event.element._index
+      event = $event.element._index;
+      this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onCompaniesDataSelect", event);
     this.showFacilities = false;
@@ -384,6 +396,7 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
+      this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onComplianceDataSelect" + event)
     this.showFacilities = false;
@@ -501,6 +514,8 @@ export class HomeComponent implements OnInit {
     this.showBack = false;
     this.showRightContent = false;
     this.showRightDetailContent = false;
+    this.hideSearchPanel();
+   
     this.resetView();
   }
   resetView() {
@@ -539,7 +554,10 @@ export class HomeComponent implements OnInit {
   //   return "assets/images/gasstation/" + fdata.img;
   // }
   showRightDetailPanel() {
+    if(this.searchResult["facilitiesList"] == null && this.searchResult["companiesList"] ==null)
     this.middlePaneClass = "ui-g-12";
+    else
+    this.middlePaneClass = "ui-g-6";
     this.area.center = 40;
     this.area.right = 40;
   }
@@ -872,5 +890,63 @@ export class HomeComponent implements OnInit {
     fileuploadlabel.key = dbObj;
     fileuploadlabel.value = file.name;
     fileuploadlabelArray.push(fileuploadlabel);
+  }
+// search results start
+searchArea = {
+  left: 50,
+  right:50,
+  leftVisible: true,
+  rightVisible: true,
+  useTransition: true,
+}
+
+  handleSearchResults(searchResult){
+    if(searchResult.facilitiesList!= null && searchResult.facilitiesList.length>0){
+    for (var i = 0; i < searchResult.facilitiesList.length; i++) {
+      var feciData = searchResult.facilitiesList[i];
+      var image = this.commonService.gasStationImage(feciData.brand)
+  
+      feciData.image = "assets/images/gasstation/"+image;
+    }
+  }
+    if(searchResult.companiesList!= null && searchResult.companiesList.length>0){
+      for (var i = 0; i < searchResult.companiesList.length; i++) {
+        var feciData = searchResult.companiesList[i];
+        for (var j = 0; j < feciData.facilities.length; j++) {
+          feciData.facilities[j].image = "assets/images/gasstation/"+this.commonService.gasStationImage(feciData.facilities[j].brand)
+        }
+        this.companiesRightdata.push(feciData);
+      }
+    }
+    this.searchResult["facilitiesList"] = searchResult.facilitiesList;
+    this.searchResult["companiesList"] = searchResult.companiesList;
+    this.hideMainPanal();
+  }
+  hideMainPanal(){
+    this.showSearchResults=true;
+  }
+  hideSearchPanel(){
+    this.appcomponent.searchString = "";
+    this.showSearchResults=false;
+  }
+
+  //search results end
+  setSplitwidth(){
+//     console.log("set")
+//     var sidebar = document.getElementById("main_side_bar")
+//     var dummyDiv =document.getElementById("dummy_div_left") 
+//     if(sidebar != null && dummyDiv != null)
+// {
+// dummyDiv.style.width = "200px";
+// }     
+//     // if(this.area.leftVisible)
+  }
+  reSetSplitwidth(){
+//     console.log("reset")
+//     var dummyDiv =document.getElementById("dummy_div_left") 
+//     if(dummyDiv != null)
+// {
+// dummyDiv.style.width = "0px";
+// }
   }
 }

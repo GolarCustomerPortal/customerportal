@@ -5,12 +5,12 @@ import java.util.List;
 
 public class SearchResults {
 
-	private List<Companies> companiesList = new ArrayList<Companies>();
+	private List<Company> companiesList = new ArrayList<Company>();
 	private List<Facilities> facilitiesList = new ArrayList<Facilities>();
-	public List<Companies> getCompaniesList() {
+	public List<Company> getCompaniesList() {
 		return companiesList;
 	}
-	public void setCompaniesList(List<Companies> companiesList) {
+	public void setCompaniesList(List<Company> companiesList) {
 		this.companiesList = companiesList;
 	}
 	public List<Facilities> getFacilitiesList() {

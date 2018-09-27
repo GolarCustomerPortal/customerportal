@@ -48,20 +48,22 @@
                     {{loginErrorMessage}}
                 </div>
                 <form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" [ngClass]="{ 'is-invalid': f.submitted && !username.valid }" class="form-control login-textfield-border" name="username" [(ngModel)]="model.username"
+                    <div class="form-group has-feedback has-feedback-left">
+                        <input type="text" placeholder="Username" [ngClass]="{ 'is-invalid': f.submitted && !username.valid }" class="form-control login-textfield-border" name="username" [(ngModel)]="model.username"
                             #username="ngModel" required (keypress)="loginErrorMessage=null" />
+                            <i class="form-control-feedback fa fa-user login-textfield-icon"></i>
                         <div *ngIf="f.submitted && !username.valid" class="help-block text-danger">Username is required</div>
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
                         <input [ngClass]="{ 'is-invalid': f.submitted && !password.valid }" type="password" class="form-control login-textfield-border" name="password"
-                            [(ngModel)]="model.password" #password="ngModel" required (keypress)="loginErrorMessage=null" />
+                            [(ngModel)]="model.password" #password="ngModel"  placeholder="Password" required (keypress)="loginErrorMessage=null" />
+                            <i class="form-control-feedback fa fa-lock login-textfield-icon"></i>
                         <div *ngIf="f.submitted && !password.valid" class="help-block text-danger">Password is required</div>
                     </div>
+                    <div class="ui-g-12" style="padding:0px"><div class="ui-g-6" style="padding:0px"><input type="checkbox" style="margin-right:10px;border:1px solid #89DF93"/><a href="" >Remember me</a></div>
+                    <div class="ui-g-6" ><a href="" style="float:right">Forgot Password?</a></div></div>
                     <div class="form-group">
-                        <button class="btn btn-primary btn-block login-button">Log in</button>
+                        <div class="ui-g-12" style="padding:0px"> <div class="ui-g-4" style="padding:0px"><button class="btn btn-primary btn-block login-button">Log in</button></div></div>
                     </div>
                     <!-- <div class="clearfix">
                         <a href="#" data-toggle="modal" data-target="#resetModal">Forgot Password?</a>

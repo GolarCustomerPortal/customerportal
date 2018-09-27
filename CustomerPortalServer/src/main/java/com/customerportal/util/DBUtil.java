@@ -52,7 +52,7 @@ public class DBUtil {
 			}
 
 		} catch (Exception exception) {
-			System.out.println("Exception occred while login: " + exception.getMessage());
+			System.out.println("Exception occred in login   method --" + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -77,7 +77,7 @@ public class DBUtil {
 			session.close();
 			return userObj;
 		} catch (Exception exception) {
-			System.out.println("Exception occred while register: " + exception.getMessage());
+			System.out.println("Exception occred in register  method --" + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -112,7 +112,7 @@ public class DBUtil {
 			session.close();
 			return userObj;
 		} catch (Exception exception) {
-			System.out.println("Exception occred while update: " + exception.getMessage());
+			System.out.println("Exception occred in update method -- " + exception.getMessage());
 			exception.printStackTrace();
 			if (trx != null)
 				trx.rollback();
@@ -140,7 +140,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in fetchFacilities method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -190,7 +190,7 @@ public class DBUtil {
 			return lst;
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			System.out.println("Exception occred while checkUserPresent for reset password: " + exception.getMessage());
+			System.out.println("Exception occred in checkUserPresent for reset password method --" + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -227,7 +227,7 @@ public class DBUtil {
 
 		{
 			exception.printStackTrace();
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in getSpecificFacilitiesForUser method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -247,7 +247,8 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c= '0033600000M1YNjAAN'",
+					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c='"
+							+ userId + "'",
 					Company.class);
 			// query.setString("contactId", userId);
 			List lst = query.list();
@@ -259,7 +260,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchCompanies: " + exception.getMessage());
+			System.out.println("Exception occred in fetchCompanies method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -279,8 +280,12 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery("Select count(*) from Account WHERE Compliant__c=" + compliance
-					+ " and id in (" + facilitiesIdString + " )");
+			String queryString = "Select count(*) from Account WHERE Compliant__c=" + compliance;
+			if(facilitiesIdString != null && facilitiesIdString.length() >0){
+				queryString+= " and id in (" + facilitiesIdString+" )" ;
+			}
+			Query query = session
+					.createNativeQuery(queryString);
 			int size = ((Number) query.uniqueResult()).intValue();
 			trx.commit();
 			session.close();
@@ -290,7 +295,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in fetchComplianceFacilities method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -310,14 +315,18 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session
-					.createNativeQuery("Select id from Account WHERE (((Facility_Operator_POA__c = 'Missing' OR "
-							+ "Property_Owner_POA__c = 'Missing' OR UST_Owner_POA__c = 'Missing' OR "
-							+ "Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR "
-							+ "SOS_Status__c = 'Missing' or "
-							+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or "
-							+ "Tax_ID_Information__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing'))) and id in ("
-							+ facilitiesIdString + " )");
+			String queryString = "Select id from Account WHERE (((Facility_Operator_POA__c = 'Missing' OR "
+					+ "Property_Owner_POA__c = 'Missing' OR UST_Owner_POA__c = 'Missing' OR "
+					+ "Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR "
+					+ "SOS_Status__c = 'Missing' or "
+					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or "
+					+ "Tax_ID_Information__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing')))";
+			
+							if(facilitiesIdString != null && facilitiesIdString.length() >0){
+								queryString+= "and id in (" + facilitiesIdString+" )" ;
+							}
+							Query query = session
+									.createNativeQuery(queryString);
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -327,7 +336,8 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			exception.printStackTrace();
+			System.out.println("Exception occred in facilityNotificationFormList method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -347,15 +357,19 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery(
+			String queryString = 
 					"Select id from Account WHERE ((MGT_Paid_Service__c = true  and Notification_form_Submitted__c = null) OR"
 							+ " (((Line_and_Leak_Detector_Test__c = null AND Is_LnL_Detr_Tst_requrd__c = TRUE)  OR "
 							+ "(Cathodic_Protection__c = null AND Is_CP_required__c = TRUE)  OR "
 							+ "(Tank_Testing_Report__c = null AND Is_Tank_Testing_Report_Required__c = TRUE ) OR "
 							+ "(Repair_Documents__c = null AND Are_Repair_Documents_Required__c = TRUE) OR "
 							+ "(Release_Detection_Report__c = null AND Is_Release_Detection_Report_Required__c = TRUE) OR "
-							+ "(Internal_Lining_Inspection__c = NULL AND Is_IL_Inspection_Required__c = TRUE) ) AND MGT_Paid_Service__c = true and Do_not_Trigger_emails__c = false )) "
-							+ "and id in (" + facilitiesIdString + " )");
+							+ "(Internal_Lining_Inspection__c = NULL AND Is_IL_Inspection_Required__c = TRUE) ) AND MGT_Paid_Service__c = true and Do_not_Trigger_emails__c = false )) ";
+			if(facilitiesIdString != null && facilitiesIdString.length() >0){
+				queryString+= "and id in (" + facilitiesIdString+" )" ;
+			}
+							
+			Query query = session.createNativeQuery(queryString);
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -365,7 +379,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in facilityComplianceList method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -384,10 +398,15 @@ public class DBUtil {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
-			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery("Select id from Account WHERE  MGT_Paid_Service__c = true "
+			String queryString = "Select id from Account WHERE  MGT_Paid_Service__c = true "
 					+ "and (Operator_A_certificate__c = null  OR Operator_B_certificate__c = null  "
-					+ "OR Operator_C_certificate__c = null) and id in (" + facilitiesIdString + " )");
+					+ "OR Operator_C_certificate__c = null)";
+			if(facilitiesIdString != null && facilitiesIdString.length() >0){
+				queryString+= "and id in (" + facilitiesIdString+" )" ;
+			}
+			Query query = session
+					.createNativeQuery(queryString);
+			// Transaction t = session.beginTransaction();
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -397,7 +416,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in facilityCertificationList method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -424,7 +443,7 @@ public class DBUtil {
 			return true;
 
 		} catch (Exception exception) {
-			System.out.println("Exception occred while changePassword: " + exception.getMessage());
+			System.out.println("Exception occred in changePassword method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -452,7 +471,7 @@ public class DBUtil {
 				return false;
 			}
 		} catch (Exception exception) {
-			System.out.println("Exception occred while changePassword: " + exception.getMessage());
+			System.out.println("Exception occred in changePassword method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -485,7 +504,7 @@ public class DBUtil {
 
 		{
 			exception.printStackTrace();
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in fetchFacilitiesForCompany method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -524,7 +543,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in fetchFacilitiesFCompliance method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -562,7 +581,7 @@ public class DBUtil {
 		{
 			
 			exception.printStackTrace();
-			System.out.println("Exception occred while fetchFacilities: " + exception.getMessage());
+			System.out.println("Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -594,7 +613,7 @@ public class DBUtil {
 				session.close();
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			System.out.println("Exception occred while updating user Preferences : " + exception.getMessage());
+			System.out.println("Exception occred in updating user Preferences method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -609,7 +628,87 @@ public class DBUtil {
 
 	public SearchResults retrieveSearchResults(String searchType, String searchString, String username,
 			boolean isadmin) {
-		// TODO Auto-generated method stub
-		return null;
+		SearchResults result = new SearchResults();
+//		List<String> facilitiesList = fetchFacilityId(username);
+		List<Facilities> facilitiesList = fetchFacilities(username);
+		List<Company> companiesList = fetchCompanyNames(username);
+		for (Company company : companiesList) {
+			List<Facilities> facilitiesListLocal = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesListLocal);
+			company.setFacilities(facilitiesListLocal);	
+		}
+		result.setFacilitiesList(facilitiesList);
+		result.setCompaniesList(companiesList);
+		return result;
 	}
+	
+	public List<String> fetchFacilityId(String userId) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction(); 
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"select Facility__c FROM Facility_Management__c where Contact__c= '"
+							+ userId + "'");
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			System.out.println("Exception occred in fetchFacilityId method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+	}
+	public List<Company> fetchCompanyNames(String userId) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c= '"+ userId + "'",
+					Company.class);
+			// Transaction t = session.beginTransaction();
+//						Query query = session.createNativeQuery(
+//								"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c='"
+//										+ userId + "'",
+//								Company.class);
+			// query.setString("contactId", userId);
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in fetchCompanies  method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+
+	}
+
+	
+	
 }

@@ -6,7 +6,7 @@
             <p-dropdown [options]="searchOptions" [(ngModel)]="selectedSearchOption" name="selectedSearchOption" optionLabel="name" [style]="{'width': '110px'}"></p-dropdown>
             <input type="text" class="form-control" name="searchString" [(ngModel)]="searchString" />
 
-            <button class="btn btn-primary search-icon-color" (click) ="fetchSearchResults()">Search</button>
+            <button class="btn btn-primary search-icon-color" [disabled]="searchString == null || searchString?.trim().length === 0" (click) ="fetchSearchResults()">Search</button>
         </form>
     </div>
     <ul class="navbar-nav" style="margin-left: auto!important;">
@@ -34,7 +34,7 @@
     </ul>
 </nav>
 <i class="fa fa-bars nav-bar-bars"  (click)="visibleSidebar=true"></i>
-<p-sidebar [(visible)]="visibleSidebar" position="left" [baseZIndex]="10000">
+<p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000">
   &nbsp;
   <p-accordion id="leftpanel">
     <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">

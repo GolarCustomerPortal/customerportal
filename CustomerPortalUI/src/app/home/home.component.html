@@ -1,5 +1,5 @@
 <i class="fa fa-bars nav-bar-bars"  (click)="visibleSidebar=true"></i>
-<p-sidebar [(visible)]="visibleSidebar" position="left" [baseZIndex]="10000">
+<p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000" (onShow)="setSplitwidth()" (onHide)="reSetSplitwidth" id="main_side_bar">
   &nbsp;
   <p-accordion id="leftpanel">
     <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">
@@ -14,7 +14,7 @@
     </p-accordionTab>
   </p-accordion>
 </p-sidebar>
-<split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}">
+<split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults">
   <split-area [visible]="area.leftVisible" [size]="area.left" order="1">
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
       <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to show all"
@@ -494,3 +494,177 @@
     </div>
   </div>
   <!-- Certification modal dialog end -->
+  <!-- search start -->
+  <split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="showSearchResults">
+    <split-area [visible]="searchArea.leftVisible" [size]="searchArea.left" order="1">
+       
+        <div class="ui-g-12  margin-top" style="cursor: pointer;">
+            <i *ngIf="showSearchResults" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to main page"
+              aria-hidden="true" (click)="showAll()"></i>
+          </div>  
+            <div id="rightSearchPanel" style="margin:10px;">
+                
+              <div style="padding: 10px;padding-left: 0px;">Search results for "{{commonService.getSearchString()}}"</div>
+              <div style="height:calc(100vh - 202px);overflow-y: auto">
+              <p-accordion>
+                  <p-accordionTab header="Facilities ({{searchResult.facilitiesList.length}})">
+             
+               
+                      
+                            <div *ngIf="searchResult.facilitiesList.length>0">
+                  <div *ngFor="let fdata of searchResult.facilitiesList; let i = index;" style="padding:10px;">
+                    <div *ngIf="i%3 == 0" class="ui-g-12">
+                        <div *ngFor="let number of [0,1] let j = index;">
+                            <div *ngIf="searchResult.facilitiesList[i+j] != null && searchResult.facilitiesList[i+j] != undefined"  class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(searchResult.facilitiesList[i+j])" style="cursor: pointer;" title="Click for more details">
+                                <p-card styleClass="ui-card-shadow">
+                                  <div style="width: 100%">
+                                   <div> <div ngClass="header-padding-left ui-card-header">{{searchResult.facilitiesList[i+j].name}}</div>
+                                    <img class="card-image" src="{{searchResult.facilitiesList[i+j].image}}" /></div>
+                                </div>
+                                  <div class="ui-g no-padding">
+                                    <div class="ui-g-4 no-padding"> Name:</div>
+                                    <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].name}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding">
+                                    <div class="ui-g-4 no-padding"> Fid:</div>
+                                    <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].fid}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding">
+                                    <div class="ui-g-4 no-padding"> Address:</div>
+                                    <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].address}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding">
+                                    <div class="ui-g-4 no-padding"> Compliance:</div>
+                                    <div class="ui-g-8 no-padding">
+                                      <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="searchResult.facilitiesList[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                                    </div>
+                                  </div>
+                                </p-card>
+                              </div>
+                              
+                        </div>
+      
+                    </div>
+                  </div>
+                </div>
+                  </p-accordionTab>
+                
+      <!-- companies start -->
+      <p-accordionTab header="{{companyData.name}}" *ngFor="let companyData of searchResult.companiesList;">
+      <div *ngIf="searchResult.companiesList.length>0">
+       
+          <div *ngIf="companyData.facilities.length>0">
+            <div *ngFor="let fdata of companyData.facilities; let i = index; let even = even;" style="padding:10px;">
+                <div *ngIf="i%2 == 0" class="ui-g-12">
+                    <div *ngFor="let number of [0,1] let j = index;">
+                        <div *ngIf="companyData.facilities[i+j] != null && companyData.facilities[i+j] != undefined" class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(companyData.facilities[i+j])" style="cursor: pointer;" title="Click for more details">
+                            <p-card styleClass="ui-card-shadow">
+                               <div style="width: 100%">
+                                   <div> <div ngClass="header-padding-left ui-card-header"> {{companyData.facilities[i+j].name}}</div>
+                                    <img class="card-image" src="{{companyData.facilities[i+j].image}}" /></div>
+                                </div>
+                              <div class="ui-g no-padding">
+                                <div class="ui-g-4 no-padding"> Name:</div>
+                                <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].name}}</div>
+                              </div>
+                              <div class="ui-g no-padding">
+                                <div class="ui-g-4 no-padding"> Fid:</div>
+                                <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].fid}}</div>
+                              </div>
+                              <div class="ui-g no-padding">
+                                <div class="ui-g-4 no-padding"> Address:</div>
+                                <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].address}}</div>
+                              </div>
+                              <div class="ui-g no-padding">
+                                <div class="ui-g-4 no-padding"> Compliance:</div>
+                                <div class="ui-g-8 no-padding">
+                                  <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
+                                </div>
+                              </div>
+                            </p-card>
+                          </div>
+                          
+                    </div>
+      
+                </div>
+            </div>
+          </div>
+        </div>
+        </p-accordionTab>
+      </p-accordion>
+     
+      <!-- companies end -->
+ 
+              </div>
+            </div>
+    </split-area>
+
+  <split-area [visible]="searchArea.rightVisible" [size]="searchArea.right" order="2">
+      <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
+          <p-header ngClass="header-padding-left">
+              <div style="width: 100%"> {{rightPaneDetailslTitle}}
+            <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
+          </div>
+          </p-header>
+          <div style="height:calc(100vh - 185px);overflow-y: auto">
+            <div class="ui-g-12">
+                <p-card styleClass="ui-card-shadow">
+                    <div style="width: 100%">
+                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important"> {{rightDetailsContent.facilityName}}</div>
+                         <img class="card-image" src="{{rightDetailsContent.image}}" /></div>
+                     </div>
+                <div class="ui-g no-padding">
+                  <div class="ui-g-4 no-padding"> Name:</div>
+                  <div class="ui-g-8 no-padding">{{rightDetailsContent.facilityName}}</div>
+                </div>
+                <div class="ui-g no-padding">
+                  <div class="ui-g-4 no-padding"> Fid:</div>
+                  <div class="ui-g-8 no-padding">{{rightDetailsContent.fid}}</div>
+                </div>
+                <div class="ui-g no-padding">
+                  <div class="ui-g-4 no-padding"> Address:</div>
+                  <div class="ui-g-8 no-padding">{{rightDetailsContent.address}}</div>
+                </div>
+                <div class="ui-g no-padding">
+                  <div class="ui-g-4 no-padding"> Compliance:</div>
+                  <div class="ui-g-8 no-padding">
+                    <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+            <div class="ui-g-12 margin-top" id="individual-chart">
+                <p-card styleClass="ui-card-shadow">
+                    <div style="width: 100%">
+                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Consolidate report of Gas station (Gallons)</div>
+                          </div>
+                         </div>
+                  <p-chart [width]="400" [height]="400" type="bar" [data]="consolidateReportdata" [options]="noLegendtOptions"></p-chart>
+    
+              </p-card>
+            </div>
+            <div class="ui-g-12 margin-top">
+              <div class="ui-g-4">
+                <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
+                 data-toggle="modal" data-target="#notificationFormModal"
+                (click)="getNotificationModalData(rightDetailsContent.facilityId)"
+                >Notification
+                  <br>Form</button>
+              </div>
+              <div class="ui-g-4">
+                <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
+                 data-toggle="modal" data-target="#complianceFormModal">Compliance
+                  <br>Section</button>
+              </div>
+              <div class="ui-g-4">
+                <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
+                data-toggle="modal" data-target="#certificationFormModal">Certification</button>
+              </div>
+            </div>
+    
+          </div>
+        </p-panel>
+    </split-area>
+  </split>
+
+  <!-- search end -->

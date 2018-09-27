@@ -183,6 +183,21 @@ export class CommonService {
   getSelectedLeftTab() {
     return localStorage.getItem('selectedLeftTab');
   }
+  setSearchString(searchString){
+    localStorage.setItem('searchString', searchString);
+  }
+  getSearchString(){
+    return localStorage.getItem('searchString');
+  }
+  storeSearchResult(searchResult){
+    localStorage.setItem('searchResult', searchResult);
+  }
+  getSearchResult(){
+    return localStorage.getItem('searchResult');
+  }
+  resetSearchResult() {
+    localStorage.removeItem('searchResult');
+  }
 
   getFullName() {
     var user;
