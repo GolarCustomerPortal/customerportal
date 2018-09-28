@@ -162,7 +162,7 @@ export class HomeComponent implements OnInit {
     right: 0,
     leftVisible: true,
     centerVisible: true,
-    rightVisible: true,
+    rightVisible: false,
     useTransition: true,
   }
   //app component code end
@@ -560,6 +560,7 @@ export class HomeComponent implements OnInit {
     this.middlePaneClass = "ui-g-6";
     this.area.center = 40;
     this.area.right = 40;
+    this.area.rightVisible =  true;
   }
   hideRightContentDetails(rightDetailsContent) {
     rightDetailsContent = [];
@@ -568,6 +569,7 @@ export class HomeComponent implements OnInit {
     this.area.center = 80;
     this.area.right = 0;
     this.middlePaneClass = "ui-g-4"
+    this.area.rightVisible =  false;
   }
   showMainDashBoard() {
     console.log("showDashBoard");
@@ -933,20 +935,22 @@ searchArea = {
   //search results end
   setSplitwidth(){
 //     console.log("set")
-//     var sidebar = document.getElementById("main_side_bar")
-//     var dummyDiv =document.getElementById("dummy_div_left") 
-//     if(sidebar != null && dummyDiv != null)
-// {
-// dummyDiv.style.width = "200px";
-// }     
+    var sidebarDiv = document.getElementById("left-split-panel")
+    var mainDiv =document.getElementById("split-panel") 
+    if(sidebarDiv != null && mainDiv !== null )
+{
+  sidebarDiv.style.display = "";
+  mainDiv.style.width="calc(100% - 320px)";
+}     
 //     // if(this.area.leftVisible)
   }
   reSetSplitwidth(){
-//     console.log("reset")
-//     var dummyDiv =document.getElementById("dummy_div_left") 
-//     if(dummyDiv != null)
-// {
-// dummyDiv.style.width = "0px";
-// }
+    var sidebarDiv = document.getElementById("left-split-panel")
+    var mainDiv =document.getElementById("split-panel") 
+    if(sidebarDiv != null && mainDiv !== null )
+{
+  sidebarDiv.style.display = "none";
+  mainDiv.style.width="100%";
+}   
   }
 }

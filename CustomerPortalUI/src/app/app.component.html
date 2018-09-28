@@ -3,10 +3,10 @@
         </a>
     <div class="form-inline search-margin">
         <form>
-            <p-dropdown [options]="searchOptions" [(ngModel)]="selectedSearchOption" name="selectedSearchOption" optionLabel="name" [style]="{'width': '110px'}"></p-dropdown>
-            <input type="text" class="form-control" name="searchString" [(ngModel)]="searchString" />
+            <p-dropdown id="searchDropdown" [options]="searchOptions" [(ngModel)]="selectedSearchOption" name="selectedSearchOption" optionLabel="name" [style]="{'width': '110px'}"></p-dropdown>
+            <input type="text"  class="form-control input-text-background-color" name="searchString" [(ngModel)]="searchString" />
 
-            <button class="btn btn-primary search-icon-color" [disabled]="searchString == null || searchString?.trim().length === 0" (click) ="fetchSearchResults()">Search</button>
+            <button class="btn btn-primary search-icon-color" style="background-color: #39b54a;border-color:#39b54a" [disabled]="searchString == null || searchString?.trim().length === 0" (click) ="fetchSearchResults()">Search</button>
         </form>
     </div>
     <ul class="navbar-nav" style="margin-left: auto!important;">

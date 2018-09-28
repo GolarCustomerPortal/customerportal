@@ -1,5 +1,5 @@
 <i class="fa fa-bars nav-bar-bars"  (click)="visibleSidebar=true"></i>
-<p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000" (onShow)="setSplitwidth()" (onHide)="reSetSplitwidth" id="main_side_bar">
+<p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000" (onShow)="setSplitwidth()" (onHide)="reSetSplitwidth()" id="main_side_bar">
   &nbsp;
   <p-accordion id="leftpanel">
     <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">
@@ -14,7 +14,9 @@
     </p-accordionTab>
   </p-accordion>
 </p-sidebar>
-<split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults">
+<div style="width: 320px;height:100px;float:left;display:none" id="left-split-panel"></div>
+<split id="split-panel" direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults"> 
+   
   <split-area [visible]="area.leftVisible" [size]="area.left" order="1">
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
       <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to show all"
