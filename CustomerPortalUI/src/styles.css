@@ -56,10 +56,14 @@ background: #ebf7ec
   }
   .height-center{
     height:100%;
+    
     /* text-align: center; */
 }
 .ui-panel-titlebar{
-    width: max-content !important;
+    display: inline-block !important;
+    width: -moz-max-content !important;
+    width: -webkit-max-content !important;
+    width: -o-max-content !important;
     margin-left: 25px;
     margin-top: 15px;
     border-radius: 10px !important;
@@ -288,6 +292,15 @@ text-align: left;
     border-radius: 15px;
     min-height: 200px;
 }
+.chart-left-padding{
+    padding-left: 60px;
+    padding-right: 20px;
+}
+.chart-right-padding{
+    padding-left: 20px;
+    padding-right: 60px;
+}
+
 #individual-chart .ui-card-shadow{
     background-color: #ffffff;
     color: #222222;
@@ -373,3 +386,7 @@ a, a:hover, a:Visited{
  .ui-widget-overlay{
      opacity: 0.1 !important;
  }
+ canvas {
+    width: 100% !important;
+    height: 280px !important;
+}

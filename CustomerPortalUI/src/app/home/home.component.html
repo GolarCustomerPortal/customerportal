@@ -17,20 +17,20 @@
 <div style="width: 320px;height:100px;float:left;display:none" id="left-split-panel"></div>
 <split id="split-panel" direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults"> 
    
-  <split-area [visible]="area.leftVisible" [size]="area.left" order="1">
+  <split-area [visible]="area.leftVisible" [size]="area.left" order="1" id="left-split-panel">
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
       <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to show all"
         aria-hidden="true" (click)="showAll()"></i>
       <i class="fa fa-refresh pull-right back-refresh-button" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues()"></i>
     </div>
     <div class="ui-g-12 margin-top" style="cursor: pointer;">
-      <div [ngClass]="facilitiesClass" *ngIf="showFacilities">
+      <div [ngClass]="facilitiesClass" class="chart-left-padding" *ngIf="showFacilities">
         <div class="ui-g-12 dashboard-boder">
           <p class="dash-board-heading">My Facilities</p>
           <p-chart type="doughnut" [data]="facilitiesdata" (onDataSelect)="onFacilitiesDataSelect($event)" [options]="options"></p-chart>
         </div>
       </div>
-      <div [ngClass]="companiesClass" *ngIf="showCompanies">
+      <div [ngClass]="companiesClass" *ngIf="showCompanies" class="chart-right-padding">
         <div class="ui-g-12 dashboard-boder">
           <p class="dash-board-heading">My companies</p>
           <p-chart type="pie" [data]="companiesdata" (onDataSelect)="onCompaniesDataSelect($event)" [options]="options"></p-chart>
@@ -39,13 +39,13 @@
     </div>
     <div class="ui-g-12 margin-top" style="cursor: pointer;">
 
-      <div [ngClass]="complianceClass" *ngIf="showCompliance">
+      <div [ngClass]="complianceClass" *ngIf="showCompliance"  class="chart-left-padding">
         <div class="ui-g-12 dashboard-boder">
           <p class="dash-board-heading">My Compliance</p>
           <p-chart type="doughnut" [data]="complianceData" (onDataSelect)="onComplianceDataSelect($event)" [options]="options"></p-chart>
         </div>
       </div>
-      <div [ngClass]="reportClass" *ngIf="showConsolidateReport">
+      <div [ngClass]="reportClass" *ngIf="showConsolidateReport" class="chart-right-padding">
         <div class="ui-g-12 dashboard-boder">
           <p class="dash-board-heading">My Inventory</p>
           <p-chart type="bar"  [data]="consolidateReportdata" (onDataSelect)="onConsolidateDataSelect($event)" [options]="noLegendtOptions"></p-chart>

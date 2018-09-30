@@ -466,11 +466,11 @@ export class HomeComponent implements OnInit {
   }
   onConsolidateDataSelect($event) {
     console.log("onConsolidateDataSelect" + $event.element._index)
-    this.showFacilities = false;
-    this.showCompanies = false;
-    this.showCompliance = false;
-    this.reportClass = "ui-g-12";
-    this.showBack = true;
+    // this.showFacilities = false;
+    // this.showCompanies = false;
+    // this.showCompliance = false;
+    // this.reportClass = "ui-g-12";
+    // this.showBack = true;
   }
   //consolidateReport end
   constructPercentage(value1, value2) {
@@ -489,7 +489,8 @@ export class HomeComponent implements OnInit {
 
   private options: any = {
     legend: { position: 'bottom' },
-
+    responsive: true,
+    maintainAspectRatio :false
   }
   private noLegendtOptions = {
     legend: { display: false },
@@ -509,6 +510,15 @@ export class HomeComponent implements OnInit {
     legend: { display: false },
     responsive: false,
     maintainAspectRatio: false,
+
+    scales: {
+      xAxes: [{
+        stacked: true // this should be set to make the bars stacked
+      }],
+      yAxes: [{
+        stacked: true // this also..
+      }]
+    }
   }
   showAll() {
     this.showBack = false;
