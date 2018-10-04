@@ -235,6 +235,8 @@ export class CommonService {
     }
   }
   gasStationImage(gasStation){
+    if(gasStation == null)
+    return null;
     return this.gasStationImages[gasStation.toLowerCase()];
   }
 

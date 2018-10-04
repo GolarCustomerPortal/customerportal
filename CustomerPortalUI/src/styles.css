@@ -159,8 +159,8 @@ background: #ebf7ec
 .file-upload-second{
     background-color: #d7f0da;
 }
-#notificationFormModal .btn-primary, #certificationFormModal .btn-primary,  #complianceFormModal .btn-primary, 
-#notificationFormModal .btn-secondary, #certificationFormModal .btn-secondary,  #complianceFormModal  .btn-secondary{
+#schedule-dialog #notificationFormModal .btn-primary, #certificationFormModal .btn-primary,  #complianceFormModal .btn-primary, 
+#notificationFormModal .btn-primary, .btn-secondary, #certificationFormModal .btn-secondary,  #complianceFormModal  .btn-secondary{
     background-color: #ef4136  !important;
     border-color: #ef4136  !important;
     color:#fdecea !important;
@@ -389,4 +389,15 @@ a, a:hover, a:Visited{
  canvas {
     width: 100% !important;
     height: 280px !important;
+}
+.schedule-fullwidth{
+    width: 100%;
+    border-radius: 3px;
+}
+#schedule-dialog .ui-dialog .ui-dialog-content{
+    overflow: visible;
+}
+.margin-top-bottom{
+    margin-bottom: 10px;
+    margin-top: 10px;
 }

@@ -10,7 +10,7 @@ public class CustomerPortalUtil {
 		List<Facilities> notificationFormList = DBUtil.getInstance().facilityNotificationFormList(facilitiesIdString);
 		List<Facilities> complianceList = DBUtil.getInstance().facilityComplianceList(facilitiesIdString);
 		List<Facilities> certificationList = DBUtil.getInstance().facilityCertificationList(facilitiesIdString);
-		
+		if(facilitiesList != null)
 		for (Facilities facilities : facilitiesList) {
 			if(notificationFormList.contains(facilities.getFacilityId())){
 				facilities.setNotificationFormButtonEnable(true);

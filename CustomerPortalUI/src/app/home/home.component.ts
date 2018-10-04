@@ -409,6 +409,7 @@ export class HomeComponent implements OnInit {
     this.dashboardService.getComplianceList(this.commonService.getUserName(), this.complianceLabel[event]) // retrieve all thd parent folders
       .subscribe(
         complianceList => {
+          if(complianceList !== null )
           for (var i = 0; i < complianceList.length; i++) {
             var feciData = complianceList[i];
             var image = this.commonService.gasStationImage(feciData.brand)

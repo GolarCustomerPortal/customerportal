@@ -552,6 +552,8 @@
                   </p-accordionTab>
                 
       <!-- companies start -->
+      <p-accordionTab header="Companies ({{searchResult.companiesList.length}})">
+      <p-accordion>
       <p-accordionTab header="{{companyData.name}}" *ngFor="let companyData of searchResult.companiesList;">
       <div *ngIf="searchResult.companiesList.length>0">
        
@@ -592,6 +594,8 @@
             </div>
           </div>
         </div>
+      </p-accordionTab>
+    </p-accordion>
         </p-accordionTab>
       </p-accordion>
      

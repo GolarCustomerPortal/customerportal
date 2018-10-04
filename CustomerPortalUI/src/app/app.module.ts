@@ -29,7 +29,10 @@ import { DashboardService } from './services/dashboard.service';
 import {DropdownModule} from 'primeng/dropdown';
 import {RadioButtonModule} from 'primeng/radiobutton';
 import { ImportService } from './services/import.service';
-
+import { ScheduleComponent } from './schedule/schedule.component';
+import {DialogModule} from 'primeng/dialog';
+import {CheckboxModule} from 'primeng/checkbox';
+import {CalendarModule} from 'primeng/calendar';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,7 @@ import { ImportService } from './services/import.service';
     HomeComponent,
     UserComponent,
     UsersComponent,
+    ScheduleComponent,
   ],  
   imports: [
     routing,
@@ -58,7 +62,10 @@ import { ImportService } from './services/import.service';
     FileUploadModule,
     FieldsetModule,
     DropdownModule,
-    RadioButtonModule
+    RadioButtonModule,
+    DialogModule,
+    CheckboxModule,
+    CalendarModule
   ],
   providers: [  
     UserService,

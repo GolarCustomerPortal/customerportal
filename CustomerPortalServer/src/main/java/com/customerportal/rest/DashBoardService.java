@@ -1,5 +1,6 @@
 package com.customerportal.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,11 +69,70 @@ public class DashBoardService {
 
 	}
 	
+	@Path("facilitiesAndCompanies")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getFacilitiesAndCompanies(@QueryParam("userId") String userId) {
+		Map<String, Map<String, Object>> resultMap= new HashMap<String, Map<String,Object>>();
+		Map<String, Object> dashboardMap = new HashMap<String, Object>();
+		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
+		List<Facilities> signedFacilitiesList =  new ArrayList<Facilities>();
+		List<Facilities> unSignedFacilitiesList =  new ArrayList<Facilities>();
+		String facilitiesIdString = CustomerPortalUtil.getfacilitiesIdString(facilitiesList);
+		if(facilitiesList != null){
+		for (Facilities facilitiy : facilitiesList) {
+			if(facilitiy.isTankPaidService())
+				signedFacilitiesList.add(facilitiy);
+			else
+				unSignedFacilitiesList.add(facilitiy);
+			
+		}
+		}
+		if(facilitiesIdString.endsWith(","))
+			facilitiesIdString = facilitiesIdString.substring(0, facilitiesIdString.length()-1);
+		dashboardMap.put("signedList", signedFacilitiesList);
+		dashboardMap.put("unsignedList", unSignedFacilitiesList);
+		resultMap.put("facilitiesData", dashboardMap);
+		// companiesData
+		dashboardMap = new HashMap<String, Object>();
+		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
+		dashboardMap.put("companiesList", companiesList);
+		resultMap.put("companiesData", dashboardMap);
+		//compliance
+		dashboardMap = new HashMap<String, Object>();
+		List<Facilities> complianceFacilitiesList = DBUtil.getInstance().fetchFacilitiesFCompliance(userId,"compliance");
+		List<Facilities> nonComplianceFacilitiesList = DBUtil.getInstance().fetchFacilitiesFCompliance(userId,"noncompliance");
+		dashboardMap.put("complianceList", complianceFacilitiesList);
+		dashboardMap.put("noncomplianceList", nonComplianceFacilitiesList);
+		resultMap.put("complianceData", dashboardMap);
+		
+		//consolidated report
+		dashboardMap = new HashMap<String, Object>();
+		dashboardMap.put("regular", 200);
+		dashboardMap.put("midgrade", 150);
+		dashboardMap.put("premium", 310);
+		dashboardMap.put("diesel", 500);
+		resultMap.put("consolidateReportData", dashboardMap);
+
+		return Response.status(200).entity(resultMap).build();
+
+	}
+	
 	@Path("/facilities")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
+		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+
+		return Response.status(200).entity(facilitiesList).build();
+
+	}
+	@Path("/facility")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response facilityData(@QueryParam("userId") String userId,@QueryParam("facilityID") String facilityID) {
+		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacility(userId,facilityID);
 		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
 
 		return Response.status(200).entity(facilitiesList).build();
@@ -84,6 +144,19 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response companiesData(@QueryParam("userId") String userId) {
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
+		for (Company company : companiesList) {
+			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+			company.setFacilities(facilitiesList);	
+		}
+		return Response.status(200).entity(companiesList).build();
+
+	}
+	@Path("/company")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response companyData(@QueryParam("userId") String userId,@QueryParam("companyID") String companyID) {
+		List<Company> companiesList = DBUtil.getInstance().fetchCompany(userId,companyID);
 		for (Company company : companiesList) {
 			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
 			CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
