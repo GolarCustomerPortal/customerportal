@@ -12,8 +12,8 @@ export class AuthenticationService {
 
     constructor(private http: HttpClient,private commonService:CommonService,private router: Router) { }
 
-    login(username: string, password: string) {
-        return this.http.post<any>(URLConstants.LOGIN_URL, { username: username, password: password })
+    login(username: string, password: string,fromApp: boolean) {
+        return this.http.post<any>(URLConstants.LOGIN_URL, { username: username, password: password,fromApp:fromApp })
             .map(user => {
                 // login successful if there's a token in the response
                 if (user && user.token) {

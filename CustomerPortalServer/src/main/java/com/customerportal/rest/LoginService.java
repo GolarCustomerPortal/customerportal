@@ -25,7 +25,7 @@ public class LoginService {
 			response.setLoginsuccess(isLoginSuccess);
 			return Response.status(403).entity(response).build();
 		}
-		User userRes =  DBUtil.getInstance().login(username, password);
+		User userRes =  DBUtil.getInstance().login(username, password,user.isFromApp());
 		
 		if(userRes !=null){// login successful
 			userRes.setFullName(userRes.getFirstName()+" "+userRes.getLastName());

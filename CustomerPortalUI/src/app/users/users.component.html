@@ -5,6 +5,7 @@
             <th>First Name</th>
             <th>Last Name</th>
             <th [hidden]="commonService.isSecondaryUserPresent()">Login</th>
+            <th>Login History</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-user>
@@ -17,6 +18,9 @@
                 <button class="btn btn-primary" type="button" [disabled]="commonService.checkForSameUser(user)" [ngClass]="{disabled :  commonService.checkForSameUser(user)}"
                     (click)="loginWithUser(user)">Logon as user</button>
             </td>
+            <td>
+                <button class="btn btn-primary" type="button" (click)="loginHistory(user)" data-toggle="modal" data-target="#historyModal">Login History</button>
+            </td>
             <td [hidden]="commonService.isSecondaryUserPresent()">
                 <i class="fa fa-edit" style="font-size:24px;cursor: pointer;" title="Edit user" (click)="editUser(user)"></i>
             </td>
@@ -26,3 +30,39 @@
         </tr>
     </ng-template>
 </p-table>
+<!-- notification form start -->
+<div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Login History for {{selectedUser?.username}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p-table [value]="userLoginHistoryData" scrollHeight="500px" [scrollable]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width:100px;">S.no</th>
+                            <th>Login time</th>
+                            <th style="width:100px;">From App</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+                        <tr>
+                            <td style="width:100px;">
+                                   {{rowIndex+1}}
+                            </td>
+                            <td>{{getDate(user.loginTime)}}</td>
+                            <td  style="width:100px;">{{user.fromApp}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

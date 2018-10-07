@@ -12,7 +12,8 @@ import com.customerportal.bean.KeyValue;
 import com.google.gson.Gson;
 import com.sforce.soap.enterprise.Connector;
 import com.sforce.soap.enterprise.EnterpriseConnection;
-import com.sforce.soap.enterprise.sobject.Custom_Attachments__c;
+import com.sforce.soap.enterprise.SaveResult;
+import com.sforce.soap.enterprise.sobject.Customer_Portal_Attachments__c;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import com.sun.jersey.api.client.Client;
@@ -76,6 +77,11 @@ public class CustomerPortalFileUpload {
 					String label = getFieldLabel(keyValue, meta.getFileName());
 					result.setKey(label);
 					String fieldlabel = urlProperties.getProperty(label);
+					String salesForceLabel = null;
+					if(fieldlabel.indexOf("__")>0){
+						salesForceLabel = fieldlabel.substring(0,fieldlabel.indexOf("__"));
+						salesForceLabel = salesForceLabel.replaceAll("_", " ");	
+					}
 					KeyValue responseEntity = clientResp.getEntity(KeyValue.class);
 					if (responseEntity ==null) {
 						result.setValue("false");
@@ -85,17 +91,18 @@ public class CustomerPortalFileUpload {
 					config.setUsername(USERNAME);
 					config.setPassword(PASSWORD);
 					connection = Connector.newConnection(config);
-					Custom_Attachments__c[] contact = new Custom_Attachments__c[1];
-					contact[0] = new Custom_Attachments__c();
-					contact[0].setContact__c(facilities.getFacilityId());
+					Customer_Portal_Attachments__c[] contact = new Customer_Portal_Attachments__c[1];
+					contact[0] = new Customer_Portal_Attachments__c();
+					contact[0].setFacility__c(facilities.getFacilityId());
+					contact[0].setType__c(salesForceLabel);
 					contact[0].setG360_URL__c(url + "/" + responseEntity.getValue());
-//					SaveResult[] saveResults = connection.create(contact);
-//					System.out.println(saveResults.length);
-//					result.setKey(label);
-//					if (saveResults[0].getErrors().length > 0) {
-//						result.setValue("false");
-//						continue;
-//					}
+					SaveResult[] saveResults = connection.create(contact);
+					System.out.println(saveResults.length);
+					result.setKey(label);
+					if (saveResults[0].getErrors().length > 0) {
+						result.setValue("false");
+						continue;
+					}
 					
 					DBUtil.getInstance().updateFileLabelMissing(fieldlabel, facilityId);
 					result.setValue("true");

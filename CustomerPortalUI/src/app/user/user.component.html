@@ -1,13 +1,15 @@
 <div *ngIf="showSearch && !isEdit" class="register-search-padding">
+        <div *ngIf="showNoResultSearchMessage === true" class="alert alert-danger" style="padding-left: 10px; width:40%; color: #721c24;">No Users found</div>
+        <div *ngIf="showMoreResultSearchMessage === true" class="alert alert-danger" style="padding-left: 10px; width:40%; color: #721c24;">More Results found. Please refine the search</div>
+        
     <div class="col-md-12 register-search-padding">
             <div><label class="first">Search Option:</label></div>
-        <p-dropdown [options]="dropdownSearch" placeholder="Select Option" optionLabel="name" [(ngModel)]="selectedDropdownOption" (onChange)="showNoResultSearchMessage=false;"></p-dropdown>
+        <p-dropdown [options]="dropdownSearch" placeholder="Select Option" optionLabel="name" [(ngModel)]="selectedDropdownOption" (onChange)="showNoResultSearchMessage=false;showMoreResultSearchMessage=false;"></p-dropdown>
     </div>
     <label for="firstName" class="register-search-padding">Enter Search String:</label>
     <div class="col-md-12 register-search-padding">
-        <input type="text" [(ngModel)]="searchString" [disabled]="selectedDropdownOption==null" (keyup)="showNoResultSearchMessage=false;" />
+        <input type="text" [(ngModel)]="searchString" [disabled]="selectedDropdownOption==null" (keyup)="showNoResultSearchMessage=false;showMoreResultSearchMessage=false;" />
     </div>
-<div *ngIf="showNoResultSearchMessage === true" style="padding-left: 10px; color: #721c24;">No Users found</div>
     <div class="col-md-12 register-search-padding">
         <button class="btn btn-primary" [disabled]="selectedDropdownOption==null || searchString == null || searchString.trim().length==0"
             (click)="searchUsers()">Search</button>

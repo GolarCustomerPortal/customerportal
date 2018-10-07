@@ -74,7 +74,7 @@ export class ScheduleComponent implements OnInit {
   delete() {
     let index = this.jobs.indexOf(this.selectedJob);
     this.jobs = this.jobs.filter((val, i) => i != index);
-    this.jobs = null;
+    // this.jobs = null;
     this.displayDialog = false;
   }
   checkFormValues() {

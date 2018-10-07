@@ -1,5 +1,7 @@
 package com.customerportal.bean;
 
+import java.util.Date;
+
 public class User {
 
 	private String firstName;
@@ -17,6 +19,9 @@ public class User {
 	private boolean loginsuccess;
 	private String fullName;
 	private String permission;
+	private Date lastLoginTime;
+	private boolean golarsEmployee;
+	private boolean fromApp;
 
 	public void setId(String id) {
 		this.id = id;
@@ -124,5 +129,23 @@ public class User {
 	}
 	public String getPermission() {
 		return permission;
+	}
+	public Date getLastLoginTime() {
+		return lastLoginTime;
+	}
+	public void setLastLoginTime(Date lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
+	}
+	public boolean isGolarsEmployee() {
+		return golarsEmployee;
+	}
+	public void setGolarsEmployee(boolean golarsEmployee) {
+		this.golarsEmployee = golarsEmployee;
+	}
+	public void setFromApp(boolean fromApp) {
+		this.fromApp = fromApp;
+	}
+	public boolean isFromApp() {
+		return fromApp;
 	}
 }

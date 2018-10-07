@@ -38,7 +38,7 @@ getComplianceList(userId,type) {
       });
 }
 getNotifictionUploadData(FacilitiesId){
-  return this.http.get<any>(URLConstants.FaCILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
+  return this.http.get<any>(URLConstants.FACILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
       .map(FacilitiesData => {
           
           return FacilitiesData;

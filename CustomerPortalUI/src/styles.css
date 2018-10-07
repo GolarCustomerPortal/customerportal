@@ -95,6 +95,8 @@ background: #ebf7ec
     width: -moz-max-content !important;
     width: -webkit-max-content !important;
     width: -o-max-content !important;
+    max-width: 90%;
+    height: 100%;
  
 }
 
@@ -128,6 +130,9 @@ background: #ebf7ec
     line-height: 1.42857;
     background-color: #afe1b6 !important;
     color: #2c347e !important; 
+}
+.facility-button-background-red{
+    background-color: #ef4136  !important;
 }
 .p-sidebar{
     height: calc(100vh - 100px) !important;

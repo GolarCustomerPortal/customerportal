@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.customerportal.bean.ChangePassword;
+import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.User;
 import com.customerportal.util.DBUtil;
 
@@ -33,6 +34,14 @@ public class UsersService {
 		return Response.status(201).entity(userList).build();
 	}
 
+	@GET
+	@Path("/history")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response retrieveUserLoginHistory(@QueryParam("userId") String userId) {
+
+		List<LoginHistory> userList = DBUtil.getInstance().getLoginHistory(userId);
+		return Response.status(201).entity(userList).build();
+	}
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response registerUser(User user) {

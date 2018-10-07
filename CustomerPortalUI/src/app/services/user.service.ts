@@ -31,6 +31,13 @@ export class UserService {
     });
 
   }
+  getUserHistory(username){
+    return this.http.get<any>(URLConstants.USERS_HISTORY_URL,this.getLoginHistoryOption(username))
+        .map(userloginHistory => {
+            
+            return userloginHistory;
+        });
+  }
   getPermission(modal){
     var facilities = true;
     var companies =true;
@@ -44,6 +51,11 @@ export class UserService {
        consolidate = modal.consolidate == null ? false: modal.consolidate;
     }
     return "facilities:"+facilities +"__##__companies:"+companies+"__##__compliance:"+ compliance+"__##__consolidate:"+ consolidate
+  }
+  private getLoginHistoryOption(username){
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,username)
+    };
   }
   private getSearchOptions(type,value) {
     return {

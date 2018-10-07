@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.util.CustomerPortalUtil;
 import com.customerportal.util.DBUtil;
@@ -25,14 +26,14 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dashboardContent(@QueryParam("userId") String userId) {
-		Map<String, Map<String, Integer>> resultMap= new HashMap<String, Map<String,Integer>>();
-		Map<String, Integer> dashboardMap = new HashMap<String, Integer>();
+		Map<String, Object> resultMap= new HashMap<String,Object>();
+		Map<String, Object> dashboardMap = new HashMap<String, Object>();
 		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
 		int facilitiesSigned=0,facilitiesUnsigned=0;
 		String facilitiesIdString = CustomerPortalUtil.getfacilitiesIdString(facilitiesList);
 		if(facilitiesList != null){
 		for (Facilities facilitiy : facilitiesList) {
-			if(facilitiy.isTankPaidService())
+			if(facilitiy!=null && facilitiy.getPaidService()!= null && facilitiy.getPaidService().equalsIgnoreCase("true"))
 				facilitiesSigned++;
 			else
 				facilitiesUnsigned++;
@@ -45,25 +46,29 @@ public class DashBoardService {
 		dashboardMap.put("unsigned", facilitiesUnsigned);
 		resultMap.put("facilitiesData", dashboardMap);
 		// companiesData
-		dashboardMap = new HashMap<String, Integer>();
+		dashboardMap = new HashMap<String, Object>();
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
 		dashboardMap.put("companies", companiesList.size());
 		resultMap.put("companiesData", dashboardMap);
 		//compliance
-		dashboardMap = new HashMap<String, Integer>();
-		int facilitiesCompliancesize = DBUtil.getInstance().fetchComplianceFacilities(userId,facilitiesIdString,true);
-		int facilitiesNonCompliancesize = DBUtil.getInstance().fetchComplianceFacilities(userId,facilitiesIdString,false);
+		dashboardMap = new HashMap<String, Object>();
+		int facilitiesCompliancesize = DBUtil.getInstance().fetchComplianceFacilities(userId,facilitiesIdString,"true");
+		int facilitiesNonCompliancesize = DBUtil.getInstance().fetchComplianceFacilities(userId,facilitiesIdString,"false");
 		dashboardMap.put("compliance", facilitiesCompliancesize);
 		dashboardMap.put("noncompliance", facilitiesNonCompliancesize);
 		resultMap.put("complianceData", dashboardMap);
 		
 		//consolidated report
-		dashboardMap = new HashMap<String, Integer>();
-		dashboardMap.put("regular", 200);
-		dashboardMap.put("midgrade", 150);
-		dashboardMap.put("premium", 310);
-		dashboardMap.put("diesel", 500);
-		resultMap.put("consolidateReportData", dashboardMap);
+		dashboardMap = new HashMap<String, Object>();
+		
+//		dashboardMap.put("midgrade", 150);
+//		dashboardMap.put("premium", 310);
+//		dashboardMap.put("diesel", 500);
+		List<KeyValue> kvList  = new ArrayList<KeyValue>();
+		if(facilitiesList != null)
+		 kvList = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
+		
+		resultMap.put("consolidateReportData", kvList);
 
 		return Response.status(200).entity(resultMap).build();
 
@@ -73,7 +78,7 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFacilitiesAndCompanies(@QueryParam("userId") String userId) {
-		Map<String, Map<String, Object>> resultMap= new HashMap<String, Map<String,Object>>();
+		Map<String,  Object> resultMap= new HashMap<String,  Object>();
 		Map<String, Object> dashboardMap = new HashMap<String, Object>();
 		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
 		List<Facilities> signedFacilitiesList =  new ArrayList<Facilities>();
@@ -81,7 +86,7 @@ public class DashBoardService {
 		String facilitiesIdString = CustomerPortalUtil.getfacilitiesIdString(facilitiesList);
 		if(facilitiesList != null){
 		for (Facilities facilitiy : facilitiesList) {
-			if(facilitiy.isTankPaidService())
+			if(facilitiy.getPaidService()!= null && facilitiy.getPaidService().equalsIgnoreCase("true"))
 				signedFacilitiesList.add(facilitiy);
 			else
 				unSignedFacilitiesList.add(facilitiy);
@@ -108,11 +113,12 @@ public class DashBoardService {
 		
 		//consolidated report
 		dashboardMap = new HashMap<String, Object>();
-		dashboardMap.put("regular", 200);
-		dashboardMap.put("midgrade", 150);
-		dashboardMap.put("premium", 310);
-		dashboardMap.put("diesel", 500);
-		resultMap.put("consolidateReportData", dashboardMap);
+		 List<KeyValue> kvList  = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
+//		dashboardMap.put("regular", 200);
+//		dashboardMap.put("midgrade", 150);
+//		dashboardMap.put("premium", 310);
+//		dashboardMap.put("diesel", 500);
+		resultMap.put("consolidateReportData", kvList);
 
 		return Response.status(200).entity(resultMap).build();
 
@@ -123,7 +129,9 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
+		if(facilitiesType.equalsIgnoreCase("signed"))
 		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+		
 
 		return Response.status(200).entity(facilitiesList).build();
 

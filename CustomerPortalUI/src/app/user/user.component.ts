@@ -23,6 +23,7 @@ export class UserComponent implements OnInit {
   showSearch = true;
   showRegister=false;
   showNoResultSearchMessage = false;
+  showMoreResultSearchMessage = false;
   dropdownSearch  = [
     {name: 'First Name', value: 'fname'},
     {name: 'Last Name', value: 'lName'},
@@ -138,6 +139,9 @@ var self=this;
       userList => {
         if(userList == null || userList.length == 0){
           this.showNoResultSearchMessage=true;
+        }
+        if(userList!=null && userList.length>20){
+          this.showMoreResultSearchMessage = true;
         }
        console.log(userList);
        this.userList = userList;

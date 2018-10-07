@@ -11,7 +11,9 @@ declare var $: any;
 })
 export class UsersComponent implements OnInit {
   users;
+  userLoginHistoryData;
   actualUsrData;
+  selectedUser;
   constructor(private userService: UserService,private commonService:CommonService,private router: Router){
 
   }
@@ -46,6 +48,23 @@ export class UsersComponent implements OnInit {
       setTimeout(() => {
         this.router.navigate(['newuser']);
       }, 50);
+  }
+  loginHistory(user){
+    this.selectedUser = user;
+    this.userService.getUserHistory(user.username)
+    .subscribe(
+      data => {
+        this.userLoginHistoryData = JSON.parse(JSON.stringify(data));;
+          // data.fo
+          
+          // this.users = this.constructUserData(data);
+      },
+      error => {
+        console.log(error);
+      });
+  }
+  getDate(loginTime){
+    return new Date(loginTime)
   }
 }
 

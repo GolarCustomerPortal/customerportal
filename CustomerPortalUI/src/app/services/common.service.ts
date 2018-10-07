@@ -2,7 +2,8 @@ import { Subject } from "rxjs";
 
 
 export class CommonService {
-  gasStationImages={'bp':'bp.png','shell':'shell.png'}
+  // gasStationImages={'bp':'bp.png','shell':'shell.png'}
+  gasStationImages={1:'bp.png',2:'shell.png'}
   loginSuccessful = false;;
   checkValidLogin() {
     if (localStorage.getItem('loginSuccessful') == "true")
@@ -22,18 +23,18 @@ export class CommonService {
       user = localStorage.getItem('secondaryUser');
       var localuser = JSON.parse(user);
       // return localuser.username;
-      if(user.id == null)
-      return "0033600000M1YNjAAN";
-      return user.id;
+      if(localuser.id == null || localuser.id =="")
+      return "admin";
+      return localuser.id;
 
     }else
       user = localStorage.getItem('primaryUser');
     if (user != null && user != undefined) {
       var localuser = JSON.parse(user);
       // return localuser.username;
-      if(user.id == null)
-      return "0033600000M1YNjAAN";
-      return user.id;
+      if(localuser.id == null  || localuser.id =="")
+      return "admin";
+      return localuser.id;
 
     }
   }
@@ -234,9 +235,14 @@ export class CommonService {
 
     }
   }
+  imageCount = 0;
   gasStationImage(gasStation){
-    if(gasStation == null)
-    return null;
+    if(gasStation == null){
+      this.imageCount++;
+      if(this.imageCount == 3)
+      this.imageCount = 1
+    return this.gasStationImages[this.imageCount];
+  }
     return this.gasStationImages[gasStation.toLowerCase()];
   }
 

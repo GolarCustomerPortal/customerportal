@@ -3,6 +3,7 @@ package com.customerportal.util;
 import java.util.List;
 
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.KeyValue;
 
 public class CustomerPortalUtil {
 	public static void getActualFacilitiesList(List<Facilities> facilitiesList) {
@@ -11,19 +12,22 @@ public class CustomerPortalUtil {
 		List<Facilities> complianceList = DBUtil.getInstance().facilityComplianceList(facilitiesIdString);
 		List<Facilities> certificationList = DBUtil.getInstance().facilityCertificationList(facilitiesIdString);
 		if(facilitiesList != null)
-		for (Facilities facilities : facilitiesList) {
-			if(notificationFormList.contains(facilities.getFacilityId())){
-				facilities.setNotificationFormButtonEnable(true);
+		for (Facilities facility : facilitiesList) {
+			if(facility == null)continue;
+			List<KeyValue> keyValue = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
+			facility.setConsolidateReport(keyValue);
+			if(notificationFormList.contains(facility.getFacilityId())){
+				facility.setNotificationFormButtonEnable("true");
 			}else
-				facilities.setNotificationFormButtonEnable(false);
-			if(complianceList.contains(facilities.getFacilityId()))
-				facilities.setComplianceButtonEnable(true);
+				facility.setNotificationFormButtonEnable("false");
+			if(complianceList.contains(facility.getFacilityId()))
+				facility.setComplianceButtonEnable("true");
 			else
-				facilities.setCertificationButtonEnable(false);
-			if(certificationList.contains(facilities.getFacilityId()))
-				facilities.setCertificationButtonEnable(true);
+				facility.setCertificationButtonEnable("false");
+			if(certificationList.contains(facility.getFacilityId()))
+				facility.setCertificationButtonEnable("true");
 			else
-				facilities.setCertificationButtonEnable(false);
+				facility.setCertificationButtonEnable("false");
 			
 		}
 	}
@@ -31,6 +35,7 @@ public class CustomerPortalUtil {
 		String facilitiesIdString = "";
 		if(facilitiesList != null){
 		for (Facilities facilitiy : facilitiesList) {
+			if(facilitiy!=null && facilitiy.getFacilityId()!=null)
 			facilitiesIdString += "'"+facilitiy.getFacilityId()+"',";
 		}
 		}

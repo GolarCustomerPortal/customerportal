@@ -19,5 +19,7 @@
   <property name="name" column="Facility_Name__c"/>
    <property name="brand" column="Facility_Brand__c"/>
   <property name="paidService" column="USSBOA_Paid_Service__c" />
+  <property name="compliance" column="Compliant__c" />
+  
  </class>
 </hibernate-mapping>

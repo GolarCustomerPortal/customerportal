@@ -1,5 +1,8 @@
 package com.customerportal.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Facilities {
 
 	private String externalId;
@@ -8,48 +11,26 @@ public class Facilities {
 	private String company;
 	private String facilityId;
 	private String fid;
-	private boolean tankPaidService;
+	private String tankPaidService;
 	private String state;
 	private String street;
 	private String city;
 	private String zip;
-	private boolean paidService;
+	private String paidService;
 	private String name;
 	private String brand;
-	private boolean notificationFormButtonEnable;
-	private boolean complianceButtonEnable;
-	private boolean certificationButtonEnable;
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-	}
+	private String notificationFormButtonEnable;
+	private String complianceButtonEnable;
+	private String certificationButtonEnable;
+	private String compliance;
+	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
 	public String getExternalId() {
 		return externalId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getFacilityId() {
-		return facilityId;
-	}
-
-	public void setFacilityId(String facilityId) {
-		this.facilityId = facilityId;
-	}
-
-	public String getCompany() {
-		return company;
-	}
-
-	public void setCompany(String company) {
-		this.company = company;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public String getContact() {
@@ -68,6 +49,22 @@ public class Facilities {
 		this.address = address;
 	}
 
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getFacilityId() {
+		return facilityId;
+	}
+
+	public void setFacilityId(String facilityId) {
+		this.facilityId = facilityId;
+	}
+
 	public String getFid() {
 		return fid;
 	}
@@ -76,11 +73,11 @@ public class Facilities {
 		this.fid = fid;
 	}
 
-	public boolean isTankPaidService() {
+	public String getTankPaidService() {
 		return tankPaidService;
 	}
 
-	public void setTankPaidService(boolean tankPaidService) {
+	public void setTankPaidService(String tankPaidService) {
 		this.tankPaidService = tankPaidService;
 	}
 
@@ -116,42 +113,67 @@ public class Facilities {
 		this.zip = zip;
 	}
 
-	public boolean isPaidService() {
+	public String getPaidService() {
 		return paidService;
 	}
 
-	public void setPaidService(boolean paidService) {
+	public void setPaidService(String paidService) {
 		this.paidService = paidService;
 	}
-	public void setBrand(String brand) {
-		this.brand = brand;
+
+	public String getName() {
+		return name;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String getBrand() {
 		return brand;
 	}
 
-	public boolean isNotificationFormButtonEnable() {
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getNotificationFormButtonEnable() {
 		return notificationFormButtonEnable;
 	}
 
-	public void setNotificationFormButtonEnable(boolean notificationFormButtonEnable) {
+	public void setNotificationFormButtonEnable(String notificationFormButtonEnable) {
 		this.notificationFormButtonEnable = notificationFormButtonEnable;
 	}
 
-	public boolean isComplianceButtonEnable() {
+	public String getComplianceButtonEnable() {
 		return complianceButtonEnable;
 	}
 
-	public void setComplianceButtonEnable(boolean complianceButtonEnable) {
+	public void setComplianceButtonEnable(String complianceButtonEnable) {
 		this.complianceButtonEnable = complianceButtonEnable;
 	}
 
-	public boolean isCertificationButtonEnable() {
+	public String getCertificationButtonEnable() {
 		return certificationButtonEnable;
 	}
 
-	public void setCertificationButtonEnable(boolean certificationButtonEnable) {
+	public void setCertificationButtonEnable(String certificationButtonEnable) {
 		this.certificationButtonEnable = certificationButtonEnable;
 	}
 
+	public String getCompliance() {
+		return compliance;
+	}
+
+	public void setCompliance(String compliance) {
+		this.compliance = compliance;
+	}
+
+	public void setConsolidateReport(List<KeyValue> consolidateReport) {
+		this.consolidateReport = consolidateReport;
+	}
+
+	public List<KeyValue> getConsolidateReport() {
+		return consolidateReport;
+	}
 }

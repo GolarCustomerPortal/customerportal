@@ -4,7 +4,7 @@
           "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<property name="connection.url">jdbc:mysql://localhost/customerportalprod?autoReconnect=true
+		<property name="connection.url">jdbc:mysql://localhost/customerportal?autoReconnect=true
 		</property>
 		<property name="connection.username">golars</property>
 		<property name="connection.password">golars</property>
@@ -18,5 +18,7 @@
 		<mapping resource="com/customerportal/config/Account.hbm.xml" />
 		<mapping resource="com/customerportal/config/Contact.hbm.xml" />
 		<mapping resource="com/customerportal/config/Companies.hbm.xml" />
+		<mapping resource="com/customerportal/config/loginhistory.hbm.xml" />
+		<mapping resource="com/customerportal/config/inventoryreport.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 

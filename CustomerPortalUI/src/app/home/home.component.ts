@@ -62,6 +62,9 @@ export class HomeComponent implements OnInit {
   NON_FILL_COLOR="#ef4136";
   GUTTER_COLOR ="#d3e8c8"; 
   showSearchResults=false;
+  SIGNED = "Signed";
+  UNSIGNED = "Un Signed"
+  selectedChart = 'facilities';
   // fOperatorFileName;
   // commom properties end
 
@@ -217,8 +220,8 @@ export class HomeComponent implements OnInit {
     this.facilitiesArray.push(fecData.unsigned);
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[0]);
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[1]);
-    this.facilitiesLabel.push("Signed");
-    this.facilitiesLabel.push("Un signed");
+    this.facilitiesLabel.push(this.SIGNED);
+    this.facilitiesLabel.push(this.UNSIGNED);
     this.facilitiesdata.labels.push(this.facilitiesLabel[0] + '-- ' + this.constructPercentage(this.facilitiesArray[0], this.facilitiesArray[1]));
     this.facilitiesdata.labels.push(this.facilitiesLabel[1] + '-- ' + this.constructPercentage(this.facilitiesArray[1], this.facilitiesArray[0]))
     this.totalFacilities = this.facilitiesArray[1] + this.facilitiesArray[0];
@@ -230,6 +233,7 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
+      this.selectedChart = "facilities";
     this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onFacilitiesDataSelect", this.facilitiesLabel[event]);
@@ -245,11 +249,15 @@ export class HomeComponent implements OnInit {
       .subscribe(
         facilitiesList => {
           for (var i = 0; i < facilitiesList.length; i++) {
-            var feciData = facilitiesList[i];
-            var image = this.commonService.gasStationImage(feciData.brand)
-            feciData.image = "assets/images/gasstation/"+image;
-            
-            this.facilitiesRightdata.push(feciData);
+            var faciData = facilitiesList[i];
+            if(this.facilitiesLabel[event] == this.UNSIGNED)
+            faciData.compliance =false;
+            else if(faciData.compliance != null)
+            faciData.compliance = faciData.compliance == "true";
+            var image = this.commonService.gasStationImage(faciData.brand)
+            faciData.image = "assets/images/gasstation/"+image;
+            // this.getFacilityConsolidateReport(faciData.consolidateReport);
+            this.facilitiesRightdata.push(faciData);
           }
 
         },
@@ -258,6 +266,7 @@ export class HomeComponent implements OnInit {
         });
 
   }
+  compliance=true;
   showSpecificfacilityDetails(fdata) {
     console.log(fdata);
     this.showRightDetailPanel();
@@ -278,6 +287,9 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
     this.rightDetailsContent.storeManager = fdata.storeManager;
     this.rightDetailsContent.tankPm = fdata.tankPm;
+    this.rightDetailsContent.compliance = fdata.compliance;
+    this.rightDetailsContent.consolidateReport  = fdata.consolidateReport;
+    this.getFacilityConsolidateReport(this.rightDetailsContent.consolidateReport);
     //actualServerData details.
     this.actualServerData.docUpdateDate = new Date();
     this.actualServerData.facilityName = fdata.name;
@@ -322,6 +334,7 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index;
+      this.selectedChart = "companies";
       this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onCompaniesDataSelect", event);
@@ -336,11 +349,13 @@ export class HomeComponent implements OnInit {
       .subscribe(
         companiesList => {
           for (var i = 0; i < companiesList.length; i++) {
-            var feciData = companiesList[i];
-            for (var j = 0; j < feciData.facilities.length; j++) {
-              feciData.facilities[j].image = "assets/images/gasstation/"+this.commonService.gasStationImage(feciData.facilities[j].brand)
+            var faciData = companiesList[i];
+            for (var j = 0; j < faciData.facilities.length; j++) {
+               if( faciData.facilities[j].compliance != null)
+               faciData.facilities[j].compliance =  faciData.facilities[j].compliance == "true";
+              faciData.facilities[j].image = "assets/images/gasstation/"+this.commonService.gasStationImage(faciData.facilities[j].brand)
             }
-            this.companiesRightdata.push(feciData);
+            this.companiesRightdata.push(faciData);
           }
 
         },
@@ -396,6 +411,7 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
+      this.selectedChart = "compliance";
       this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onComplianceDataSelect" + event)
@@ -428,18 +444,22 @@ export class HomeComponent implements OnInit {
 
   //consolidateReport start
   consolidateReportdata: any;
+  facilityConsolidateReportdata:any;
   showConsolidateReport = this.commonService.getPreferencesOfConsolidate();
   reportClass = "ui-g-6"
-  regular;
-  midGrade;
-  premium;
-  diesel;
-  totalGallons = 1000;
+  // regular;
+  // midGrade;
+  // premium;
+  // diesel;
+  // totalGallons = 1000;
   getConsolidateReport(consolidateData) {
-    this.regular = consolidateData.regular;
-    this.midGrade = consolidateData.midgrade;
-    this.premium = consolidateData.premium;
-    this.diesel = consolidateData.diesel;
+
+
+
+  //   this.regular = consolidateData.regular;
+  //   this.midGrade = consolidateData.midgrade;
+  //   this.premium = consolidateData.premium;
+  //   this.diesel = consolidateData.diesel;
     this.consolidateReportdata = {
       labels: [],
 
@@ -447,23 +467,31 @@ export class HomeComponent implements OnInit {
       datasets: [
         {
           label: 'Remaining',
-          data: [this.regular, this.midGrade, this.premium, this.diesel],
-          backgroundColor: this.NON_FILL_COLOR,
-          hoverBackgroundColor: this.NON_FILL_COLOR
-
-        }, {
-          label: 'Total',
-          data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
+          data: [],
+          // backgroundColor: this.NON_FILL_COLOR,
+          // hoverBackgroundColor: this.NON_FILL_COLOR
           backgroundColor: this.FILL_COLOR,
           hoverBackgroundColor: this.FILL_COLOR
+        }
+        // , {
+        //   label: 'Total',
+        //   data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
+        //   backgroundColor: this.FILL_COLOR,
+        //   hoverBackgroundColor: this.FILL_COLOR
 
-        }]
+        // }
+      ]
     };
+    for(var i=0;i<consolidateData.length;i++){
+      this.consolidateReportdata.labels.push(consolidateData[i].key);
+      this.consolidateReportdata.datasets[0].data.push(consolidateData[i].value)
 
-  this.consolidateReportdata.labels.push('Regular')
-    this.consolidateReportdata.labels.push('Mid Grade');
-    this.consolidateReportdata.labels.push('Premium');
-    this.consolidateReportdata.labels.push('diesel');
+    }
+
+  // this.consolidateReportdata.labels.push('Regular')
+  //   this.consolidateReportdata.labels.push('Mid Grade');
+  //   this.consolidateReportdata.labels.push('Premium');
+  //   this.consolidateReportdata.labels.push('diesel');
   }
   onConsolidateDataSelect($event) {
     console.log("onConsolidateDataSelect" + $event.element._index)
@@ -596,12 +624,13 @@ export class HomeComponent implements OnInit {
     // var file = files[0];
     // this.fOperatorFileName = file.name;
   }
-  modalData
-  getNotificationModalData(facilitiesId) {
+  modalData;
+  getNotificationModalData(facilitiesId,modalID) {
     this.dashboardService.getNotifictionUploadData(facilitiesId) // retrieve all thd parent folders
       .subscribe(
         modalData => {
           this.modalData = modalData;
+          $("#"+modalID).modal('show')
         },
         error => {
           console.log(error);
@@ -609,17 +638,17 @@ export class HomeComponent implements OnInit {
   }
 
   getNotificationFormButtonClass(rightDetailsContent) {
-    if ((rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == true))
+    if ((rightDetailsContent.compliance == false && rightDetailsContent.tankPaidService =="false") ||(rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == "true"))
       return 'facility-button-background-red'
     return ""
   }
   getComplianceButtonClass(rightDetailsContent) {
-    if ((rightDetailsContent.complianceButtonEnable != null && rightDetailsContent.complianceButtonEnable == true))
+    if ((rightDetailsContent.compliance == false && rightDetailsContent.tankPaidService =="false") || (rightDetailsContent.complianceButtonEnable != null && rightDetailsContent.complianceButtonEnable == "true"))
       return 'facility-button-background-red'
     return ""
   }
   getCertificationButtonClass(rightDetailsContent) {
-    if ((rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == true))
+    if ((rightDetailsContent.compliance == false && rightDetailsContent.tankPaidService =="false") || (rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == "true"))
       return 'facility-button-background-red'
     return ""
   }
@@ -703,7 +732,7 @@ export class HomeComponent implements OnInit {
                 this.operatorLeaseFileSuccess = result[i].value;
               if (result[i].key == 'notificationDueDate')
                 this.notificationDueDateFileSuccess = result[i].value;
-              if (result[i].key == 'operatorAffidevitOfLease')
+              if (result[i].key == 'operatoraffidavitFile')
                 this.operatoraffidavitFileSuccess = result[i].value;
               if (result[i].key == 'ownerAffidevitOfLease')
                 this.ownerAffidavitFileSuccess = result[i].value;
@@ -917,6 +946,7 @@ searchArea = {
     if(searchResult.facilitiesList!= null && searchResult.facilitiesList.length>0){
     for (var i = 0; i < searchResult.facilitiesList.length; i++) {
       var feciData = searchResult.facilitiesList[i];
+      if(feciData == null)continue;
       var image = this.commonService.gasStationImage(feciData.brand)
   
       feciData.image = "assets/images/gasstation/"+image;
@@ -964,4 +994,48 @@ searchArea = {
   mainDiv.style.width="100%";
 }   
   }
+  checkCertificationDisabled(enableData){
+    console.log(enableData)
+    if(enableData == null) return false;
+    return true;
+
+  }
+  getFacilityConsolidateReport(consolidateData) {
+
+this.facilityConsolidateReportdata = null;;
+
+    //   this.regular = consolidateData.regular;
+    //   this.midGrade = consolidateData.midgrade;
+    //   this.premium = consolidateData.premium;
+    //   this.diesel = consolidateData.diesel;
+      this.facilityConsolidateReportdata = {
+        labels: [],
+  
+  
+        datasets: [
+          {
+            label: 'Remaining',
+            data: [],
+            // backgroundColor: this.NON_FILL_COLOR,
+            // hoverBackgroundColor: this.NON_FILL_COLOR
+            backgroundColor: this.FILL_COLOR,
+            hoverBackgroundColor: this.FILL_COLOR
+          }
+          // , {
+          //   label: 'Total',
+          //   data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
+          //   backgroundColor: this.FILL_COLOR,
+          //   hoverBackgroundColor: this.FILL_COLOR
+  
+          // }
+        ]
+      };
+      for(var i=0;i<consolidateData.length;i++){
+        this.facilityConsolidateReportdata.labels.push(consolidateData[i].key);
+        this.facilityConsolidateReportdata.datasets[0].data.push(consolidateData[i].value)
+  
+      }
+      // return this.facilityConsolidateReportdata;
+    }
+
 }
