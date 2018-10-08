@@ -183,13 +183,13 @@ public class DBUtil {
 			if(!userId.equalsIgnoreCase("admin"))
 				queryString+= " where Contact__c= '"
 						+ userId + "'";
+			queryString+= "  and ( ";
 			if(searchType.equalsIgnoreCase("all")){
-				queryString+= "and FID__C like '%"
+				queryString+= "  FID__C like '%"
 						+ searchString + "%' or Facility_Name__c like '%"+ searchString + "%' or Facility_Address__c like '%"+ searchString + "%'";
 			}
 			if(searchType.equalsIgnoreCase("fid")){
-				queryString+= "and FID__C like '%"
-						+ searchString + "%'";
+				queryString+= "and FID__C like '%"+ searchString + "%'";
 			}
 			if(searchType.equalsIgnoreCase("name")){
 				queryString+= "and Facility_Name__c like '%"+ searchString + "%'";
@@ -197,6 +197,7 @@ public class DBUtil {
 			if(searchType.equalsIgnoreCase("address")){
 				queryString+= "and Facility_Address__c like '%"+ searchString + "%'";
 			}
+			queryString+= " )";
 			Query query = session.createNativeQuery(queryString,	Facilities.class);
 			List lst = query.list();
 			trx.commit();
@@ -418,7 +419,9 @@ public class DBUtil {
 	}
 
 	public int fetchComplianceFacilities(String userId, String facilitiesIdString, String compliance) {
-
+		if (facilitiesIdString == null || facilitiesIdString.length() == 0) {
+			return 0;
+		}
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {

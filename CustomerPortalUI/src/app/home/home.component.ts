@@ -173,7 +173,7 @@ export class HomeComponent implements OnInit {
   // middlepanel code start
   constructor(public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
-
+    if (this.commonService.getSearchResult() == null)
     this.fetchDashboardValues();
   }
   fetchDashboardValues() {
@@ -625,12 +625,11 @@ export class HomeComponent implements OnInit {
     // this.fOperatorFileName = file.name;
   }
   modalData;
-  getNotificationModalData(facilitiesId,modalID) {
+  getNotificationModalData(facilitiesId) {
     this.dashboardService.getNotifictionUploadData(facilitiesId) // retrieve all thd parent folders
       .subscribe(
         modalData => {
           this.modalData = modalData;
-          $("#"+modalID).modal('show')
         },
         error => {
           console.log(error);
