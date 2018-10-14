@@ -10,7 +10,6 @@ public class Account {
 	private String sosStatus;
 	private String taxIDInformation;
 	private String letterOfNetworthCertification;
-	private String taxIdInformation;
 	private String operatorLeaseAgreement;
 	private String lineAndLeakDetector;
 	private String lnlDetrTstRequrd;
@@ -31,6 +30,44 @@ public class Account {
 	private String notificationFormSubmitted;
 	private String propertyDeedLandContract;
 	private String repairDocuments;
+	private String name;
+	private String fid;
+	private String street;
+	private String city;
+	private String state;
+	private String postalCode;
+	
+
+	private boolean facilityOperatorPOAEnable = false;
+	private boolean propertyOwnerPOAEnable = false;
+	private boolean ustOwnerPOAEnable = false;
+	private boolean operatorAffidevitOfEnable = false;
+	private boolean ownerAffidevitOfLeaseEnable = false;
+	private boolean sosStatusEnable = false;
+	private boolean operatorAffidevitOfLeaseEnable = false;
+	private boolean taxIDInformationEnable = false;
+	private boolean letterOfNetworthCertificationEnable = false;
+	private boolean operatorLeaseAgreementEnable = false;
+	private boolean notificationDueDateEnable = false;
+	private boolean propertyDeedLandContractEnable = false;
+	private boolean notificationFormSubmittedEnable = false;
+	
+	// compliance enable start
+	
+	private boolean lnlDetrTstRequrdEnable = false;
+	private boolean cprequiredEnable = false;
+	private boolean tankTestingReportRequiredEnable = false;
+	private boolean repairDocumentRequiredEnable = false;
+	private boolean releaseDetectionReportRequiredEnable = false;
+	private boolean internalLiningInspectionRequiredEnable = false;
+	
+	//certification start
+	private boolean operatorAcertificateEnable = false;
+	private boolean operatorBcertificateEnable = false;
+	private boolean operatorCcertificateEnable = false;
+	
+	
+	
 
 	public String getId() {
 		return Id;
@@ -104,13 +141,6 @@ public class Account {
 		this.letterOfNetworthCertification = letterOfNetworthCertification;
 	}
 
-	public String getTaxIdInformation() {
-		return taxIdInformation;
-	}
-
-	public void setTaxIdInformation(String taxIdInformation) {
-		this.taxIdInformation = taxIdInformation;
-	}
 
 	public String getOperatorLeaseAgreement() {
 		return operatorLeaseAgreement;
@@ -263,10 +293,231 @@ public class Account {
 	public void setPropertyDeedLandContract(String propertyDeedLandContract) {
 		this.propertyDeedLandContract = propertyDeedLandContract;
 	}
+
 	public String getRepairDocuments() {
 		return repairDocuments;
 	}
+
 	public void setRepairDocuments(String repairDocuments) {
 		this.repairDocuments = repairDocuments;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setFid(String fid) {
+		this.fid = fid;
+	}
+	public String getFid() {
+		return fid;
+	}
+	
+	
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public void setFacilityOperatorPOAEnable(boolean facilityOperatorPOAEnable) {
+		this.facilityOperatorPOAEnable = facilityOperatorPOAEnable;
+	}
+
+	public boolean isFacilityOperatorPOAEnable() {
+		return facilityOperatorPOAEnable;
+	}
+
+	public void setPropertyOwnerPOAEnable(boolean propertyOwnerPOAEnable) {
+		this.propertyOwnerPOAEnable = propertyOwnerPOAEnable;
+	}
+
+	public boolean isPropertyOwnerPOAEnable() {
+		return propertyOwnerPOAEnable;
+	}
+
+	public void setUstOwnerPOAEnable(boolean ustOwnerPOAEnable) {
+		this.ustOwnerPOAEnable = ustOwnerPOAEnable;
+	}
+
+	public boolean isUstOwnerPOAEnable() {
+		return ustOwnerPOAEnable;
+	}
+
+	public void setOperatorAffidevitOfLeaseEnable(boolean operatorAffidevitOfLeaseEnable) {
+		this.operatorAffidevitOfLeaseEnable = operatorAffidevitOfLeaseEnable;
+	}
+
+	public boolean isOperatorAffidevitOfLeaseEnable() {
+		return operatorAffidevitOfLeaseEnable;
+	}
+
+	public boolean isOperatorAffidevitOfEnable() {
+		return operatorAffidevitOfEnable;
+	}
+
+	public void setOperatorAffidevitOfEnable(boolean operatorAffidevitOfEnable) {
+		this.operatorAffidevitOfEnable = operatorAffidevitOfEnable;
+	}
+
+	public boolean isOwnerAffidevitOfLeaseEnable() {
+		return ownerAffidevitOfLeaseEnable;
+	}
+
+	public void setOwnerAffidevitOfLeaseEnable(boolean ownerAffidevitOfLeaseEnable) {
+		this.ownerAffidevitOfLeaseEnable = ownerAffidevitOfLeaseEnable;
+	}
+
+	public boolean isSosStatusEnable() {
+		return sosStatusEnable;
+	}
+
+	public void setSosStatusEnable(boolean sosStatusEnable) {
+		this.sosStatusEnable = sosStatusEnable;
+	}
+
+	public boolean isTaxIDInformationEnable() {
+		return taxIDInformationEnable;
+	}
+
+	public void setTaxIDInformationEnable(boolean taxIDInformationEnable) {
+		this.taxIDInformationEnable = taxIDInformationEnable;
+	}
+
+	public boolean isLetterOfNetworthCertificationEnable() {
+		return letterOfNetworthCertificationEnable;
+	}
+
+	public void setLetterOfNetworthCertificationEnable(boolean letterOfNetworthCertificationEnable) {
+		this.letterOfNetworthCertificationEnable = letterOfNetworthCertificationEnable;
+	}
+
+	public boolean isOperatorLeaseAgreementEnable() {
+		return operatorLeaseAgreementEnable;
+	}
+
+	public void setOperatorLeaseAgreementEnable(boolean operatorLeaseAgreementEnable) {
+		this.operatorLeaseAgreementEnable = operatorLeaseAgreementEnable;
+	}
+	public void setNotificationDueDateEnable(boolean notificationDueDateEnable) {
+		this.notificationDueDateEnable = notificationDueDateEnable;
+	}
+	public boolean isNotificationDueDateEnable() {
+		return notificationDueDateEnable;
+	}
+	public void setPropertyDeedLandContractEnable(boolean propertyDeedLandContractEnable) {
+		this.propertyDeedLandContractEnable = propertyDeedLandContractEnable;
+	}
+	public boolean isPropertyDeedLandContractEnable() {
+		return propertyDeedLandContractEnable;
+	}
+	public void setNotificationFormSubmittedEnable(boolean notificationFormSubmittedEnable) {
+		this.notificationFormSubmittedEnable = notificationFormSubmittedEnable;
+	}
+	public boolean isNotificationFormSubmittedEnable() {
+		return notificationFormSubmittedEnable;
+	}
+
+	public boolean isLnlDetrTstRequrdEnable() {
+		return lnlDetrTstRequrdEnable;
+	}
+
+	public void setLnlDetrTstRequrdEnable(boolean lnlDetrTstRequrdEnable) {
+		this.lnlDetrTstRequrdEnable = lnlDetrTstRequrdEnable;
+	}
+
+	public boolean isCprequiredEnable() {
+		return cprequiredEnable;
+	}
+
+	public void setCprequiredEnable(boolean cprequiredEnable) {
+		this.cprequiredEnable = cprequiredEnable;
+	}
+
+	public boolean isTankTestingReportRequiredEnable() {
+		return tankTestingReportRequiredEnable;
+	}
+
+	public void setTankTestingReportRequiredEnable(boolean tankTestingReportRequiredEnable) {
+		this.tankTestingReportRequiredEnable = tankTestingReportRequiredEnable;
+	}
+
+	public boolean isRepairDocumentRequiredEnable() {
+		return repairDocumentRequiredEnable;
+	}
+
+	public void setRepairDocumentRequiredEnable(boolean repairDocumentRequiredEnable) {
+		this.repairDocumentRequiredEnable = repairDocumentRequiredEnable;
+	}
+
+	public boolean isReleaseDetectionReportRequiredEnable() {
+		return releaseDetectionReportRequiredEnable;
+	}
+
+	public void setReleaseDetectionReportRequiredEnable(boolean releaseDetectionReportRequiredEnable) {
+		this.releaseDetectionReportRequiredEnable = releaseDetectionReportRequiredEnable;
+	}
+
+	public boolean isInternalLiningInspectionRequiredEnable() {
+		return internalLiningInspectionRequiredEnable;
+	}
+
+	public void setInternalLiningInspectionRequiredEnable(boolean internalLiningInspectionRequiredEnable) {
+		this.internalLiningInspectionRequiredEnable = internalLiningInspectionRequiredEnable;
+	}
+
+	public boolean isOperatorAcertificateEnable() {
+		return operatorAcertificateEnable;
+	}
+
+	public void setOperatorAcertificateEnable(boolean operatorAcertificateEnable) {
+		this.operatorAcertificateEnable = operatorAcertificateEnable;
+	}
+
+	public boolean isOperatorBcertificateEnable() {
+		return operatorBcertificateEnable;
+	}
+
+	public void setOperatorBcertificateEnable(boolean operatorBcertificateEnable) {
+		this.operatorBcertificateEnable = operatorBcertificateEnable;
+	}
+
+	public boolean isOperatorCcertificateEnable() {
+		return operatorCcertificateEnable;
+	}
+
+	public void setOperatorCcertificateEnable(boolean operatorCcertificateEnable) {
+		this.operatorCcertificateEnable = operatorCcertificateEnable;
+	}
+
 }

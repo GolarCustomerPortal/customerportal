@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonService } from './services/common.service';
 import { AuthenticationService } from './services/authentication.service';
 import { DashboardService } from './services/dashboard.service';
+import { CRMConstants } from './constants/crmconstants';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { DashboardService } from './services/dashboard.service';
 })
 export class AppComponent implements OnInit{
   visibleSidebar=false;
+  crmConst = CRMConstants;
   constructor(private router: Router,public commonService: CommonService,public  authService:AuthenticationService,private dashboardService: DashboardService){
   }
   searchOptions = [
@@ -47,6 +49,9 @@ selectedSearchOption = this.searchOptions[0];
     setTimeout(() => {
       this.router.navigate(['newuser']);
     }, 50);
+  }
+  onUSSBOASelect(){
+    this.router.navigate(['ussboa']);
   }
   fetchSearchResults(){
     this.commonService.setSearchString(this.searchString);

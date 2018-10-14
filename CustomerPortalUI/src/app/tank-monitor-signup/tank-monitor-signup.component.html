@@ -1,0 +1,110 @@
+<div class="alert alert-success" style="margin: 10px; width:40%;" [hidden]='!showPathSuccessMessage'>
+    {{pathSuccessMessage}}
+</div>
+<div class="form-inline  register-search-padding" style="margin-top: 10px">
+   
+    <div class="form-group">
+        <label for="firstName">Tank Monitor File Path:</label>
+            <input type="text"  style="margin-left: 10px" class="form-control" 
+            name="tankMonitorPath" [(ngModel)]="tankMonitorPath" (keyup)="showPathSuccessMessage=false;" placeholder="c:\tankmonitorpath"/>
+
+            <button class="btn btn-primary search-icon-color" style="margin-left: 10px"
+            [disabled]="tankMonitorPath == null || tankMonitorPath.trim().length==0" 
+            (click)="showPathSuccessMessage=false;saveUserPreferences()">Save</button>
+               
+    </div>
+</div>
+
+<div class="col-md-12 register-search-padding">
+  <div class="margin-top-bottom">
+    <label>Search Tank Monitor </label>
+  </div>
+  <div *ngIf="showNoResultSearchMessage === true" class="alert alert-danger" style="padding-left: 10px; width:40%; color: #721c24;">No Tanks found</div>
+
+  <label for="firstName" class="register-search-padding">Enter Fid:</label>
+  <div class="col-md-12 register-search-padding">
+    <input type="text" [(ngModel)]="searchString" (keyup)="showUpdateFailedMessage=false;showUpdateSuccessMessage=false;showNoResultSearchMessage=false;showPathSuccessMessage=false;"
+    />
+  </div>
+  <div class="col-md-12 register-search-padding">
+    <button class="btn btn-primary" [disabled]="searchString == null || searchString.trim().length==0" (click)="searchtankMonitorFid()">Search</button>
+  </div>
+  <div *ngIf="showUpdateFailedMessage === true" class="alert alert-danger" 
+  style="padding-left: 10px; width:40%; color: #721c24;">{{updateFailedMessage}}</div>
+   <div class="alert alert-success" [hidden]='!showUpdateSuccessMessage'>
+      {{updateSuccessMessage}}
+  </div>
+
+  <div *ngIf=" tankSignup !== null && tankSignup != undefined" class="register-search-padding">
+    <div class="margin-top-bottom" *ngIf='showAdd === true'>
+      <label>Add Tank Monitor</label>
+    </div>
+    <div class="margin-top-bottom" *ngIf='showUpdate === true || showDelete === true'>
+      <label>Update / Delete Tank Monitor</label>
+    </div>
+    <div class="ui-g" style="margin-bottom:10px">
+      <div class="ui-g-12">
+        <p-table [value]="tankMonitorRegisterData">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width:10%">Fid</th>
+              <th style="width:20%;">Name</th>
+              <th style="width:30%">Address</th>
+              <th style="width:20%">IPAddress</th>
+              <th style="width:20%">Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-tankSignup let-rowIndex="rowIndex">
+            <tr>
+
+              <td style="width:10%">{{tankSignup.fid}}</td>
+              <td style="width:20%;">{{tankSignup.name}}</td>
+              <td style="width:30%">{{tankSignup.address}}</td>
+              <td style="width:20%">
+                <input type="text" name="ipAddress" [(ngModel)]="tankSignup.ipAddress"  maxlength="40"
+                (keyup)="showUpdateFailedMessage=false;showUpdateSuccessMessage=false;">
+              </td>
+              <td style="width:20%">
+                <div class="col-md-12 register-search-padding" *ngIf='showAdd === true'>
+                  <button class="btn btn-primary" [disabled]="tankSignup?.ipAddress == null || tankSignup?.ipAddress.trim().length==0" (click)="addOrUpdateTankMonitorSignup()">Register</button>
+                </div>
+                <div class="col-md-12 register-search-padding" *ngIf='showAdd === false'>
+                  <button class="btn btn-primary" [disabled]="tankSignup?.ipAddress == null || tankSignup?.ipAddress.trim().length==0" (click)="addOrUpdateTankMonitorSignup()">Update</button>
+
+                  <button class="btn btn-primary" [disabled]="tankSignup?.ipAddress == null || tankSignup?.ipAddress.trim().length==0" (click)="deleteTankMonitorSignup()">Delete</button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="ui-g-12">
+  <div style="margin-bottom: 20px;margin-left: 10px">
+    <span> Tank Monitor Signup List</span>
+  </div>
+  <div class="ui-g-12">
+    <p-table [value]="tankMonitorSignupData" [scrollable]="true" scrollHeight="200px" [paginator]="true" [rows]="10">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width:20%">Fid</th>
+          <th style="width:20%;">Name</th>
+          <th style="width:40%">Address</th>
+          <th style="width:20%">IPAddress</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-tankSignup let-rowIndex="rowIndex">
+        <tr>
+
+          <td style="width:20%">{{tankSignup.fid}}</td>
+          <td style="width:20%;">{{tankSignup.name}}</td>
+          <td style="width:40%">{{tankSignup.address}}</td>
+          <td style="width:20%">{{tankSignup.ipAddress}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

@@ -10,7 +10,10 @@
   <property name="companyOwner" column="Company_Owner__c" />
   <property name="existingClient" column="Existing_Client__c" />
   <property name="externalID" column="External_ID__c" />
-  <property name="name" column="Name"/>
+  <property name="name" column="Company__c"/>
   <property name="ownerName" column="Owner_Name__c"/>
+      <property name="companyAddress" column="Company_Address__c"/>
+    <property name="company" column="Name"/>
+  
  </class>
 </hibernate-mapping>

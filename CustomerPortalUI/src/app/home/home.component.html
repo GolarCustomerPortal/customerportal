@@ -2,15 +2,15 @@
 <p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000" (onShow)="setSplitwidth()" (onHide)="reSetSplitwidth()" id="main_side_bar">
   &nbsp;
   <p-accordion id="leftpanel">
-    <p-accordionTab header="Dashboard" [selected]="true" (click)="showAll();visibleSidebar=false;">
+    <p-accordionTab header="{{dashboardConst.DASHBOARD}}" [selected]="true" (click)="showAll();visibleSidebar=false;">
     </p-accordionTab>
-    <p-accordionTab header="facilities" (click)="onFacilitiesDataSelect(null);showFacilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFacilities()==false">
+    <p-accordionTab header="{{dashboardConst.FACALITIES}}" (click)="onFacilitiesDataSelect(null);showFacilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFacilities()==false">
     </p-accordionTab>
-    <p-accordionTab header="Companies" (click)="onCompaniesDataSelect(null);showCompanies=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
+    <p-accordionTab header="{{dashboardConst.COMPANIES}}" (click)="onCompaniesDataSelect(null);showCompanies=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
     </p-accordionTab>
-    <p-accordionTab header="facilities in Compliance" (click)="onComplianceDataSelect(null);showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
+    <p-accordionTab header="{{dashboardConst.FACALITIESINCOMPLIANCE}}" (click)="onComplianceDataSelect(null);showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
     </p-accordionTab>
-    <p-accordionTab header="USSBOA Vendors">
+    <p-accordionTab header="{{dashboardConst.USSBOAVENDORS}}" (click)="onUSSBOASelect();;visibleSidebar=false;">
     </p-accordionTab>
   </p-accordion>
 </p-sidebar>
@@ -19,20 +19,20 @@
    
   <split-area [visible]="area.leftVisible" [size]="area.left" order="1" id="left-split-panel">
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
-      <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to show all"
+      <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="{{dashboardConst.BACKTOSHOWALL}}"
         aria-hidden="true" (click)="showAll()"></i>
       <i class="fa fa-refresh pull-right back-refresh-button" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues()"></i>
     </div>
     <div class="ui-g-12 margin-top" style="cursor: pointer;">
       <div [ngClass]="facilitiesClass" class="chart-left-padding" *ngIf="showFacilities">
         <div class="ui-g-12 dashboard-boder">
-          <p class="dash-board-heading">My Facilities</p>
+          <p class="dash-board-heading">{{dashboardConst.MYFACALITIES}}</p>
           <p-chart type="doughnut" [data]="facilitiesdata" (onDataSelect)="onFacilitiesDataSelect($event)" [options]="options"></p-chart>
         </div>
       </div>
       <div [ngClass]="companiesClass" *ngIf="showCompanies" class="chart-right-padding">
         <div class="ui-g-12 dashboard-boder">
-          <p class="dash-board-heading">My companies</p>
+          <p class="dash-board-heading">{{dashboardConst.MYCOMPANIES}}</p>
           <p-chart type="pie" [data]="companiesdata" (onDataSelect)="onCompaniesDataSelect($event)" [options]="options"></p-chart>
         </div>
       </div>
@@ -41,13 +41,13 @@
 
       <div [ngClass]="complianceClass" *ngIf="showCompliance"  class="chart-left-padding">
         <div class="ui-g-12 dashboard-boder">
-          <p class="dash-board-heading">My Compliance</p>
+          <p class="dash-board-heading">{{dashboardConst.MYCOMPLIANCE}}</p>
           <p-chart type="doughnut" [data]="complianceData" (onDataSelect)="onComplianceDataSelect($event)" [options]="options"></p-chart>
         </div>
       </div>
       <div [ngClass]="reportClass" *ngIf="showConsolidateReport" class="chart-right-padding">
         <div class="ui-g-12 dashboard-boder">
-          <p class="dash-board-heading">My Inventory</p>
+          <p class="dash-board-heading">{{dashboardConst.MYINVENTORY}}</p>
           <p-chart type="bar"  [data]="consolidateReportdata" (onDataSelect)="onConsolidateDataSelect($event)" [options]="noLegendtOptions"></p-chart>
         </div>
       </div>
@@ -276,7 +276,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="fOperatorFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #fOperatorfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;fOperatorfile = $event.files[0]; fOperatorFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.facilityOperatorPOA?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.facilityOperatorPOAEnable"></p-fileUpload>
               <span *ngIf='fOperatorfileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{fOperatorFileName}}  </span>
             </div>
           </div>
@@ -285,7 +285,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="pOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #pOwnerfileUpload
                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;ownerFile = $event.files[0];  ownerFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.propertyOwnerPOA?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.propertyOwnerPOAEnable"></p-fileUpload>
                 <span *ngIf='ownerFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerFileName}}</span>
             </div>
           </div>
@@ -294,7 +294,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="usetOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #usetOwnerfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;ustOwnerFile = $event.files[0]; ustOwnerFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.ustOwnerPOA?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.ustOwnerPOAEnable"></p-fileUpload>
                 <span *ngIf='ustOwnerFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ustOwnerFileName}}</span>
             </div>
           </div>
@@ -303,7 +303,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="operatorLeaseFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #operatorLeasefileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatorLeaseFile = $event.files[0]; operatorLeaseFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.operatorAffidevitOfLease?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.operatorLeaseAgreementEnable"></p-fileUpload>
                 <span *ngIf='operatorLeaseFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorLeaseFileName}}</span>
             </div>
           </div>
@@ -312,7 +312,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="notificationDueDateFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #notificationDueDatefileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;notificationDueDateFile = $event.files[0]; notificationDueDateFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.notificationDueDate?.toLowerCase() != '1'}"></p-fileUpload>
+                [disabled]="!modalData?.notificationDueDateEnable"></p-fileUpload>
                 <span *ngIf='notificationDueDateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{notificationDueDateFileName}}</span>
             </div>
           </div>
@@ -321,7 +321,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="operatoraffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #operatoraffidavitUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatoraffidavitFile = $event.files[0]; operatoraffidavitFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.operatorAffidevitOfLease?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.operatorAffidevitOfLeaseEnable"></p-fileUpload>
                 <span *ngIf='operatoraffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatoraffidavitFileName}}</span>
             </div>
           </div>
@@ -330,7 +330,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="ownerAffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #ownerAffidavitfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;ownerAffidavitFile = $event.files[0]; ownerAffidavitFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.ownerAffidevitOfLease?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.ownerAffidevitOfLeaseEnable"></p-fileUpload>
                 <span *ngIf='ownerAffidavitFile == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
             </div>
           </div>
@@ -339,7 +339,7 @@
             <div class="ui-g-4">
               <p-fileUpload name="deedLandFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #deedLandfileUpload
                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;deedLandFile = $event.files[0]; deedLandFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.propertyDeedLandContract?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.propertyDeedLandContractEnable"></p-fileUpload>
                 <span *ngIf='deedLandFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{deedLandFileName}}</span>
             </div>
           </div>
@@ -348,11 +348,11 @@
             <div class="ui-g-4">
               <p-fileUpload name="taxIdFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #taxIdfileUpload
                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;taxIdFile = $event.files[0]; taxIdFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.taxIDInformation?.toLowerCase() != 'missing'}"></p-fileUpload>
+                [disabled]="!modalData?.taxIDInformationEnable"></p-fileUpload>
                 <span *ngIf='taxIdFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{taxIdFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <!-- <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Notification form Submitted</div>
             <div class="ui-g-4">
               <p-fileUpload name="notificationFormSubmittedFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -361,7 +361,7 @@
                 </p-fileUpload>
                 <span *ngIf='notificationFormSubmittedFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{notificationFormSubmittedFileName}}</span>
             </div>
-          </div>
+          </div> -->
 
 
         </form>
@@ -392,7 +392,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="fLineLeakFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #fLineLeakfileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;lineLeakFile = $event.files[0]; lineLeakFileName=$event.files[0].name"
-                  [disabled]="(modalData?.lnlDetrTstRequrd != true && modalData?.lineAndLeakDetector !==null)"></p-fileUpload>
+                  [disabled]="!modalData?.lnlDetrTstRequrdEnable"></p-fileUpload>
                   <span *ngIf='lineLeakFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{lineLeakFileName}}</span>
               </div>
             </div>
@@ -401,7 +401,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="cathodicProtectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #athodicProtectionUpload
                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;cathodicProtectionFile = $event.files[0]; cathodicProtectionFileName=$event.files[0].name"
-                  [disabled]="(modalData?.cprequired != true && modalData?.cathodicProtection == null)"></p-fileUpload>
+                  [disabled]="!modalData?.cprequiredEnable"></p-fileUpload>
                   <span *ngIf='cathodicProtectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{cathodicProtectionFileName}}</span>
               </div>
             </div>
@@ -419,7 +419,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="repairDocumentsFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #repairDocumentsFileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;repairDocumentsFile = $event.files[0]; repairDocumentsFileName=$event.files[0].name"
-                  [disabled]="(modalData?.repairDocumentRequired != true && modalData?.repairDocuments ==null)"></p-fileUpload>
+                  [disabled]="!modalData?.repairDocumentRequiredEnable"></p-fileUpload>
                   <span *ngIf='repairDocumentsFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{repairDocumentsFileName}}</span>
               </div>
             </div>
@@ -428,7 +428,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="releaseDetectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #releaseDetectionfileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;releaseDetectionFile = $event.files[0]; releaseDetectionFileName=$event.files[0].name"
-                  [disabled]="(modalData?.releaseDetectionReportRequired != true && modalData?.releaseDetectionReport ==null)"></p-fileUpload>
+                  [disabled]="!modalData?.releaseDetectionReportRequiredEnable"></p-fileUpload>
                   <span *ngIf='releaseDetectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{releaseDetectionFileName}}</span>
               </div>
             </div>
@@ -437,7 +437,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="internalLiningFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #internalLiningUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;internalLiningFile = $event.files[0]; internalLiningFileName=$event.files[0].name"
-                  [disabled]="(modalData?.internalLiningInspectionRequired != true && modalData?.internalLiningInspection ==null)"></p-fileUpload>
+                  [disabled]="!modalData?.internalLiningInspectionRequiredEnable"></p-fileUpload>
                   <span *ngIf='internalLiningFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{internalLiningFileName}}</span>
               </div>
             </div>
@@ -469,7 +469,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="certificateAFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #certificateAFileUpload customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorAcertificateFile = $event.files[0]; operatorAcertificateFileName=$event.files[0].name"
-                  [disabled]=" modalData?.operatorAcertificate != null"></p-fileUpload>
+                  [disabled]="!modalData?.operatorAcertificateEnable"></p-fileUpload>
                   <span *ngIf='operatorAcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorAcertificateFileName}}</span>
               </div>
             </div>
@@ -478,7 +478,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="certificateBFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #certificateBFileUpload
                   customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorBcertificateFile = $event.files[0]; operatorBcertificateFileName=$event.files[0].name"
-                  [disabled]="modalData?.operatorBcertificate != null"></p-fileUpload>
+                  [disabled]="!modalData?.operatorBcertificateEnable"></p-fileUpload>
                   <span *ngIf='operatorBcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorBcertificateFileName}}</span>
               </div>
             </div>
@@ -487,7 +487,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="certificateCFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #certificateCFiletFileUpload customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorCcertificateFile = $event.files[0]; operatorCcertificateFileName=$event.files[0].name"
-                  [disabled]="modalData?.operatorCcertificate != null"></p-fileUpload>
+                  [disabled]="!modalData?.operatorCcertificateEnable"></p-fileUpload>
                   <span *ngIf='operatorCcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorCcertificateFileName}}</span>
               </div>
             </div>
@@ -508,7 +508,7 @@
        
         <div class="ui-g-12  margin-top" style="cursor: pointer;">
             <i *ngIf="showSearchResults" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to main page"
-              aria-hidden="true" (click)="showAll()"></i>
+              aria-hidden="true" (click)="showAll();fetchDashboardValues()"></i>
           </div>  
             <div id="rightSearchPanel" style="margin:10px;">
                 
@@ -521,7 +521,7 @@
                       
                             <div *ngIf="searchResult.facilitiesList.length>0">
                   <div *ngFor="let fdata of searchResult.facilitiesList; let i = index;" style="padding:10px;">
-                    <div *ngIf="i%3 == 0" class="ui-g-12">
+                    <div *ngIf="i%2 == 0" class="ui-g-12">
                         <div *ngFor="let number of [0,1] let j = index;">
                             <div *ngIf="searchResult.facilitiesList[i+j] != null && searchResult.facilitiesList[i+j] != undefined"  class="{{middlePaneClass}}" (click)="showSpecificfacilityDetails(searchResult.facilitiesList[i+j])" style="cursor: pointer;" title="Click for more details">
                                 <p-card styleClass="ui-card-shadow">

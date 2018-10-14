@@ -267,4 +267,14 @@ export class CommonService {
     }
     return null;
   }
+  getValueForName(userPrefList,name){
+    for(var i=0;i<userPrefList.length;i++ ){
+      var prefObj = userPrefList[i];
+      if(prefObj.name == name){
+        return prefObj.value;
+      }
+    }
+    return "";
+
+  }
 }

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -17,6 +19,9 @@ import com.customerportal.bean.Company;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.SearchResults;
+import com.customerportal.bean.TankMonitorSignup;
+import com.customerportal.bean.USSBOA;
+import com.customerportal.bean.Userpreferences;
 import com.customerportal.util.CustomerPortalUtil;
 import com.customerportal.util.DBUtil;
 
@@ -115,7 +120,7 @@ public class DashBoardService {
 		dashboardMap = new HashMap<String, Object>();
 		 List<KeyValue> kvList  = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
 //		dashboardMap.put("regular", 200);
-//		dashboardMap.put("midgrade", 150);
+//		dashboardMap.put("midgrade", 150);	
 //		dashboardMap.put("premium", 310);
 //		dashboardMap.put("diesel", 500);
 		resultMap.put("consolidateReportData", kvList);
@@ -129,7 +134,7 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
-		if(facilitiesType.equalsIgnoreCase("signed"))
+		if(facilitiesType.equalsIgnoreCase("Managed"))
 		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
 		
 
@@ -201,6 +206,79 @@ public class DashBoardService {
 
 		return Response.status(200).entity(result).build();
 	}
+	@Path("/ussboa")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response fetchUSSBOAContent() {
+		List<USSBOA> ussBOA = DBUtil.getInstance().fetchUSSBOAContent();
+		return Response.status(200).entity(ussBOA).build();
 
+	}
+	
+	@Path("/tankmonitorsignup")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response fetchTankMonitorSignup() {
+		List<TankMonitorSignup> tankMonitorSignup = DBUtil.getInstance().fetchTankMonitorSignup();
+		return Response.status(200).entity(tankMonitorSignup).build();
 
+	}
+	@Path("/tankmonitorsignup")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response addOrUpdateTankMonitorSignup(TankMonitorSignup tankSignup) {
+		boolean result = false;
+		result = DBUtil.getInstance().addOrUpdateTankMonitorSignup(tankSignup);
+		if(result){
+			List<TankMonitorSignup> tankMonitorSignup = DBUtil.getInstance().fetchTankMonitorSignup();
+			CustomerPortalUtil.writeTankMonitorDetailsIntoFile(tankMonitorSignup);
+			return Response.status(200).entity(tankMonitorSignup).build();
+		}
+		return Response.status(200).entity(false).build();
+
+	}
+	@Path("/tankmonitorsignup")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteTankMonitorSignup(@QueryParam("facilitiesId") String facilitiesId) {
+		boolean result = false;
+		result = DBUtil.getInstance().deleteTankMonitorSignup(facilitiesId);
+		if(result){
+			List<TankMonitorSignup> tankMonitorSignup = DBUtil.getInstance().fetchTankMonitorSignup();
+			CustomerPortalUtil.writeTankMonitorDetailsIntoFile(tankMonitorSignup);
+			return Response.status(200).entity(tankMonitorSignup).build();
+		}
+		return Response.status(200).entity(false).build();
+
+	}
+	@Path("/tankmonitorsearch")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response fetchTankMonitorSearch(@QueryParam("facilitiesId") String facilitiesId) {
+		TankMonitorSignup tankMonitorSignup = DBUtil.getInstance().fetchTankMonitorSearch(facilitiesId);
+		return Response.status(200).entity(tankMonitorSignup).build();
+
+	}
+	
+	@Path("/preferences")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getUserPreferences () {
+
+		List<Userpreferences>  userPrefList= DBUtil.getInstance().getUserPreferences();
+		
+		return Response.status(200).entity(userPrefList).build();
+
+	}
+
+	@Path("/preferences")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response saveUserPreferences (Userpreferences pref) {
+		boolean result = false;
+		result = DBUtil.getInstance().saveUserPreferences(pref);
+		
+		return Response.status(200).entity(result).build();
+
+	}
 }

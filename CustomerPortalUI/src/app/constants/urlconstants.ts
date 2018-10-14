@@ -19,5 +19,9 @@ export class URLConstants {
     public static COMPANIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies';
     public static COMPLIANCE_URL = environment.server+'/CustomerPortalServer/rest/dashboard/compliance';
     public static  FACILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
+    public static USSBOA_URL = environment.server+'/CustomerPortalServer/rest/dashboard/ussboa';
+    public static TANK_MONITOR_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankmonitorsignup';
+    public static TANK_MONITOR_SEARCH_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankmonitorsearch';
 
+    public static USER_PREFERENCES = environment.server+'/CustomerPortalServer/rest/dashboard/preferences';
 }

@@ -4,6 +4,8 @@ import { LoginComponent } from './login/login.component';
 import { UsersComponent } from './users/users.component';
 import { UserComponent } from './user/user.component';
 import { ScheduleComponent } from './schedule/schedule.component';
+import { UssboaComponent } from './ussboa/ussboa.component';
+import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-signup.component';
 
 
 
@@ -14,6 +16,8 @@ const appRoutes: Routes = [
     { path: 'users', component: UsersComponent },
     { path: 'newuser', component: UserComponent },
     { path: 'schedule', component: ScheduleComponent },
+    { path: 'ussboa', component: UssboaComponent },
+    { path: 'tankmonitorsignup', component: TankMonitorSignupComponent },
     // otherwise redirect to home
     { path: '**', redirectTo: 'login' } 
 ];

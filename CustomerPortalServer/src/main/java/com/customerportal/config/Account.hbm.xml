@@ -7,6 +7,12 @@
 		<id name="id">
 			<column name="Id" />
 		</id>
+		<property name="name" column="Name" />
+		<property name="fid" column="FID__C" />
+		<property name="street" column="BillingStreet" />
+		<property name="city" column="BillingCity" />
+		<property name="state" column="BillingState" />
+		<property name="postalCode" column="BillingPostalCode" />
 		<property name="facilityOperatorPOA" column="Facility_Operator_POA__c" />
 		<property name="propertyOwnerPOA" column="Property_Owner_POA__c" />
 		<property name="ustOwnerPOA" column="UST_Owner_POA__c" />

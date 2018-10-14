@@ -51,6 +51,57 @@ searchResults(searchType:string,searchString: string,username: string,isadmin:bo
             return folder;
         });
 }
+getUSSBOAData() {
+    return this.http.get<any>(URLConstants.USSBOA_URL)
+        .map(ussboaData => {
+            
+            return ussboaData;
+        });
+}
+getTankMonitorSignupData() {
+    return this.http.get<any>(URLConstants.TANK_MONITOR_URL)
+        .map(tankMontiorData => {
+            
+            return tankMontiorData;
+        });
+}
+getTankMonitorSearch(searchString){
+    return this.http.get<any>(URLConstants.TANK_MONITOR_SEARCH_URL,this.getDashboardOptions(CRMConstants.FACILITIES_ID,searchString))
+    .map(searchTankData => {
+        
+        return searchTankData;
+    });
+}
+addOrUpdateTankMonitorSignup(tankSignup){
+    return this.http.post<any>(URLConstants.TANK_MONITOR_URL, {name: tankSignup.name, fid: tankSignup.fid,
+         address: tankSignup.address, ipAddress:tankSignup.ipAddress})
+      .map(tankMontiorData => {
+          // Registration response 
+          return tankMontiorData;
+      });
+}
+deleteTankMonitorSignup(fid){
+    return this.http.delete<any>(URLConstants.TANK_MONITOR_URL,this.getDashboardOptions(CRMConstants.FACILITIES_ID,fid))
+    .map(tankMontiorData => {
+        
+        return tankMontiorData;
+    });
+}
+saveUserPreferences(name,value){
+    return this.http.post<any>(URLConstants.USER_PREFERENCES, {name: name, value: value})
+     .map(preferencesResult => {
+         // Registration response 
+         return preferencesResult;
+     });
+}
+
+getUserPreferences(){
+    return this.http.get<any>(URLConstants.USER_PREFERENCES)
+     .map(preferencesList => {
+         // Registration response 
+         return preferencesList;
+     });
+}
 private getSearchOptions(searchType,searchString,username,isadmin) {
     return {
       params: new HttpParams().set(CRMConstants.SEARCH_TYPE,searchType).set(CRMConstants.SEARCH_STRING,searchString).set(CRMConstants.USER_ID,username).set(CRMConstants.ISADMIN,isadmin)

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -19,7 +19,10 @@ import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
+import com.customerportal.bean.TankMonitorSignup;
+import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
+import com.customerportal.bean.Userpreferences;
 
 public class DBUtil {
 	private static DBUtil dbObj;
@@ -142,13 +145,11 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString =
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
+			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c,Compliant__c FROM Facility_Management__c";
-			if(!userId.equalsIgnoreCase("admin"))
-				queryString+= " where Contact__c= '"
-						+ userId + "'";
-			Query query = session.createNativeQuery(queryString,	Facilities.class);
+			if (!userId.equalsIgnoreCase("admin"))
+				queryString += " where Contact__c= '" + userId + "'";
+			Query query = session.createNativeQuery(queryString, Facilities.class);
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -171,38 +172,39 @@ public class DBUtil {
 
 		}
 	}
+
 	public List<Facilities> searchFacilities(String searchType, String userId, String searchString) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString =
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
+			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c,Compliant__c FROM Facility_Management__c";
-			
-			if(!userId.equalsIgnoreCase("admin"))
-				queryString+= " where Contact__c= '"
-						+ userId + "'";
-			queryString+= "  and ( ";
-			if(searchType.equalsIgnoreCase("all")){
-				queryString+= "  FID__C like '%"
-						+ searchString + "%' or Facility_Name__c like '%"+ searchString + "%' or Facility_Address__c like '%"+ searchString + "%'";
+
+			if (!userId.equalsIgnoreCase("admin"))
+				queryString += " where Contact__c= '" + userId + "'";
+			queryString += "  and ( ";
+			if (searchType.equalsIgnoreCase("all")) {
+				queryString += "  FID__C like '%" + searchString + "%' or Facility_Name__c like '%" + searchString
+						+ "%' or Facility_Address__c like '%" + searchString + "%'";
 			}
-			if(searchType.equalsIgnoreCase("fid")){
-				queryString+= "and FID__C like '%"+ searchString + "%'";
+			if (searchType.equalsIgnoreCase("fid")) {
+				queryString += " FID__C like '%" + searchString + "%'";
 			}
-			if(searchType.equalsIgnoreCase("name")){
-				queryString+= "and Facility_Name__c like '%"+ searchString + "%'";
+			if (searchType.equalsIgnoreCase("name")) {
+				queryString += " Facility_Name__c like '%" + searchString + "%'";
 			}
-			if(searchType.equalsIgnoreCase("address")){
-				queryString+= "and Facility_Address__c like '%"+ searchString + "%'";
+			if (searchType.equalsIgnoreCase("address")) {
+				queryString += " Facility_Address__c like '%" + searchString + "%'";
 			}
-			queryString+= " )";
-			Query query = session.createNativeQuery(queryString,	Facilities.class);
+			queryString += " )";
+			Query query = session.createNativeQuery(queryString, Facilities.class);
 			List lst = query.list();
 			trx.commit();
 			session.close();
+			CustomerPortalUtil.fillImageURL(lst);
 			return lst;
+
 		} catch (
 
 		Exception exception)
@@ -221,7 +223,6 @@ public class DBUtil {
 
 		}
 	}
-
 
 	public List<User> getAllUsers(String searchOption, String searchString) {
 		Session session = HibernateUtil.getSession();
@@ -260,8 +261,7 @@ public class DBUtil {
 			return lst;
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			System.out.println(
-					"Exception occred in getALl Users method --" + exception.getMessage());
+			System.out.println("Exception occred in getALl Users method --" + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)
@@ -278,19 +278,25 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Compliant__c,"
-							+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c "
-							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Golars_Tank_Paid_Service__c =:tankService",
-					Facilities.class);
-			query.setString("userId", userId);
-			if (facilitiesType.equalsIgnoreCase("signed"))
+			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Compliant__c,"
+					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c "
+					+ "FROM Facility_Management__c f where f.Golars_Tank_Paid_Service__c =:tankService ";
+			if (!userId.equalsIgnoreCase("admin")) {
+				queryString += " and f.Contact__c =:userId";
+			}
+			Query query = session.createNativeQuery(queryString, Facilities.class);
+			if (!userId.equalsIgnoreCase("admin")) {
+				query.setString("userId", userId);
+			}
+			if (facilitiesType.equalsIgnoreCase("managed"))
 				query.setString("tankService", "true");
 			else
 				query.setString("tankService", "false");
-			List lst = query.list();
+			List<Facilities> lst = query.list();
 			trx.commit();
 			session.close();
+			CustomerPortalUtil.fillImageURL(lst);
+
 			return lst;
 		} catch (
 
@@ -328,6 +334,7 @@ public class DBUtil {
 			List lst = query.list();
 			trx.commit();
 			session.close();
+			CustomerPortalUtil.fillImageURL(lst);
 			return lst;
 		} catch (
 
@@ -354,13 +361,10 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c";
-			if(!userId.equalsIgnoreCase("admin"))
-				queryString+=" where Company_Owner__c='"
-						+ userId + "'";
-			Query query = session.createNativeQuery(queryString
-					,
-					Company.class);
+			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
+			if (!userId.equalsIgnoreCase("admin"))
+				queryString += " where Company_Owner__c='" + userId + "'";
+			Query query = session.createNativeQuery(queryString, Company.class);
 			// query.setString("contactId", userId);
 			List lst = query.list();
 			trx.commit();
@@ -636,6 +640,7 @@ public class DBUtil {
 			List lst = query.list();
 			trx.commit();
 			session.close();
+			CustomerPortalUtil.fillImageURL(lst);
 			return lst;
 		} catch (
 
@@ -680,6 +685,7 @@ public class DBUtil {
 			List<Facilities> lst = query.list();
 			trx.commit();
 			session.close();
+			CustomerPortalUtil.fillImageURL(lst);
 			List<Facilities> resultList = new ArrayList<Facilities>();
 			if (compliance.equalsIgnoreCase("compliance")) {
 				for (Facilities facility : lst) {
@@ -714,6 +720,118 @@ public class DBUtil {
 
 	}
 
+	public List<USSBOA> fetchUSSBOAContent() {
+
+		Session session = HibernateUtil.getSession();
+		;
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery(
+				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone "
+						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Approved Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id");
+
+		List<USSBOA> lst = new ArrayList<USSBOA>();
+		List<Object[]> rows = query.list();
+		for (Object[] row : rows) {
+			USSBOA ussboa = new USSBOA();
+			if (row[0] != null)
+				ussboa.setName(row[0].toString());
+			if (row[1] != null && row[1].toString().equalsIgnoreCase("true"))
+				ussboa.setActive(true);
+			String street = null;
+			if (row[2] != null)
+				street = row[2].toString();
+			String city = null;
+			if (row[3] != null)
+				city = row[3].toString();
+			String state = null;
+			if (row[4] != null)
+				state = row[4].toString();
+			String postalcode = null;
+			if (row[5] != null)
+				postalcode = row[5].toString();
+			String address = getAddress(street, city, state, postalcode);
+			ussboa.setAddress(address);
+			if (row[6] != null)
+				ussboa.setOwnerName(row[6].toString());
+			if (row[7] != null)
+				ussboa.setEmail(row[7].toString());
+			if (row[8] != null)
+				ussboa.setPhone(row[8].toString());
+			if (row[9] != null)
+				ussboa.setMobile(row[9].toString());
+			lst.add(ussboa);
+		}
+		t.commit();
+		session.close();
+		return lst;
+	}
+
+	public List<TankMonitorSignup> fetchTankMonitorSignup() {
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT FID__C,ipAddress,name,address from tank_monitor_signup",
+				TankMonitorSignup.class);
+
+		List<TankMonitorSignup> lst = query.list();
+		t.commit();
+		session.close();
+		return lst;
+	}
+
+	public TankMonitorSignup fetchTankMonitorSearch(String searchString) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery(
+				"SELECT FID__C,ipAddress,name,address from tank_monitor_signup where FID__C =:searchString",
+				TankMonitorSignup.class);
+		query.setString("searchString", searchString);
+		List<TankMonitorSignup> lst = query.list();
+		TankMonitorSignup tSignup = new TankMonitorSignup();
+
+		query = session.createNativeQuery("SELECT * from Account where FID__C =:searchString", Account.class);
+		query.setString("searchString", searchString);
+		List<Account> accountList = query.list();
+		if (accountList != null && accountList.size() > 0) {
+			Account account = accountList.get(0);
+			tSignup.setFid(account.getFid());
+			tSignup.setName(account.getName());
+			String address = getAddress(account.getStreet(), account.getCity(), account.getState(),
+					account.getPostalCode());
+			tSignup.setAddress(address);
+		} else {
+			tSignup = null;
+		}
+
+		if (lst != null && lst.size() > 0) {
+			TankMonitorSignup tmpSignup = lst.get(0);
+			if (tSignup == null)
+				tSignup = tmpSignup;
+			tSignup.setIpAddress(tmpSignup.getIpAddress());
+		}
+		t.commit();
+		session.close();
+		return tSignup;
+	}
+
+	private String getAddress(String street, String city, String state, String postalcode) {
+		String address = "";
+		if (street != null)
+			address += street + ", ";
+		if (city != null)
+			address += city + ", ";
+		if (state != null)
+			address += state + ", ";
+		if (postalcode != null)
+			address += postalcode + ", ";
+		if (address != null && address.trim().endsWith(",")) {
+			address = address.trim();
+			address = address.substring(0, address.length() - 1);
+		}
+		return address;
+	}
+
 	public Account fetchFacilitiesNotificationData(String facilitiesId) {
 
 		Session session = HibernateUtil.getSession();
@@ -721,25 +839,86 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT id, Facility_Operator_POA__c,Property_Owner_POA__c,UST_Owner_POA__c,Notification_form_Submitted__c,Property_Deed_Land_Contract__c,Operator_Affidevit_of_Lease__c,Owner_Affidavit_Of_Lease__c,SOS_Status__c,"
-					+ "Tax_ID_Information__c,Letter_of_Networth_Certificate_of_INsure__c,Operator_Lease_Agreement__c,Line_and_Leak_Detector_Test__c,Is_LnL_Detr_Tst_requrd__c,Cathodic_Protection__c,Is_CP_required__c,"
-					+ "Operator_A_certificate__c,Operator_B_certificate__c,Operator_C_certificate__c,Tank_Testing_Report__c,Is_Tank_Testing_Report_Required__c,Repair_Documents__c,Are_Repair_Documents_Required__c,"
-					+ "Release_Detection_Report__c,Is_Release_Detection_Report_Required__c,Internal_Lining_Inspection__c,Is_IL_Inspection_Required__c,MGT_Paid_Service__c ,"
-					+ "( Due_Date__c <= CURDATE()) as due_Date_c FROM Account WHERE (((Facility_Operator_POA__c = 'Missing' OR Property_Owner_POA__c = 'Missing' OR "
-					+ "UST_Owner_POA__c = 'Missing' OR Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or "
-					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing') AND  MGT_Paid_Service__c = 'true' AND  Due_Date__c <= CURDATE() AND  Notification_form_Submitted__c is NULL) "
-					+ "OR (((Line_and_Leak_Detector_Test__c is NULL AND  Is_LnL_Detr_Tst_requrd__c = 'true') OR (Cathodic_Protection__c is NULL AND  Is_CP_required__c = 'true')  OR Operator_A_certificate__c is NULL  OR Operator_B_certificate__c is"
-					+ " NULL  OR Operator_C_certificate__c is NULL  OR (Tank_Testing_Report__c is NULL AND  Is_Tank_Testing_Report_Required__c = 'true' ) OR (Repair_Documents__c is NULL AND  Are_Repair_Documents_Required__c = 'true') OR "
-					+ "(Release_Detection_Report__c is NULL AND  Is_Release_Detection_Report_Required__c = 'true') OR (Internal_Lining_Inspection__c is NULL AND  Is_IL_Inspection_Required__c = 'true') ) AND  MGT_Paid_Service__c = 'true' )) "
-					+ "and  id =:facilitiesId",
+					"SELECT id, Name, Facility_Operator_POA__c,Property_Owner_POA__c,UST_Owner_POA__c,Notification_form_Submitted__c,Property_Deed_Land_Contract__c,Operator_Affidevit_of_Lease__c,Owner_Affidavit_Of_Lease__c,SOS_Status__c,"
+							+ "Tax_ID_Information__c,Letter_of_Networth_Certificate_of_INsure__c,Operator_Lease_Agreement__c,Line_and_Leak_Detector_Test__c,Is_LnL_Detr_Tst_requrd__c,Cathodic_Protection__c,Is_CP_required__c,"
+							+ "Operator_A_certificate__c,Operator_B_certificate__c,Operator_C_certificate__c,Tank_Testing_Report__c,Is_Tank_Testing_Report_Required__c,Repair_Documents__c,Are_Repair_Documents_Required__c,"
+							+ "Release_Detection_Report__c,Is_Release_Detection_Report_Required__c,Internal_Lining_Inspection__c,Is_IL_Inspection_Required__c,MGT_Paid_Service__c ,"
+							+ "( Due_Date__c <= CURDATE()) as due_Date_c FROM Account where id =:facilitiesId",
 					Account.class);
 
 			query.setString("facilitiesId", facilitiesId);
-			List lst = query.list();	
+			List<Account> lst = query.list();
 			trx.commit();
 			session.close();
-			if (lst.size() > 0)
-				return (Account) lst.get(0);
+			if (lst.size() > 0) {
+				Account account = lst.get(0);
+				if (account.getFacilityOperatorPOA() != null
+						&& account.getFacilityOperatorPOA().equalsIgnoreCase("Missing"))
+					account.setFacilityOperatorPOAEnable(true);
+				if (account.getPropertyOwnerPOA() != null && account.getPropertyOwnerPOA().equalsIgnoreCase("Missing"))
+					account.setPropertyOwnerPOAEnable(true);
+				if (account.getUstOwnerPOA() != null && account.getUstOwnerPOA().equalsIgnoreCase("Missing"))
+					account.setUstOwnerPOAEnable(true);
+				if (account.getPropertyDeedLandContract() != null
+						&& account.getPropertyDeedLandContract().equalsIgnoreCase("0"))
+					account.setPropertyDeedLandContractEnable(true);
+				if (account.getOperatorAffidevitOfLease() != null
+						&& account.getOperatorAffidevitOfLease().equalsIgnoreCase("Missing"))
+					account.setOperatorAffidevitOfLeaseEnable(true);
+				if (account.getOwnerAffidevitOfLease() != null
+						&& account.getOwnerAffidevitOfLease().equalsIgnoreCase("Missing"))
+					account.setOwnerAffidevitOfLeaseEnable(true);
+				if (account.getSosStatus() != null && account.getSosStatus().equalsIgnoreCase("Missing"))
+					account.setSosStatusEnable(true);
+				if (account.getTaxIDInformation() != null && account.getTaxIDInformation().equalsIgnoreCase("Missing"))
+					account.setTaxIDInformationEnable(true);
+				// if(account.getLetterOfNetworthCertification() != null &&
+				// account.getLetterOfNetworthCertification().equalsIgnoreCase("Missing"))
+				// account.setLetterOfNetworthCertificationEnable(true);
+				if (account.getOperatorLeaseAgreement() != null
+						&& account.getOperatorLeaseAgreement().equalsIgnoreCase("Missing"))
+					account.setOperatorLeaseAgreementEnable(true);
+				if (account.getNotificationDueDate() != null && account.getNotificationDueDate().equalsIgnoreCase("0"))
+					account.setNotificationDueDateEnable(true);
+				// compliance start
+				if (account.getLnlDetrTstRequrd() != null && !account.getLnlDetrTstRequrd().equalsIgnoreCase("true")
+						&& account.getLineAndLeakDetector() == null)
+					account.setLnlDetrTstRequrdEnable(true);
+				if (account.getCprequired() != null && !account.getCprequired().equalsIgnoreCase("true")
+						&& account.getCathodicProtection() == null)
+					account.setCprequiredEnable(true);
+				if (account.getTankTestingReportRequired() != null
+						&& !account.getTankTestingReportRequired().equalsIgnoreCase("true")
+						&& account.getTankTestingReport() == null)
+					account.setTankTestingReportRequiredEnable(true);
+				if (account.getRepairDocumentRequired() != null
+						&& !account.getRepairDocumentRequired().equalsIgnoreCase("true")
+						&& account.getRepairDocuments() == null)
+					account.setRepairDocumentRequiredEnable(true);
+				if (account.getReleaseDetectionReportRequired() != null
+						&& !account.getReleaseDetectionReportRequired().equalsIgnoreCase("true")
+						&& account.getReleaseDetectionReport() == null)
+					account.setReleaseDetectionReportRequiredEnable(true);
+				if (account.getInternalLiningInspectionRequired() != null
+						&& !account.getInternalLiningInspectionRequired().equalsIgnoreCase("true")
+						&& account.getInternalLiningInspection() == null)
+					account.setInternalLiningInspectionRequiredEnable(true);
+				// compliance end
+				// certification start
+				if (account.getOperatorAcertificate() == null)
+					account.setOperatorAcertificateEnable(true);
+				if (account.getOperatorBcertificate() == null)
+					account.setOperatorBcertificateEnable(true);
+				if (account.getOperatorCcertificate() == null)
+					account.setOperatorAcertificateEnable(true);
+				// certification end
+
+				// if(account.getNotificationFormSubmitted() == null ||
+				// account.getNotificationFormSubmitted().equalsIgnoreCase(null))
+				// account.setNotificationFormSubmittedEnable(true);
+
+				return account;
+			}
 			return null;
 		} catch (
 
@@ -797,8 +976,8 @@ public class DBUtil {
 			boolean isadmin) {
 		SearchResults result = new SearchResults();
 		// List<String> facilitiesList = fetchFacilityId(username);
-		List<Facilities> facilitiesList = searchFacilities(searchType,username,searchString);
-		List<Company> companiesList = fetchCompanyNamesForSearch(searchType,username,searchString);
+		List<Facilities> facilitiesList = searchFacilities(searchType, username, searchString);
+		List<Company> companiesList = fetchCompanyNamesForSearch(searchType, username, searchString);
 		for (Company company : companiesList) {
 			List<Facilities> facilitiesListLocal = DBUtil.getInstance()
 					.fetchFacilitiesForCompany(company.getCompanyName(), company.getCompanyOwner());
@@ -811,32 +990,32 @@ public class DBUtil {
 	}
 
 	private List<Company> fetchCompanyNamesForSearch(String searchType, String userId, String searchString) {
+		if (searchType.equalsIgnoreCase("fid")) {
+
+			return new ArrayList<Company>();
+		}
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c";
-			if(!userId.equalsIgnoreCase("admin"))
-				queryString+=" where Company_Owner__c='"
-						+ userId + "' ";
-//			if(searchType.equalsIgnoreCase("all")){
-//				queryString+= "and FID__C like '%"
-//						+ searchString + "%' or Facility_Name__c like '%"+ searchString + "%' or Facility_Address__c like '%"+ searchString + "%'";
-//			}
-//			if(searchType.equalsIgnoreCase("fid")){
-//				queryString+= "and FID__C like '%"
-//						+ searchString + "%'";
-//			}
-//			if(searchType.equalsIgnoreCase("name")){
-//				queryString+= "and Facility_Name__c like '%"+ searchString + "%'";
-//			}
-//			if(searchType.equalsIgnoreCase("address")){
-//				queryString+= "and Facility_Address__c like '%"+ searchString + "%'";
-//			}
+			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
+			if (!userId.equalsIgnoreCase("admin"))
+				queryString += " where Company_Owner__c='" + userId + "' ";
+			queryString += "  and ( ";
+			if (searchType.equalsIgnoreCase("all")) {
+				queryString += " Company__c like '%" + searchString + "%' or Company_Address__c like '%" + searchString
+						+ "%'";
+			}
 
-			Query query = session.createNativeQuery(queryString
-					,
-					Company.class);
+			if (searchType.equalsIgnoreCase("name")) {
+				queryString += " Company__c like '%" + searchString + "%'";
+			}
+			if (searchType.equalsIgnoreCase("address")) {
+				queryString += " Company_Address__c like '%" + searchString + "%'";
+			}
+			queryString += " )";
+
+			Query query = session.createNativeQuery(queryString, Company.class);
 			// query.setString("contactId", userId);
 			List lst = query.list();
 			trx.commit();
@@ -947,87 +1126,232 @@ public class DBUtil {
 	public List<KeyValue> retrieveConsolidateReport(List<Facilities> facilitiesList) {
 		Session session = HibernateUtil.getSession();
 		Transaction t = session.beginTransaction();
-//		Map<String, Object> consolidateMap = new HashMap<String, Object>();
+		// Map<String, Object> consolidateMap = new HashMap<String, Object>();
 		List<KeyValue> consolidateList = new ArrayList<KeyValue>();
 		for (Facilities facilities : facilitiesList) {
-			if(facilities == null)continue;
+			if (facilities == null)
+				continue;
 			Query query = session.createNativeQuery(
-					"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"+facilities.getFacilityId()+"' and CAST(Date__c AS DATETIME) = (SELECT MAX(CAST(Date__c AS DATETIME)) FROM inventoryreport__c where Facility__c='"+facilities.getFacilityId()+"' )  group by Tank__C order by CAST(Date__C AS DATETIME) DESC   ;",InventoryReport.class);
+					"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
+							+ facilities.getFacilityId()
+							+ "' and CAST(Date__c AS DATETIME) = (SELECT MAX(CAST(Date__c AS DATETIME)) FROM inventoryreport__c where Facility__c='"
+							+ facilities.getFacilityId()
+							+ "' )  group by Tank__C order by CAST(Date__C AS DATETIME) DESC   ;",
+					InventoryReport.class);
 			List<InventoryReport> lst = query.list();
 			System.out.println(lst.size());
-			if(lst.size()>0){
+			if (lst.size() > 0) {
 				for (InventoryReport iReport : lst) {
 					boolean productFound = false;
 					KeyValue selectedKeyValue = null;
 					for (KeyValue keyvalue : consolidateList) {
-						if(keyvalue.getKey().equalsIgnoreCase(iReport.getProduct())){
+						if (keyvalue.getKey().equalsIgnoreCase(iReport.getProduct())) {
 							productFound = true;
 							selectedKeyValue = keyvalue;
 							break;
 						}
-						
+
 					}
-					if(productFound){
-						int gallonsIntValue = (int)Double.parseDouble(selectedKeyValue.getValue());
-						gallonsIntValue += (int)Double.parseDouble(iReport.getGallons());
-						selectedKeyValue.setValue(gallonsIntValue+"");
-					}else{
+					if (productFound) {
+						int gallonsIntValue = (int) Double.parseDouble(selectedKeyValue.getValue());
+						gallonsIntValue += (int) Double.parseDouble(iReport.getGallons());
+						selectedKeyValue.setValue(gallonsIntValue + "");
+					} else {
 						KeyValue kv = new KeyValue();
 						kv.setKey(iReport.getProduct());
+						kv.setName(iReport.getTank());
 						kv.setValue(iReport.getGallons());
-						consolidateList.add(kv)	;
+						consolidateList.add(kv);
 					}
-					System.out.println(iReport);	
+					System.out.println(iReport);
 				}
 			}
 		}
-		
-//		query.setString("userId", userId);
+
+		// query.setString("userId", userId);
 		t.commit();
 		session.close();
 		return consolidateList;
 	}
+
 	public List<KeyValue> retrieveSpecifiFacilityConsolidateReport(Facilities facilities) {
 		Session session = HibernateUtil.getSession();
 		Transaction t = session.beginTransaction();
-//		Map<String, Object> consolidateMap = new HashMap<String, Object>();
+		// Map<String, Object> consolidateMap = new HashMap<String, Object>();
 		List<KeyValue> consolidateList = new ArrayList<KeyValue>();
-		
-			Query query = session.createNativeQuery(
-					"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"+facilities.getFacilityId()+"' and CAST(Date__c AS DATETIME) = (SELECT MAX(CAST(Date__c AS DATETIME)) FROM inventoryreport__c where Facility__c='"+facilities.getFacilityId()+"' )  group by Tank__C order by CAST(Date__C AS DATETIME) DESC   ;",InventoryReport.class);
-			List<InventoryReport> lst = query.list();
-			System.out.println(lst.size());
-			if(lst.size()>0){
-				for (InventoryReport iReport : lst) {
-					boolean productFound = false;
-					KeyValue selectedKeyValue = null;
-					for (KeyValue keyvalue : consolidateList) {
-						if(keyvalue.getKey().equalsIgnoreCase(iReport.getProduct())){
-							productFound = true;
-							selectedKeyValue = keyvalue;
-							break;
-						}
-						
+
+		Query query = session
+				.createNativeQuery(
+						"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
+								+ facilities.getFacilityId()
+								+ "' and CAST(Date__c AS DATETIME) = (SELECT MAX(CAST(Date__c AS DATETIME)) FROM inventoryreport__c where Facility__c='"
+								+ facilities.getFacilityId()
+								+ "' )  group by Tank__C order by CAST(Date__C AS DATETIME) DESC   ;",
+						InventoryReport.class);
+		List<InventoryReport> lst = query.list();
+		System.out.println(lst.size());
+		if (lst.size() > 0) {
+			for (InventoryReport iReport : lst) {
+				boolean productFound = false;
+				KeyValue selectedKeyValue = null;
+				for (KeyValue keyvalue : consolidateList) {
+					if (keyvalue.getKey().equalsIgnoreCase(iReport.getProduct())) {
+						productFound = true;
+						selectedKeyValue = keyvalue;
+						break;
 					}
-					if(productFound){
-						int gallonsIntValue = (int)Double.parseDouble(selectedKeyValue.getValue());
-						gallonsIntValue += (int)Double.parseDouble(iReport.getGallons());
-						selectedKeyValue.setValue(gallonsIntValue+"");
-					}else{
-						KeyValue kv = new KeyValue();
-						kv.setKey(iReport.getProduct());
-						kv.setValue(iReport.getGallons());
-						consolidateList.add(kv)	;
-					}
-					System.out.println(iReport);	
+
 				}
+				if (productFound) {
+					int gallonsIntValue = (int) Double.parseDouble(selectedKeyValue.getValue());
+					gallonsIntValue += (int) Double.parseDouble(iReport.getGallons());
+					selectedKeyValue.setValue(gallonsIntValue + "");
+				} else {
+					KeyValue kv = new KeyValue();
+					kv.setKey(iReport.getProduct());
+					kv.setValue(iReport.getGallons());
+					consolidateList.add(kv);
+				}
+				System.out.println(iReport);
 			}
-		
-		
-//		query.setString("userId", userId);
+		}
+
+		// query.setString("userId", userId);
 		t.commit();
 		session.close();
 		return consolidateList;
+	}
+
+	public boolean addOrUpdateTankMonitorSignup(TankMonitorSignup tankSignup) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			TankMonitorSignup tankDB = (TankMonitorSignup) session.get(TankMonitorSignup.class, tankSignup.getFid());
+
+			if (tankDB == null) {
+				session.save(tankSignup);
+			} else {
+				tankDB.setIpAddress(tankSignup.getIpAddress());
+				session.update(tankDB);
+			}
+
+			trx.commit();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in addOrUpdateTankMonitorSignup   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return false;
+		} finally {
+
+		}
+		return true;
+
+	}
+
+	public boolean deleteTankMonitorSignup(String facilitiesId) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			TankMonitorSignup tankDB = (TankMonitorSignup) session.get(TankMonitorSignup.class, facilitiesId);
+
+			if (tankDB != null) {
+				session.delete(tankDB);
+			}
+			trx.commit();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in deleteTankMonitorSignup   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return false;
+		} finally {
+
+		}
+		return true;
+
+	}
+
+	public boolean saveUserPreferences(Userpreferences pref) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			Userpreferences userPref = (Userpreferences) session.get(Userpreferences.class, pref.getName());
+
+			if (userPref != null) {
+				userPref.setValue(pref.getValue());
+				session.update(userPref);
+			} else {
+				session.save(pref);
+			}
+			trx.commit();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in saveUserPreferences   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return false;
+		} finally {
+
+		}
+		return true;
+	}
+
+	public List<Userpreferences> getUserPreferences() {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+
+			Query query = session.createNativeQuery("SELECT * FROM userpreferences", Userpreferences.class);
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+
+			System.out.println("Exception occred in getUserPreferences   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
+
+		}
+	}
+	public String getUserPreferences(String name) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+
+			Userpreferences userPref = (Userpreferences) session.get(Userpreferences.class, name);
+			if(userPref!=null)
+				return userPref.getValue();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+
+			System.out.println("Exception occred in getUserPreferences   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
+
+		}
+		return name;
 	}
 
 }

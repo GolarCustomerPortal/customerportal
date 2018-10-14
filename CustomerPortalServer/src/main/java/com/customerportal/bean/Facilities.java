@@ -23,6 +23,7 @@ public class Facilities {
 	private String complianceButtonEnable;
 	private String certificationButtonEnable;
 	private String compliance;
+	private String imageURL;
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
 	public String getExternalId() {
@@ -175,5 +176,13 @@ public class Facilities {
 
 	public List<KeyValue> getConsolidateReport() {
 		return consolidateReport;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
+
+	public String getImageURL() {
+		return imageURL;
 	}
 }

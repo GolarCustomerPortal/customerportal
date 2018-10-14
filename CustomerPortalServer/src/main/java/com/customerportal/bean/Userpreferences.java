@@ -1,28 +1,24 @@
 package com.customerportal.bean;
 
-public class KeyValue{
-	
+public class Userpreferences {
 
-	private String key;
-	private String value;
 	private String name;
-	public String getKey() {
-		return key;
-	}
-	public void setKey(String key) {
-		this.key = key;
-	}
+	private String value;
+
 	public String getValue() {
 		return value;
 	}
+
 	public void setValue(String value) {
 		this.value = value;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getName() {
 		return name;
 	}
-	
+
 }

@@ -11,6 +11,9 @@ public class Company {
 	private String externalID;
 	private String name;
 	private String ownerName;
+	private String companyAddress;
+	private String company;
+	
 	List<Facilities> facilities = new ArrayList<Facilities>();
 	public String getCompanyOwner() {
 		return companyOwner;
@@ -55,4 +58,18 @@ public class Company {
 	public List<Facilities> getFacilities() {
 		return facilities;
 	}
+	public String getCompanyAddress() {
+		return companyAddress;
+	}
+	public void setCompanyAddress(String companyAddress) {
+		this.companyAddress = companyAddress;
+	}
+	public String getCompany() {
+		return company;
+	}
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
 }
+

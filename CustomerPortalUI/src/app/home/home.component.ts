@@ -3,6 +3,9 @@ import { CommonService } from '../services/common.service';
 import { DashboardService } from '../services/dashboard.service';
 import { ImportService } from '../services/import.service';
 import { AppComponent } from '../app.component';
+import { CRMConstants } from '../constants/crmconstants';
+import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 declare var $: any;
 @Component({
   selector: 'crm-home',
@@ -57,13 +60,13 @@ export class HomeComponent implements OnInit {
   showBack = false;
   newsFeedVisible = true;
   notificationForm;
+  dashboardConst = CRMConstants;
   uploadLabel = "Browse"
   FILL_COLOR="#2c347E";
   NON_FILL_COLOR="#ef4136";
   GUTTER_COLOR ="#d3e8c8"; 
   showSearchResults=false;
-  SIGNED = "Signed";
-  UNSIGNED = "Un Signed"
+ 
   selectedChart = 'facilities';
   // fOperatorFileName;
   // commom properties end
@@ -171,7 +174,7 @@ export class HomeComponent implements OnInit {
   //app component code end
 
   // middlepanel code start
-  constructor(public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
+  constructor(private router: Router,public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
     if (this.commonService.getSearchResult() == null)
     this.fetchDashboardValues();
@@ -220,8 +223,8 @@ export class HomeComponent implements OnInit {
     this.facilitiesArray.push(fecData.unsigned);
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[0]);
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[1]);
-    this.facilitiesLabel.push(this.SIGNED);
-    this.facilitiesLabel.push(this.UNSIGNED);
+    this.facilitiesLabel.push(this.dashboardConst.MANAGED);
+    this.facilitiesLabel.push(this.dashboardConst.UNMANAGED);
     this.facilitiesdata.labels.push(this.facilitiesLabel[0] + '-- ' + this.constructPercentage(this.facilitiesArray[0], this.facilitiesArray[1]));
     this.facilitiesdata.labels.push(this.facilitiesLabel[1] + '-- ' + this.constructPercentage(this.facilitiesArray[1], this.facilitiesArray[0]))
     this.totalFacilities = this.facilitiesArray[1] + this.facilitiesArray[0];
@@ -237,7 +240,7 @@ export class HomeComponent implements OnInit {
     this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onFacilitiesDataSelect", this.facilitiesLabel[event]);
-    this.rightPanelTitle = "Facilities -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
+    this.rightPanelTitle = this.dashboardConst.MYFACALITIES+" -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
     this.showCompanies = false;
     this.showCompliance = false;
     this.showConsolidateReport = false;
@@ -250,13 +253,14 @@ export class HomeComponent implements OnInit {
         facilitiesList => {
           for (var i = 0; i < facilitiesList.length; i++) {
             var faciData = facilitiesList[i];
-            if(this.facilitiesLabel[event] == this.UNSIGNED)
+            if(this.facilitiesLabel[event] == this.dashboardConst.UNMANAGED)
             faciData.compliance =false;
             else if(faciData.compliance != null)
             faciData.compliance = faciData.compliance == "true";
-            var image = this.commonService.gasStationImage(faciData.brand)
-            faciData.image = "assets/images/gasstation/"+image;
+            // var image = this.commonService.gasStationImage(faciData.brand)
+            // faciData.image = "assets/images/gasstation/"+image;
             // this.getFacilityConsolidateReport(faciData.consolidateReport);
+            faciData.image = environment.server+faciData.imageURL;
             this.facilitiesRightdata.push(faciData);
           }
 
@@ -344,7 +348,7 @@ export class HomeComponent implements OnInit {
     this.companiesClass = "ui-g-12";
     this.showBack = true;
     this.showRightContent = true;
-    this.rightPanelTitle = "Companies -- " + " (" + this.totalCompanies + ")";
+    this.rightPanelTitle = this.dashboardConst.MYCOMPANIES+" -- " + " (" + this.totalCompanies + ")";
     this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         companiesList => {
@@ -353,7 +357,7 @@ export class HomeComponent implements OnInit {
             for (var j = 0; j < faciData.facilities.length; j++) {
                if( faciData.facilities[j].compliance != null)
                faciData.facilities[j].compliance =  faciData.facilities[j].compliance == "true";
-              faciData.facilities[j].image = "assets/images/gasstation/"+this.commonService.gasStationImage(faciData.facilities[j].brand)
+              faciData.facilities[j].image =  environment.server+faciData.facilities[j].imageURL;
             }
             this.companiesRightdata.push(faciData);
           }
@@ -395,8 +399,8 @@ export class HomeComponent implements OnInit {
     // this.compliance = 11;
     this.complianceArray.push(compliData.compliance);
     this.complianceArray.push(compliData.noncompliance);
-    this.complianceLabel.push("Compliance");
-    this.complianceLabel.push("Non Compliance");
+    this.complianceLabel.push("Compliant");
+    this.complianceLabel.push("Non-compliant");
     // this.nonCompliance = 9;
     this.complianceData.labels.push('Compliance ' + this.constructPercentage(this.complianceArray[0], this.complianceArray[1]));
     this.complianceData.labels.push('Non Compliance' + this.constructPercentage(this.complianceArray[1], this.complianceArray[0]));
@@ -420,16 +424,21 @@ export class HomeComponent implements OnInit {
     this.showConsolidateReport = false;
     this.complianceClass = "ui-g-12";
     this.showBack = true;
-    this.rightPanelTitle = "Compliance -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
+    this.rightPanelTitle = this.dashboardConst.MYCOMPLIANCE+" -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
     this.showRightContent = true;
-    this.dashboardService.getComplianceList(this.commonService.getUserName(), this.complianceLabel[event]) // retrieve all thd parent folders
+    var complianceParam = "compliant";
+    if(this.complianceLabel[event].toLowerCase() == 'compliant')
+    complianceParam = 'compliance'
+    else
+    complianceParam = 'non compliance'
+    this.dashboardService.getComplianceList(this.commonService.getUserName(), complianceParam) // retrieve all thd parent folders
       .subscribe(
         complianceList => {
           if(complianceList !== null )
           for (var i = 0; i < complianceList.length; i++) {
             var feciData = complianceList[i];
-            var image = this.commonService.gasStationImage(feciData.brand)
-            feciData.image = "assets/images/gasstation/"+image;
+            // var image = this.commonService.gasStationImage(feciData.brand)
+            feciData.image = environment.server+feciData.imageURL;
             this.complianceRightdata.push(feciData);
           }
 
@@ -946,16 +955,17 @@ searchArea = {
     for (var i = 0; i < searchResult.facilitiesList.length; i++) {
       var feciData = searchResult.facilitiesList[i];
       if(feciData == null)continue;
-      var image = this.commonService.gasStationImage(feciData.brand)
+      // var image = this.commonService.gasStationImage(feciData.brand)
   
-      feciData.image = "assets/images/gasstation/"+image;
+      // feciData.image = "assets/images/gasstation/"+image;
+      feciData.image = environment.server+feciData.imageURL;
     }
   }
     if(searchResult.companiesList!= null && searchResult.companiesList.length>0){
       for (var i = 0; i < searchResult.companiesList.length; i++) {
         var feciData = searchResult.companiesList[i];
         for (var j = 0; j < feciData.facilities.length; j++) {
-          feciData.facilities[j].image = "assets/images/gasstation/"+this.commonService.gasStationImage(feciData.facilities[j].brand)
+          feciData.facilities[j].image = feciData.image = environment.server+feciData.facilities[j].imageURL;
         }
         this.companiesRightdata.push(feciData);
       }
@@ -1036,5 +1046,7 @@ this.facilityConsolidateReportdata = null;;
       }
       // return this.facilityConsolidateReportdata;
     }
-
+  onUSSBOASelect(){
+    this.router.navigate(['ussboa']);
+  }
 }
