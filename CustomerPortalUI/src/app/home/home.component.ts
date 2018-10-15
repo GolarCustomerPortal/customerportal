@@ -192,6 +192,8 @@ export class HomeComponent implements OnInit {
         error => {
           console.log(error);
         });
+        if(!this.commonService.isAdmin())
+        this.retrieveTankAlarmHistory();   
 
   }
   // Facilities
@@ -1048,5 +1050,18 @@ this.facilityConsolidateReportdata = null;;
     }
   onUSSBOASelect(){
     this.router.navigate(['ussboa']);
+  }
+  retrieveTankAlarmHistory(){
+    this.dashboardService.getTankAlarmHistory(this.commonService.getUserName()) // retrieve all thd parent folders
+    .subscribe(
+      tankAlaramList => {
+        if(tankAlaramList!=null){
+          this.commonService.setTankAlert(tankAlaramList);
+          console.log(tankAlaramList.length)
+        }
+      },
+      error => {
+        console.log(error);
+      });
   }
 }

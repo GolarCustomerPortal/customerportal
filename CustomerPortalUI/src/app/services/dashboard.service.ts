@@ -102,6 +102,20 @@ getUserPreferences(){
          return preferencesList;
      });
 }
+getTankAlarmHistory(userId) {
+    return this.http.get<any>(URLConstants.TANK_ALARM_HISTORY_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+        .map(tankAlaramList => {
+            
+            return tankAlaramList;
+        });
+}
+resetTankAlert(tankAlertString){
+    return this.http.post<any>(URLConstants.TANK_ALARM_HISTORY_URL, tankAlertString)
+     .map(result => {
+         // Registration response 
+         return result;
+     });
+}
 private getSearchOptions(searchType,searchString,username,isadmin) {
     return {
       params: new HttpParams().set(CRMConstants.SEARCH_TYPE,searchType).set(CRMConstants.SEARCH_STRING,searchString).set(CRMConstants.USER_ID,username).set(CRMConstants.ISADMIN,isadmin)

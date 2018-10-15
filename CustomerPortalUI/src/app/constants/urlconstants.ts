@@ -22,6 +22,6 @@ export class URLConstants {
     public static USSBOA_URL = environment.server+'/CustomerPortalServer/rest/dashboard/ussboa';
     public static TANK_MONITOR_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankmonitorsignup';
     public static TANK_MONITOR_SEARCH_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankmonitorsearch';
-
+    public static TANK_ALARM_HISTORY_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankalarmhistory';
     public static USER_PREFERENCES = environment.server+'/CustomerPortalServer/rest/dashboard/preferences';
 }

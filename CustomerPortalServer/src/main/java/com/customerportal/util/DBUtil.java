@@ -19,6 +19,7 @@ import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
+import com.customerportal.bean.TankAarmHistory;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
@@ -1331,13 +1332,14 @@ public class DBUtil {
 
 		}
 	}
+
 	public String getUserPreferences(String name) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 
 			Userpreferences userPref = (Userpreferences) session.get(Userpreferences.class, name);
-			if(userPref!=null)
+			if (userPref != null)
 				return userPref.getValue();
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -1352,6 +1354,81 @@ public class DBUtil {
 
 		}
 		return name;
+	}
+
+	public List<TankAarmHistory> getTankalarmHistory(String facilitiesIdString) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			Query query = session.createNativeQuery("SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (viewed is null or viewed ='false') and facility__C in (" + facilitiesIdString + " ) ");
+			
+			List<TankAarmHistory> lst = new ArrayList<TankAarmHistory>();
+			List<Object[]> rows = query.list();
+			for (Object[] row : rows) {
+				TankAarmHistory alarmHistory = new TankAarmHistory();
+				if (row[0] != null)
+					alarmHistory.setFid(row[0].toString());
+				if (row[1] != null)
+					alarmHistory.setName(row[1].toString());
+				
+				if (row[2] != null)
+					alarmHistory.setOccuredDate(row[2].toString());
+				if (row[3] != null)
+					alarmHistory.setAlarmType(row[3].toString());
+				if (row[4] != null)
+					alarmHistory.setId(row[4].toString());
+				lst.add(alarmHistory);
+			}
+			
+			
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		}
+
+	}
+
+	public boolean resetTankalarmHistory(String[] facilityArray) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			for (String facility : facilityArray) {
+				
+			
+				TankAarmHistory alarmHistory = (TankAarmHistory) session.get(TankAarmHistory.class, facility);
+
+			if (alarmHistory != null) {
+				alarmHistory.setViewed("true");
+				session.update(alarmHistory);
+			} 
+			}
+			trx.commit();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in resetTankalarmHistory   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return false;
+		} finally {
+
+		}
+		return true;
+	
 	}
 
 }

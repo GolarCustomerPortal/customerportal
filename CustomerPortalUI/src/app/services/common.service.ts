@@ -193,6 +193,7 @@ export class CommonService {
   storeSearchResult(searchResult){
     localStorage.setItem('searchResult', searchResult);
   }
+ 
   getSearchResult(){
     return localStorage.getItem('searchResult');
   }
@@ -276,5 +277,17 @@ export class CommonService {
     }
     return "";
 
+  }
+  setTankAlert(tankAlertList){
+    localStorage.setItem('tankAlertList', JSON.stringify(tankAlertList));
+  }
+  removeTankAlert(){
+    localStorage.removeItem('tankAlertList');
+  }
+  getTankAlert(){
+    var alertList = localStorage.getItem('tankAlertList');
+    if(alertList != null ){
+      return JSON.parse(alertList)
+    }
   }
 }

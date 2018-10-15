@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,11 +20,13 @@ import com.customerportal.bean.Company;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.SearchResults;
+import com.customerportal.bean.TankAarmHistory;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.Userpreferences;
 import com.customerportal.util.CustomerPortalUtil;
 import com.customerportal.util.DBUtil;
+import com.sun.jersey.multipart.FormDataParam;
 
 @Path("/dashboard")
 public class DashBoardService {
@@ -281,4 +284,30 @@ public class DashBoardService {
 		return Response.status(200).entity(result).build();
 
 	}
+	@Path("/tankalarmhistory")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getTankalarmHistory (@QueryParam("userId") String userId) {
+		
+		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
+		if(facilitiesList == null || facilitiesList.size() ==0)
+			return Response.status(200).entity(null).build();
+		String facilitiesIdString = CustomerPortalUtil.getfacilitiesIdString(facilitiesList);
+		List<TankAarmHistory> tankAlarmList = DBUtil.getInstance().getTankalarmHistory(facilitiesIdString);
+		return Response.status(200).entity(tankAlarmList).build();
+		
+	}
+	
+	@Path("/tankalarmhistory")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response resetTankalarmHistory (String facilityString) {
+		
+		boolean result = false;
+		String[] facilityArray = facilityString.split(",");
+		result = DBUtil.getInstance().resetTankalarmHistory(facilityArray);
+		return Response.status(200).entity(result).build();
+		
+	}
+	
 }

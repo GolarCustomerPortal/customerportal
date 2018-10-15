@@ -4,7 +4,7 @@ import { CommonService } from './services/common.service';
 import { AuthenticationService } from './services/authentication.service';
 import { DashboardService } from './services/dashboard.service';
 import { CRMConstants } from './constants/crmconstants';
-
+declare var $: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,7 +13,10 @@ import { CRMConstants } from './constants/crmconstants';
 export class AppComponent implements OnInit{
   visibleSidebar=false;
   crmConst = CRMConstants;
+  alertList;
   constructor(private router: Router,public commonService: CommonService,public  authService:AuthenticationService,private dashboardService: DashboardService){
+  console.log("AppComponent---");
+ 
   }
   searchOptions = [
     {name: 'All', value: 'all'},
@@ -24,6 +27,10 @@ export class AppComponent implements OnInit{
 selectedSearchOption = this.searchOptions[0];
   searchString;
   ngOnInit(){
+    var self = this;
+    $('#tankalert').on('hidden.bs.modal', function (e) {
+      self.resetTankAlert();
+    })
     this.commonService.removeEditUser();
     if(!this.commonService.checkValidLogin())
      this.router.navigate(['/login']);
@@ -60,10 +67,35 @@ selectedSearchOption = this.searchOptions[0];
       searchResultList => {
         this.commonService.storeSearchResult(JSON.stringify(searchResultList));
         this.router.navigate(['/#']);
-        console.log(searchResultList)
+       
       },
       error => {
         console.log(error);
       });
+  }
+  getAlertData(){
+    this.alertList = this.commonService.getTankAlert();
+  }
+  resetTankAlert(){
+    if(this.alertList != null && this.alertList.length>0){
+      var alertFacilities = this.getAlertFacilities();
+      this.dashboardService.resetTankAlert(alertFacilities) .subscribe(
+        result => {
+          if(result == true)
+          this.commonService.removeTankAlert();
+        },
+        error => {
+          console.log(error);
+        });
+    }
+  }
+  getAlertFacilities(){
+  var idString="";
+    for(var i=0;i<this.alertList.length;i++){
+      idString+=this.alertList[i].id+",";
+   } 
+   if(idString.endsWith(","))
+   idString = idString.substring(0,idString.length-1);
+   return idString;
   }
 }

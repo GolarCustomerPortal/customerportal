@@ -21,6 +21,7 @@
 		<mapping resource="com/customerportal/config/loginhistory.hbm.xml" />
 		<mapping resource="com/customerportal/config/inventoryreport.hbm.xml" />
 		<mapping resource="com/customerportal/config/tankmonitorsignup.hbm.xml" />
+		<mapping resource="com/customerportal/config/tankalarmhistory.hbm.xml" />
 		<mapping resource="com/customerportal/config/userpreferences.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 
