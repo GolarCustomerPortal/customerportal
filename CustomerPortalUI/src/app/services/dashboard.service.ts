@@ -102,6 +102,27 @@ getUserPreferences(){
          return preferencesList;
      });
 }
+getJobScheduleData(userId) {
+    return this.http.get<any>(URLConstants.JOB_SCHEDULE,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+        .map(jobScheduleData => {
+            
+            return jobScheduleData;
+        });
+}
+saveJobScheduleData(job) {
+    return this.http.post<any>(URLConstants.JOB_SCHEDULE,job)
+        .map(jobScheduleData => {
+            
+            return jobScheduleData;
+        });
+}
+deleteJobScheduleData(jobName) {
+    return this.http.delete<any>(URLConstants.JOB_SCHEDULE,this.getDashboardOptions(CRMConstants.JOB_NAME,jobName))
+        .map(result => {
+            
+            return result;
+        });
+}
 getTankAlarmHistory(userId) {
     return this.http.get<any>(URLConstants.TANK_ALARM_HISTORY_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
         .map(tankAlaramList => {

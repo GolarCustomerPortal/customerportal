@@ -27,7 +27,7 @@ export class CRMConstants {
     public static EDITPROFILE = "Edit Profile";
     public static LOGOUT = "Logout";
     public static TANK_MONITOR_SIGNUP = "Tank Monitor signup";
-    
+    public static JOB_NAME = 'jobName';
     
     
     

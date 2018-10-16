@@ -16,6 +16,7 @@ import com.customerportal.bean.Company;
 import com.customerportal.bean.Contact;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.InventoryReport;
+import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
@@ -1360,8 +1361,10 @@ public class DBUtil {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
-			Query query = session.createNativeQuery("SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (viewed is null or viewed ='false') and facility__C in (" + facilitiesIdString + " ) ");
-			
+			Query query = session.createNativeQuery(
+					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (viewed is null or viewed ='false') and facility__C in ("
+							+ facilitiesIdString + " ) ");
+
 			List<TankAarmHistory> lst = new ArrayList<TankAarmHistory>();
 			List<Object[]> rows = query.list();
 			for (Object[] row : rows) {
@@ -1370,7 +1373,7 @@ public class DBUtil {
 					alarmHistory.setFid(row[0].toString());
 				if (row[1] != null)
 					alarmHistory.setName(row[1].toString());
-				
+
 				if (row[2] != null)
 					alarmHistory.setOccuredDate(row[2].toString());
 				if (row[3] != null)
@@ -1379,8 +1382,7 @@ public class DBUtil {
 					alarmHistory.setId(row[4].toString());
 				lst.add(alarmHistory);
 			}
-			
-			
+
 			trx.commit();
 			session.close();
 			return lst;
@@ -1405,14 +1407,13 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			for (String facility : facilityArray) {
-				
-			
+
 				TankAarmHistory alarmHistory = (TankAarmHistory) session.get(TankAarmHistory.class, facility);
 
-			if (alarmHistory != null) {
-				alarmHistory.setViewed("true");
-				session.update(alarmHistory);
-			} 
+				if (alarmHistory != null) {
+					alarmHistory.setViewed("true");
+					session.update(alarmHistory);
+				}
 			}
 			trx.commit();
 
@@ -1428,7 +1429,73 @@ public class DBUtil {
 
 		}
 		return true;
+
+	}
+
+	public List<JobSchedule> getJobScheduleData() {
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM schedulejob", JobSchedule.class);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		return lst;
+	}
+
+	public JobSchedule saveJobScheduleData(JobSchedule schedule) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+
+			JobSchedule scheduleDB = (JobSchedule) session.get(JobSchedule.class, schedule.getJobName());
+			if (scheduleDB != null) {
+				scheduleDB.setDependentJobName(schedule.getDependentJobName());
+				scheduleDB.setEndFilePath(schedule.getEndFilePath());
+				scheduleDB.setRecurrence(schedule.isRecurrence());
+				scheduleDB.setJobPath(schedule.getJobPath());
+				scheduleDB.setSchedule(schedule.getSchedule());
+				session.update(scheduleDB);
+			} else {
+				session.save(schedule);
+			}
+			trx.commit();
+			return schedule;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in saveJobScheduleData   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
+
+		}
+	}
 	
+	public boolean deleteJobScheduleData(String jobName) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+
+			JobSchedule scheduleDB = (JobSchedule) session.get(JobSchedule.class, jobName);
+			if (scheduleDB != null) {
+				session.remove(scheduleDB);
+			} 
+			trx.commit();
+			return true;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in deleteJobScheduleData   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return false;
+		} finally {
+
+		}
 	}
 
 }

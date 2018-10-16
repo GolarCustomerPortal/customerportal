@@ -1,5 +1,5 @@
 <div class="margin-top-bottom">
-<p-table [columns]="cols" [value]="jobs" selectionMode="single" [(selection)]="selectedJob" (onRowSelect)="onRowSelect($event)"
+<p-table [columns]="cols" [value]="jobScheduleData" selectionMode="single" [(selection)]="selectedJob" (onRowSelect)="onRowSelect($event)"
   [rows]="50">
   <ng-template pTemplate="caption">
     Job Schedule
@@ -36,6 +36,12 @@
       <div class="ui-grid-col-8">
         <input class="schedule-fullwidth" pInputText id="jobName" [(ngModel)]="job.jobName" />
       </div>
+    </div>
+    <div class="ui-grid-col-4">
+      <label for="dependentJobName">Dependent Job Name</label>
+    </div>
+    <div class="ui-grid-col-8">
+      <input class="schedule-fullwidth" pInputText id="dependentJobName" [(ngModel)]="job.dependentJobName" />
     </div>
     <div class="ui-grid-row margin-top-bottom">
       <div class="ui-grid-col-4">

@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.TankAarmHistory;
@@ -306,6 +307,33 @@ public class DashBoardService {
 		boolean result = false;
 		String[] facilityArray = facilityString.split(",");
 		result = DBUtil.getInstance().resetTankalarmHistory(facilityArray);
+		return Response.status(200).entity(result).build();
+		
+	}
+	@Path("/jobschedule")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getJobScheduleData (@QueryParam("userId") String userId) {
+		
+		List<JobSchedule> jobScheduleData = DBUtil.getInstance().getJobScheduleData();
+		return Response.status(200).entity(jobScheduleData).build();
+		
+	}
+	@Path("/jobschedule")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response saveJobScheduleData (JobSchedule data) {
+		
+		JobSchedule jobSchedule = DBUtil.getInstance().saveJobScheduleData(data);
+		return Response.status(200).entity(jobSchedule).build();
+		
+	}
+	@Path("/jobschedule")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteJobScheduleData (@QueryParam("jobName") String jobName) {
+		
+		boolean result = DBUtil.getInstance().deleteJobScheduleData(jobName);
 		return Response.status(200).entity(result).build();
 		
 	}
