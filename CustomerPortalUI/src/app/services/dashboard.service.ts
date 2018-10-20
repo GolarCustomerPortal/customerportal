@@ -123,6 +123,13 @@ deleteJobScheduleData(jobName) {
             return result;
         });
 }
+getScheduleJobHisotryData(userId) {
+    return this.http.get<any>(URLConstants.JOB_SCHEDULE_HISTORY,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+        .map(jobScheduleHistoryData => {
+            
+            return jobScheduleHistoryData;
+        });
+}
 getTankAlarmHistory(userId) {
     return this.http.get<any>(URLConstants.TANK_ALARM_HISTORY_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
         .map(tankAlaramList => {

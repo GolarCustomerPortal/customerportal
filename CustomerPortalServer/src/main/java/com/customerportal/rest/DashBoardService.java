@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,22 +18,26 @@ import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.JobSchedule;
+import com.customerportal.bean.JobScheduleHistory;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.TankAarmHistory;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.USSBOA;
+import com.customerportal.bean.User;
 import com.customerportal.bean.Userpreferences;
 import com.customerportal.util.CustomerPortalUtil;
 import com.customerportal.util.DBUtil;
-import com.sun.jersey.multipart.FormDataParam;
 
 @Path("/dashboard")
 public class DashBoardService {
 
+
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dashboardContent(@QueryParam("userId") String userId) {
+		User user = DBUtil.getInstance().getSpecificUser(userId);
+		
 		Map<String, Object> resultMap= new HashMap<String,Object>();
 		Map<String, Object> dashboardMap = new HashMap<String, Object>();
 		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
@@ -74,7 +77,7 @@ public class DashBoardService {
 //		dashboardMap.put("premium", 310);
 //		dashboardMap.put("diesel", 500);
 		List<KeyValue> kvList  = new ArrayList<KeyValue>();
-		if(facilitiesList != null)
+		if(facilitiesList != null && user != null && !user.isAdmin())
 		 kvList = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
 		
 		resultMap.put("consolidateReportData", kvList);
@@ -87,6 +90,7 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFacilitiesAndCompanies(@QueryParam("userId") String userId) {
+		User user = DBUtil.getInstance().getSpecificUser(userId);
 		Map<String,  Object> resultMap= new HashMap<String,  Object>();
 		Map<String, Object> dashboardMap = new HashMap<String, Object>();
 		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
@@ -122,7 +126,10 @@ public class DashBoardService {
 		
 		//consolidated report
 		dashboardMap = new HashMap<String, Object>();
-		 List<KeyValue> kvList  = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
+		List<KeyValue> kvList  = new ArrayList<KeyValue>();
+		if(facilitiesList != null && user != null && !user.isAdmin())
+		 kvList = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
+		
 //		dashboardMap.put("regular", 200);
 //		dashboardMap.put("midgrade", 150);	
 //		dashboardMap.put("premium", 310);
@@ -139,7 +146,7 @@ public class DashBoardService {
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
 		if(facilitiesType.equalsIgnoreCase("Managed"))
-		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 		
 
 		return Response.status(200).entity(facilitiesList).build();
@@ -150,7 +157,7 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilityData(@QueryParam("userId") String userId,@QueryParam("facilityID") String facilityID) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacility(userId,facilityID);
-		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 
 		return Response.status(200).entity(facilitiesList).build();
 
@@ -163,7 +170,7 @@ public class DashBoardService {
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
 		for (Company company : companiesList) {
 			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
-			CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 			company.setFacilities(facilitiesList);	
 		}
 		return Response.status(200).entity(companiesList).build();
@@ -176,7 +183,7 @@ public class DashBoardService {
 		List<Company> companiesList = DBUtil.getInstance().fetchCompany(userId,companyID);
 		for (Company company : companiesList) {
 			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
-			CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 			company.setFacilities(facilitiesList);	
 		}
 		return Response.status(200).entity(companiesList).build();
@@ -188,7 +195,7 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response complianceData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesFCompliance(userId,facilitiesType);
-		CustomerPortalUtil.getActualFacilitiesList(facilitiesList);
+		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 		return Response.status(200).entity(facilitiesList).build();
 
 	}
@@ -335,6 +342,15 @@ public class DashBoardService {
 		
 		boolean result = DBUtil.getInstance().deleteJobScheduleData(jobName);
 		return Response.status(200).entity(result).build();
+		
+	}
+	@Path("/jobschedulehistory")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getJobScheduleHistoryData (@QueryParam("userId") String userId) {
+		
+		List<JobScheduleHistory> jobScheduleHistoryData = DBUtil.getInstance().getJobScheduleHistoryData();
+		return Response.status(200).entity(jobScheduleHistoryData).build();
 		
 	}
 	

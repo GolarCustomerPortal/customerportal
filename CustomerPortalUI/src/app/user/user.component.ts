@@ -154,5 +154,8 @@ var self=this;
     this.commonService.removeEditUser();
     this.router.navigate(['/login']);
   }
-  
+  checkDisabled(){
+    return !this.commonService.isAdmin() && this.isEdit;
+
+  }
 }

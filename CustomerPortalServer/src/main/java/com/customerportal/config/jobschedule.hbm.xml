@@ -9,6 +9,8 @@
 		</id>
 		<property name="dependentJobName" column="dependentjob" />
 		<property name="jobPath" column="jobpath" />
+		<property name="sourceFilePath" column="sourcefile
+		" />
 		<property name="endFilePath" column="endfilename" />
 		<property name="schedule" column="schedule" />
 		<property name="recurrence" column="recurrence" />

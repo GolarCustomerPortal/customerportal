@@ -8,6 +8,7 @@ public class JobSchedule {
 	private String endFilePath;
 	private String schedule;
 	private boolean recurrence;
+	private String sourceFilePath;
 	public String getJobName() {
 		return jobName;
 	}
@@ -45,6 +46,11 @@ public class JobSchedule {
 		this.recurrence = recurrence;
 	}
 	
-	
+	public void setSourceFilePath(String sourceFilePath) {
+		this.sourceFilePath = sourceFilePath;
+	}
+	public String getSourceFilePath() {
+		return sourceFilePath;
+	}
 
 }

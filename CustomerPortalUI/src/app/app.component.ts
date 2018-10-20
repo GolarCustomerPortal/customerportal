@@ -37,7 +37,7 @@ selectedSearchOption = this.searchOptions[0];
     
   }
   showAll(){
-    this.router.navigate(['/']);
+    this.router.navigate(['/dummy']);
   }
   onFacilitiesDataSelect(){
     this.commonService.selectedLeftTab("facilities")

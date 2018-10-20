@@ -25,4 +25,5 @@ export class URLConstants {
     public static TANK_ALARM_HISTORY_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankalarmhistory';
     public static USER_PREFERENCES = environment.server+'/CustomerPortalServer/rest/dashboard/preferences';
     public static JOB_SCHEDULE = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedule';
+    public static JOB_SCHEDULE_HISTORY = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedulehistory';
 }

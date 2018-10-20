@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit {
     var resultObj = JSON.parse(this.commonService.getSearchResult())
     this.handleSearchResults(resultObj);
     this.commonService.resetSearchResult();
+    return;
   }
 //searchRestults
 
@@ -107,6 +108,9 @@ export class HomeComponent implements OnInit {
   notificationFormSubmittedFileName;
   notificationFormSubmittedFile;
   notificationFormSubmittedFileSuccess = "false";
+  letterOfNetworthCertificationFileName;
+  letterOfNetworthCertificationFile;
+  letterOfNetworthCertificationFileSuccess = "false";
   enableNotificationuploadButton = false;
   notificationResultList = [];
 
@@ -177,12 +181,13 @@ export class HomeComponent implements OnInit {
   constructor(private router: Router,public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
     if (this.commonService.getSearchResult() == null)
-    this.fetchDashboardValues();
+    this.fetchDashboardValues(true);
   }
-  fetchDashboardValues() {
+  fetchDashboardValues(resetview) {
     this.dashboardService.getDashboardData(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         dashboardData => {
+          if(resetview)
           this.resetLeftSideData();
           this.getFacilitiesData(dashboardData.facilitiesData);
           this.getCompanies(dashboardData.companiesData);
@@ -227,8 +232,8 @@ export class HomeComponent implements OnInit {
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[1]);
     this.facilitiesLabel.push(this.dashboardConst.MANAGED);
     this.facilitiesLabel.push(this.dashboardConst.UNMANAGED);
-    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + '-- ' + this.constructPercentage(this.facilitiesArray[0], this.facilitiesArray[1]));
-    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + '-- ' + this.constructPercentage(this.facilitiesArray[1], this.facilitiesArray[0]))
+    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + '-- ' + this.facilitiesArray[0]);
+    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + '-- ' + this.facilitiesArray[1])
     this.totalFacilities = this.facilitiesArray[1] + this.facilitiesArray[0];
 
   }
@@ -239,17 +244,22 @@ export class HomeComponent implements OnInit {
     else
       event = $event.element._index
       this.selectedChart = "facilities";
+      this.showRightContent = false;
     this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onFacilitiesDataSelect", this.facilitiesLabel[event]);
-    this.rightPanelTitle = this.dashboardConst.MYFACALITIES+" -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
     this.showCompanies = false;
     this.showCompliance = false;
     this.showConsolidateReport = false;
     this.facilitiesClass = "ui-g-12";
     this.showBack = true;
+    if ($event == null || $event == undefined){
+      this.fetchDashboardValues(false);
+      return;
+    }
     this.showRightContent = true;
-
+    this.rightPanelTitle = this.dashboardConst.MYFACALITIES+" -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
+  
     this.dashboardService.getFacilitiesList(this.commonService.getUserName(), this.facilitiesLabel[event]) // retrieve all thd parent folders
       .subscribe(
         facilitiesList => {
@@ -259,6 +269,8 @@ export class HomeComponent implements OnInit {
             faciData.compliance =false;
             else if(faciData.compliance != null)
             faciData.compliance = faciData.compliance == "true";
+            faciData.tankPaidService = faciData.tankPaidService=="true";
+            faciData.compliance = faciData.compliance && faciData.tankPaidService;
             // var image = this.commonService.gasStationImage(faciData.brand)
             // faciData.image = "assets/images/gasstation/"+image;
             // this.getFacilityConsolidateReport(faciData.consolidateReport);
@@ -348,7 +360,12 @@ export class HomeComponent implements OnInit {
     this.showCompliance = false;
     this.showConsolidateReport = false;
     this.companiesClass = "ui-g-12";
+    this.showRightContent = false;
     this.showBack = true;
+    if ($event == null || $event == undefined){
+      this.fetchDashboardValues(false);
+      return;
+    }
     this.showRightContent = true;
     this.rightPanelTitle = this.dashboardConst.MYCOMPANIES+" -- " + " (" + this.totalCompanies + ")";
     this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
@@ -425,7 +442,14 @@ export class HomeComponent implements OnInit {
     this.showCompanies = false;
     this.showConsolidateReport = false;
     this.complianceClass = "ui-g-12";
+    this.showRightContent = false;
     this.showBack = true;
+    if ($event == null || $event == undefined){
+      this.fetchDashboardValues(false);
+      return;
+    }
+    
+   
     this.rightPanelTitle = this.dashboardConst.MYCOMPLIANCE+" -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
     this.showRightContent = true;
     var complianceParam = "compliant";
@@ -438,10 +462,11 @@ export class HomeComponent implements OnInit {
         complianceList => {
           if(complianceList !== null )
           for (var i = 0; i < complianceList.length; i++) {
-            var feciData = complianceList[i];
+            var faciData = complianceList[i];
             // var image = this.commonService.gasStationImage(feciData.brand)
-            feciData.image = environment.server+feciData.imageURL;
-            this.complianceRightdata.push(feciData);
+            faciData.tankPaidService =  faciData.tankPaidService == "true";
+            faciData.image = environment.server+faciData.imageURL;
+            this.complianceRightdata.push(faciData);
           }
 
         },
@@ -565,7 +590,7 @@ export class HomeComponent implements OnInit {
     this.showRightContent = false;
     this.showRightDetailContent = false;
     this.hideSearchPanel();
-   
+    this.fetchDashboardValues(true);
     this.resetView();
   }
   resetView() {
@@ -604,7 +629,7 @@ export class HomeComponent implements OnInit {
   //   return "assets/images/gasstation/" + fdata.img;
   // }
   showRightDetailPanel() {
-    if(this.searchResult["facilitiesList"] == null && this.searchResult["companiesList"] ==null)
+    if(this.selectedChart =="companies" || this.selectedChart == "facilities" ||this.selectedChart == "compliance")
     this.middlePaneClass = "ui-g-12";
     else
     this.middlePaneClass = "ui-g-6";
@@ -716,7 +741,10 @@ export class HomeComponent implements OnInit {
     if (this.notificationFormSubmittedFile != null) {
       this.generateFileUploadObj(this.notificationFormSubmittedFile, frmData, 'notificationFormSubmitted', fileuploadlabelArray)
     }
-
+    if (this.letterOfNetworthCertificationFile != null) {
+      this.generateFileUploadObj(this.letterOfNetworthCertificationFile, frmData, 'letterOfNetworthCertification', fileuploadlabelArray)
+    }
+    
 
     frmData.append("fileuploadlabel", JSON.stringify(fileuploadlabelArray));
     this.importNotificationDocument(frmData);
@@ -752,6 +780,8 @@ export class HomeComponent implements OnInit {
                 this.taxIdFileSuccess = result[i].value;
               if (result[i].key == 'notificationFormSubmitted')
                 this.notificationFormSubmittedFileSuccess = result[i].value;
+                if (result[i].key == 'letterOfNetworthCertification')
+                this.letterOfNetworthCertificationFileSuccess = result[i].value;
 
             }
 
@@ -776,6 +806,7 @@ export class HomeComponent implements OnInit {
     this.deedLandFileName = "";
     this.taxIdFileName = "";
     this.notificationFormSubmittedFileName = "";
+    this.letterOfNetworthCertificationFileName="";
     if(clearTick){
     this.fOperatorfileSuccess = "false";
     this.ownerFileSuccess = "false";
@@ -955,21 +986,26 @@ searchArea = {
   handleSearchResults(searchResult){
     if(searchResult.facilitiesList!= null && searchResult.facilitiesList.length>0){
     for (var i = 0; i < searchResult.facilitiesList.length; i++) {
-      var feciData = searchResult.facilitiesList[i];
-      if(feciData == null)continue;
-      // var image = this.commonService.gasStationImage(feciData.brand)
-  
+      var faciData = searchResult.facilitiesList[i];
+      if(faciData == null)continue;
+       // var image = this.commonService.gasStationImage(feciData.brand)
+      if(faciData.tankPaidService != null)
+       faciData.tankPaidService = faciData.tankPaidService == "true";
       // feciData.image = "assets/images/gasstation/"+image;
-      feciData.image = environment.server+feciData.imageURL;
+      faciData.image = environment.server+faciData.imageURL;
     }
   }
     if(searchResult.companiesList!= null && searchResult.companiesList.length>0){
       for (var i = 0; i < searchResult.companiesList.length; i++) {
-        var feciData = searchResult.companiesList[i];
-        for (var j = 0; j < feciData.facilities.length; j++) {
-          feciData.facilities[j].image = feciData.image = environment.server+feciData.facilities[j].imageURL;
+        var faciData = searchResult.companiesList[i];
+        for (var j = 0; j < faciData.facilities.length; j++) {
+          if( faciData.facilities[j] == null)continue;
+          // var image = this.commonService.gasStationImage(feciData.brand)
+         if( faciData.facilities[j].tankPaidService != null)
+         faciData.facilities[j].tankPaidService =  faciData.facilities[j].tankPaidService == "true";
+          faciData.facilities[j].image = faciData.image = environment.server+faciData.facilities[j].imageURL;
         }
-        this.companiesRightdata.push(feciData);
+        this.companiesRightdata.push(faciData);
       }
     }
     this.searchResult["facilitiesList"] = searchResult.facilitiesList;

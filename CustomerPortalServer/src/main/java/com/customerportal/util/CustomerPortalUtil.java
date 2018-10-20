@@ -6,12 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.TankMonitorSignup;
+import com.customerportal.bean.User;
 
 public class CustomerPortalUtil {
 	static Properties imageProperties = new Properties();
@@ -26,7 +28,8 @@ public class CustomerPortalUtil {
 		}
 	}
 
-	public static void getActualFacilitiesList(List<Facilities> facilitiesList) {
+	public static void getActualFacilitiesList(List<Facilities> facilitiesList, String userId) {
+		User user = DBUtil.getInstance().getSpecificUser(userId);
 		String facilitiesIdString = getfacilitiesIdString(facilitiesList);
 		List<Facilities> notificationFormList = DBUtil.getInstance().facilityNotificationFormList(facilitiesIdString);
 		List<Facilities> complianceList = DBUtil.getInstance().facilityComplianceList(facilitiesIdString);
@@ -35,8 +38,10 @@ public class CustomerPortalUtil {
 			for (Facilities facility : facilitiesList) {
 				if (facility == null)
 					continue;
-				List<KeyValue> keyValue = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
-				facility.setConsolidateReport(keyValue);
+				List<KeyValue> kvList  = new ArrayList<KeyValue>();
+				if(facilitiesList != null && user != null && !user.isAdmin())
+				 kvList = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
+				facility.setConsolidateReport(kvList);
 				if (notificationFormList.contains(facility.getFacilityId())) {
 					facility.setNotificationFormButtonEnable("true");
 				} else
@@ -70,9 +75,13 @@ public class CustomerPortalUtil {
 		fetchURLProperties();
 		String contextpath = imageProperties.getProperty("contextPath");
 		for (Facilities facility : lst) {
-			String imageURL = "/" + contextpath + "/images/gasstation/bp.png";
+			if(facility == null) continue;
+			String imageURL = "/" + contextpath + "/images/gasstation/not_found_logo.png";
 			if (facility.getBrand() != null) {
-				imageURL = "/" + contextpath + "/images/gasstation/" + imageProperties.getProperty(facility.getBrand());
+				String brand=facility.getBrand().replace(" ", "_");
+				String brandURL = imageProperties.getProperty(brand);
+				brandURL = brandURL == null? "not_found_logo.png":brandURL;
+				imageURL = "/" + contextpath + "/images/gasstation/" + imageProperties.getProperty(brand);
 			}
 			facility.setImageURL(imageURL);
 		}
@@ -95,7 +104,7 @@ public class CustomerPortalUtil {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
 			for (int i = 0; i < tankMonitorSignup.size(); i++) {
-				bw.write(tankMonitorSignup.get(i).getFid()+" "+tankMonitorSignup.get(i).getIpAddress());
+				bw.write(tankMonitorSignup.get(i).getIpAddress()+" "+tankMonitorSignup.get(i).getFid());
 				bw.newLine();
 			}
 

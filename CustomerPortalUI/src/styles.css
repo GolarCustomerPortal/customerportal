@@ -394,6 +394,9 @@ a, a:hover, a:Visited{
  canvas {
     width: 100% !important;
     height: 280px !important;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 .schedule-fullwidth{
     width: 100%;
@@ -411,4 +414,11 @@ a, a:hover, a:Visited{
     font-size: 20px !important;
     color:#2C347E !important;
     cursor: pointer;  
+}
+
+
+.my-chart {
+    display: block;
+    width: 533px;
+    height: 266px;
 }

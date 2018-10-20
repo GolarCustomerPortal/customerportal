@@ -17,6 +17,7 @@ import com.customerportal.bean.Contact;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.JobSchedule;
+import com.customerportal.bean.JobScheduleHistory;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
@@ -49,6 +50,20 @@ public class DBUtil {
 		t.commit();
 		session.close();
 		return lst;
+	}
+	public User getSpecificUser(String userId) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM crmuser where id =:userId", User.class);
+		query.setString("userId", userId);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		
+		if(lst != null)
+			return (User) lst.get(0);
+		return null;
 	}
 
 	public User login(String username, String password, boolean fromApp) {
@@ -183,9 +198,10 @@ public class DBUtil {
 			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
 					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c,Compliant__c FROM Facility_Management__c";
 
+			queryString += " where ";
 			if (!userId.equalsIgnoreCase("admin"))
-				queryString += " where Contact__c= '" + userId + "'";
-			queryString += "  and ( ";
+				queryString += " Contact__c= '" + userId + "'  and ";
+			queryString += " ( ";
 			if (searchType.equalsIgnoreCase("all")) {
 				queryString += "  FID__C like '%" + searchString + "%' or Facility_Name__c like '%" + searchString
 						+ "%' or Facility_Address__c like '%" + searchString + "%'";
@@ -812,7 +828,7 @@ public class DBUtil {
 				tSignup = tmpSignup;
 			tSignup.setIpAddress(tmpSignup.getIpAddress());
 		}
-		t.commit();
+		t.commit();	
 		session.close();
 		return tSignup;
 	}
@@ -841,11 +857,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT id, Name, Facility_Operator_POA__c,Property_Owner_POA__c,UST_Owner_POA__c,Notification_form_Submitted__c,Property_Deed_Land_Contract__c,Operator_Affidevit_of_Lease__c,Owner_Affidavit_Of_Lease__c,SOS_Status__c,"
-							+ "Tax_ID_Information__c,Letter_of_Networth_Certificate_of_INsure__c,Operator_Lease_Agreement__c,Line_and_Leak_Detector_Test__c,Is_LnL_Detr_Tst_requrd__c,Cathodic_Protection__c,Is_CP_required__c,"
-							+ "Operator_A_certificate__c,Operator_B_certificate__c,Operator_C_certificate__c,Tank_Testing_Report__c,Is_Tank_Testing_Report_Required__c,Repair_Documents__c,Are_Repair_Documents_Required__c,"
-							+ "Release_Detection_Report__c,Is_Release_Detection_Report_Required__c,Internal_Lining_Inspection__c,Is_IL_Inspection_Required__c,MGT_Paid_Service__c ,"
-							+ "( Due_Date__c <= CURDATE()) as due_Date_c FROM Account where id =:facilitiesId",
+					"SELECT * FROM Account where id =:facilitiesId",
 					Account.class);
 
 			query.setString("facilitiesId", facilitiesId);
@@ -874,9 +886,9 @@ public class DBUtil {
 					account.setSosStatusEnable(true);
 				if (account.getTaxIDInformation() != null && account.getTaxIDInformation().equalsIgnoreCase("Missing"))
 					account.setTaxIDInformationEnable(true);
-				// if(account.getLetterOfNetworthCertification() != null &&
-				// account.getLetterOfNetworthCertification().equalsIgnoreCase("Missing"))
-				// account.setLetterOfNetworthCertificationEnable(true);
+				 if(account.getLetterOfNetworthCertification() != null &&
+				 account.getLetterOfNetworthCertification().equalsIgnoreCase("Missing"))
+				 account.setLetterOfNetworthCertificationEnable(true);
 				if (account.getOperatorLeaseAgreement() != null
 						&& account.getOperatorLeaseAgreement().equalsIgnoreCase("Missing"))
 					account.setOperatorLeaseAgreementEnable(true);
@@ -978,12 +990,15 @@ public class DBUtil {
 			boolean isadmin) {
 		SearchResults result = new SearchResults();
 		// List<String> facilitiesList = fetchFacilityId(username);
+		searchString = searchString.trim();
 		List<Facilities> facilitiesList = searchFacilities(searchType, username, searchString);
+		if(facilitiesList != null)
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesList,username);
 		List<Company> companiesList = fetchCompanyNamesForSearch(searchType, username, searchString);
 		for (Company company : companiesList) {
 			List<Facilities> facilitiesListLocal = DBUtil.getInstance()
 					.fetchFacilitiesForCompany(company.getCompanyName(), company.getCompanyOwner());
-			CustomerPortalUtil.getActualFacilitiesList(facilitiesListLocal);
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesListLocal,username);
 			company.setFacilities(facilitiesListLocal);
 		}
 		result.setFacilitiesList(facilitiesList);
@@ -1001,9 +1016,10 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
+			queryString += " where ";
 			if (!userId.equalsIgnoreCase("admin"))
-				queryString += " where Company_Owner__c='" + userId + "' ";
-			queryString += "  and ( ";
+				queryString += " Company_Owner__c='" + userId + "'  and ";
+			queryString += "( ";
 			if (searchType.equalsIgnoreCase("all")) {
 				queryString += " Company__c like '%" + searchString + "%' or Company_Address__c like '%" + searchString
 						+ "%'";
@@ -1362,8 +1378,9 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			Query query = session.createNativeQuery(
-					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (viewed is null or viewed ='false') and facility__C in ("
-							+ facilitiesIdString + " ) ");
+					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (tnk.viewed is null or tnk.viewed ='false') "
+					+ "and tnk.AlarmType__C !='---' and facility__C in ("
+							+ facilitiesIdString + " ) order by tnk.OccuredDate__c desc");
 
 			List<TankAarmHistory> lst = new ArrayList<TankAarmHistory>();
 			List<Object[]> rows = query.list();
@@ -1453,6 +1470,7 @@ public class DBUtil {
 				scheduleDB.setDependentJobName(schedule.getDependentJobName());
 				scheduleDB.setEndFilePath(schedule.getEndFilePath());
 				scheduleDB.setRecurrence(schedule.isRecurrence());
+				scheduleDB.setSourceFilePath(schedule.getSourceFilePath());
 				scheduleDB.setJobPath(schedule.getJobPath());
 				scheduleDB.setSchedule(schedule.getSchedule());
 				session.update(scheduleDB);
@@ -1473,7 +1491,7 @@ public class DBUtil {
 
 		}
 	}
-	
+
 	public boolean deleteJobScheduleData(String jobName) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
@@ -1482,7 +1500,7 @@ public class DBUtil {
 			JobSchedule scheduleDB = (JobSchedule) session.get(JobSchedule.class, jobName);
 			if (scheduleDB != null) {
 				session.remove(scheduleDB);
-			} 
+			}
 			trx.commit();
 			return true;
 		} catch (Exception exception) {
@@ -1496,6 +1514,65 @@ public class DBUtil {
 		} finally {
 
 		}
+	}
+
+	public List<JobSchedule> getParentSchedulejobs() {
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery(
+				"SELECT * FROM schedulejob where dependentjob is null or dependentjob = ''", JobSchedule.class);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		return lst;
+	}
+
+	public List<JobSchedule> getChildSchedulejobs(String jobName) {
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM schedulejob where dependentjob =:jobName",
+				JobSchedule.class);
+		query.setString("jobName", jobName);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		return lst;
+	}
+
+	public void writeSchduleHistory(JobScheduleHistory history) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+
+			session.save(history);
+			trx.commit();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in saveJobScheduleData   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+		} finally {
+
+		}
+
+	}
+
+	public List<JobScheduleHistory> getJobScheduleHistoryData() {
+
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM schedulejobhistory s order by s.jobexecutiontime desc", JobScheduleHistory.class);
+		query.setFirstResult(0).setMaxResults(50);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		return lst;
+	
 	}
 
 }

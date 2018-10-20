@@ -13,7 +13,7 @@
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
-      <td *ngFor="let col of columns">
+      <td *ngFor="let col of columns" style="word-break: break-all">
         {{rowData[col.field]}}
       </td>
     </tr>
@@ -21,27 +21,37 @@
   <ng-template pTemplate="summary" let-rowData>
     <div style="text-align:left">
       <button class="btn btn-secondary" (click)="showDialogToAdd()">Add Job</button>
+      <button class="btn btn-secondary" style="float: right;" (click)="fetchScheduleJobHistory()" data-toggle="modal" data-target="#jobHistoryModal">Schedule Job History</button>
+ 
     </div>
+    <!-- <div style="text-align:left">
+    <button class="btn btn-secondary" (click)="fetchScheduleJobHistory()" data-toggle="modal" data-target="#jobHistoryModal">Schedule Job History</button>
+ </div> -->
   </ng-template>
 </p-table>
 
 
 <p-dialog id="schedule-dialog" header="Job Details" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
-  [width]="500">
+  [width]="700">
   <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="job">
     <div class="ui-grid-row margin-top-bottom">
       <div class="ui-grid-col-4">
         <label for="jobName">Job Name</label>
       </div>
       <div class="ui-grid-col-8">
-        <input class="schedule-fullwidth" pInputText id="jobName" [(ngModel)]="job.jobName" />
+        <input class="schedule-fullwidth" pInputText id="jobName" [(ngModel)]="job.jobName" (keyup)="checkNameValid(job.jobName)" />
+        <div style="color: #721c24;" role="alert" *ngIf="duplicateName === true">
+          JobName already exists
+      </div>
       </div>
     </div>
+    <div class="ui-grid-row margin-top-bottom">
     <div class="ui-grid-col-4">
       <label for="dependentJobName">Dependent Job Name</label>
     </div>
     <div class="ui-grid-col-8">
       <input class="schedule-fullwidth" pInputText id="dependentJobName" [(ngModel)]="job.dependentJobName" />
+    </div>
     </div>
     <div class="ui-grid-row margin-top-bottom">
       <div class="ui-grid-col-4">
@@ -49,6 +59,14 @@
       </div>
       <div class="ui-grid-col-8">
         <input class="schedule-fullwidth" pInputText id="jobFilePath" [(ngModel)]="job.jobPath" />
+      </div>
+    </div>
+    <div class="ui-grid-row margin-top-bottom">
+      <div class="ui-grid-col-4">
+        <label for="sourceFilePath"> Source File Path</label>
+      </div>
+      <div class="ui-grid-col-8">
+        <input class="schedule-fullwidth" pInputText id="sourceFilePath" [(ngModel)]="job.sourceFilePath" />
       </div>
     </div>
     <div class="ui-grid-row margin-top-bottom">
@@ -84,4 +102,42 @@
     </div>
   </p-footer>
 </p-dialog>
+</div>
+
+<div class="modal fade" id="jobHistoryModal" tabindex="-1" role="dialog" aria-labelledby="jobHistoryModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Schedule Job History</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <p-table [value]="jobScheduleHistoryData" scrollHeight="500px" [scrollable]="true">
+                  <ng-template pTemplate="header">
+                      <tr>
+                          <th style="width:50px;">S.no</th>
+                          <th style="width:20%;">Job Name</th>
+                          <th style="width:60%;">Job Exection Time</th>
+                          <th style="width:10%;">Result</th>
+                      </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-job let-rowIndex="rowIndex">
+                      <tr>
+                          <td style="width:50px;">
+                                 {{rowIndex+1}}
+                          </td>
+                          <td  style="width:20%;">{{job.jobName}}</td>
+                          <td style="width:60%;">{{getDate(job.jobExeuctionTime)}}</td>
+                          <td style="width:10%;">{{job.result}}</td>
+                      </tr>
+                  </ng-template>
+              </p-table>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
 </div>

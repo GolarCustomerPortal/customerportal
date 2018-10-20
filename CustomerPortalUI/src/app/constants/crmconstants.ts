@@ -20,7 +20,7 @@ export class CRMConstants {
     public static MYINVENTORY = "My Inventory";
     public static MYCOMPLIANCE = "Facility Status";
     public static MANAGED = "Managed";
-    public static UNMANAGED = "Non-managed";
+    public static UNMANAGED = "Non-Managed";
     public static lISTOFUSERS = "List of Users";
     public static ADDUSER = "Add User";
     public static SCHEDULE = "Job Schedule";

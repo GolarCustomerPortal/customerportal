@@ -41,19 +41,19 @@
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
             <label for="firstName">First Name</label>
             <input type="text" [ngClass]="{ 'is-invalid': f.submitted && !firstName.valid }" class="form-control" name="firstName" [(ngModel)]="model.firstName"
-                #firstName="ngModel" required maxlength="50" (keypress)="resetSuccessAndFailureMessages()" />
+                #firstName="ngModel" required maxlength="50" (keypress)="resetSuccessAndFailureMessages()" [disabled]='checkDisabled()' />
             <div *ngIf="f.submitted && !firstName.valid" class="help-block text-danger">First Name is required</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
             <label for="lastName">Last Name</label>
             <input type="text" class="form-control" [ngClass]="{ 'is-invalid': f.submitted && !lastName.valid }" name="lastName" [(ngModel)]="model.lastName"
-                #lastName="ngModel" required maxlength="50" (keypress)="resetSuccessAndFailureMessages()" />
+                #lastName="ngModel" required maxlength="50" (keypress)="resetSuccessAndFailureMessages()" [disabled]='checkDisabled()' />
             <div *ngIf="f.submitted && !lastName.valid" class="help-block text-danger">Last Name is required</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
             <label for="email">Email Address</label>
             <input type="text" [ngClass]="{ 'is-invalid': f.submitted && !email.valid }" class="form-control" name="email" [(ngModel)]="model.email"
-                #email="ngModel" required maxlength="50" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" (keypress)="resetSuccessAndFailureMessages()"
+                #email="ngModel" [disabled]='checkDisabled()' required maxlength="50" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" (keypress)="resetSuccessAndFailureMessages()"
             />
             <div *ngIf="f.submitted && !email.valid" class="help-block text-danger">
                 <span *ngIf="email.errors?.required">Email Address is required</span>
@@ -64,22 +64,22 @@
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="facilities" [(ngModel)]="model.facilities" #admin="ngModel" style="margin-right: 5px"
-                    />Facilities</label>
+                    [disabled]='checkDisabled()'/>Facilities</label>
             </div>
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="companies" [(ngModel)]="model.companies" #admin="ngModel" style="margin-right: 5px"
-                    />Companies</label>
+                    [disabled]='checkDisabled()'/>Companies</label>
             </div>
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="compliance" [(ngModel)]="model.compliance" #admin="ngModel" style="margin-right: 5px"
-                    />Facilities in Compliance</label>
+                    [disabled]='checkDisabled()'/>Facilities in Compliance</label>
             </div>
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="consolidate" [(ngModel)]="model.consolidate" #admin="ngModel" style="margin-right: 5px"
-                    />Consolidate report of all stations</label>
+                    [disabled]='checkDisabled()'/>Consolidate report of all stations</label>
             </div>
         </div>
         <div class="form-group">
@@ -90,7 +90,7 @@
         </div>
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="admin" [(ngModel)]="model.admin" #admin="ngModel" style="margin-right: 5px" />Is Admin</label>
+                <input type="checkbox" name="admin" [disabled]='checkDisabled()' [(ngModel)]="model.admin" #admin="ngModel" style="margin-right: 5px" />Is Admin</label>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !username.valid  && !isEdit}">
             <label for="username">Username</label>

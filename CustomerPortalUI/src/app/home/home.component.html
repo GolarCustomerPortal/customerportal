@@ -21,7 +21,7 @@
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
       <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="{{dashboardConst.BACKTOSHOWALL}}"
         aria-hidden="true" (click)="showAll()"></i>
-      <i class="fa fa-refresh pull-right back-refresh-button" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues()"></i>
+      <i class="fa fa-refresh pull-right back-refresh-button" title="Refresh Data" aria-hidden="true" (click)="fetchDashboardValues(true)"></i>
     </div>
     <div class="ui-g-12 margin-top" style="cursor: pointer;">
       <div [ngClass]="facilitiesClass" class="chart-left-padding" *ngIf="showFacilities">
@@ -71,20 +71,20 @@
                               <img class="card-image" src="{{facilitiesRightdata[i+j].image}}" /></div>
                           </div>
                             <div class="ui-g no-padding">
-                              <div class="ui-g-4 no-padding"> Name:</div>
-                              <div class="ui-g-8 no-padding">{{facilitiesRightdata[i+j].name}}</div>
+                              <div class="ui-g-3 no-padding"> Name:</div>
+                              <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].name}}</div>
                             </div>
                             <div class="ui-g no-padding">
-                              <div class="ui-g-4 no-padding"> Fid:</div>
-                              <div class="ui-g-8 no-padding">{{facilitiesRightdata[i+j].fid}}</div>
+                              <div class="ui-g-3 no-padding"> Fid:</div>
+                              <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].fid}}</div>
                             </div>
                             <div class="ui-g no-padding">
-                              <div class="ui-g-4 no-padding"> Address:</div>
-                              <div class="ui-g-8 no-padding">{{facilitiesRightdata[i+j].address}}</div>
+                              <div class="ui-g-3 no-padding"> Address:</div>
+                              <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].address}}</div>
                             </div>
                             <div class="ui-g no-padding">
-                              <div class="ui-g-4 no-padding"> Compliance:</div>
-                              <div class="ui-g-8 no-padding">
+                              <div class="ui-g-3 no-padding"> Compliance:</div>
+                              <div class="ui-g-9 no-padding">
                                 <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="facilitiesRightdata[i+j].compliance" [disabled]="true"></p-inputSwitch>
                               </div>
                             </div>
@@ -111,20 +111,20 @@
                               <img class="card-image" src="{{companyData.facilities[i+j].image}}" /></div>
                           </div>
                         <div class="ui-g no-padding">
-                          <div class="ui-g-4 no-padding"> Name:</div>
-                          <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].name}}</div>
+                          <div class="ui-g-3 no-padding"> Name:</div>
+                          <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].name}}</div>
                         </div>
                         <div class="ui-g no-padding">
-                          <div class="ui-g-4 no-padding"> Fid:</div>
-                          <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].fid}}</div>
+                          <div class="ui-g-3 no-padding"> Fid:</div>
+                          <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].fid}}</div>
                         </div>
                         <div class="ui-g no-padding">
-                          <div class="ui-g-4 no-padding"> Address:</div>
-                          <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].address}}</div>
+                          <div class="ui-g-3 no-padding"> Address:</div>
+                          <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].address}}</div>
                         </div>
                         <div class="ui-g no-padding">
-                          <div class="ui-g-4 no-padding"> Compliance:</div>
-                          <div class="ui-g-8 no-padding">
+                          <div class="ui-g-3 no-padding"> Compliance:</div>
+                          <div class="ui-g-9 no-padding">
                             <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
                           </div>
                         </div>
@@ -155,20 +155,20 @@
                                      <img class="card-image" src="{{complianceRightdata[i+j].image}}" /></div>
                                  </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-4 no-padding"> Name:</div>
-                                    <div class="ui-g-8 no-padding">{{complianceRightdata[i+j].name}}</div>
+                                    <div class="ui-g-3 no-padding"> Name:</div>
+                                    <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].name}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-4 no-padding"> Fid:</div>
-                                    <div class="ui-g-8 no-padding">{{complianceRightdata[i+j].fid}}</div>
+                                    <div class="ui-g-3 no-padding"> Fid:</div>
+                                    <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].fid}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-4 no-padding"> Address:</div>
-                                    <div class="ui-g-8 no-padding">{{complianceRightdata[i+j].address}}</div>
+                                    <div class="ui-g-3 no-padding"> Address:</div>
+                                    <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].address}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-4 no-padding"> Compliance:</div>
-                                    <div class="ui-g-8 no-padding">
+                                    <div class="ui-g-3 no-padding"> Compliance:</div>
+                                    <div class="ui-g-9 no-padding">
                                       <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
                                     </div>
                                   </div>
@@ -352,16 +352,16 @@
                 <span *ngIf='taxIdFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{taxIdFileName}}</span>
             </div>
           </div>
-          <!-- <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Notification form Submitted</div>
+          <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-8">Letter of Networth or COI</div>
             <div class="ui-g-4">
-              <p-fileUpload name="notificationFormSubmittedFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #notificationFormSubmittedfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;notificationFormSubmittedFile = $event.files[0]; notificationFormSubmittedFileName=$event.files[0].name"
-                [disabled]="{true: modalData?.notificationFormSubmitted?.toLowerCase() != 'missing'}">
+              <p-fileUpload name="letterOfNetworthCertificationFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #letterOfNetworthCertificationFileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;letterOfNetworthCertificationFile = $event.files[0]; letterOfNetworthCertificationFile=$event.files[0].name"
+                [disabled]="!modalData?.letterOfNetworthCertificationEnable">
                 </p-fileUpload>
-                <span *ngIf='notificationFormSubmittedFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{notificationFormSubmittedFileName}}</span>
+                <span *ngIf='letterOfNetworthCertificationFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{letterOfNetworthCertificationFile}}</span>
             </div>
-          </div> -->
+          </div>
 
 
         </form>

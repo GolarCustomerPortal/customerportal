@@ -24,5 +24,6 @@
 		<mapping resource="com/customerportal/config/tankalarmhistory.hbm.xml" />
 		<mapping resource="com/customerportal/config/userpreferences.hbm.xml" />
 		<mapping resource="com/customerportal/config/jobschedule.hbm.xml" />
+		<mapping resource="com/customerportal/config/jobschedulehistory.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 
