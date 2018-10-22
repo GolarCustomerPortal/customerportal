@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.Gaslevel;
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
 import com.customerportal.bean.KeyValue;
@@ -145,7 +146,6 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
-		if(facilitiesType.equalsIgnoreCase("Managed"))
 		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 		
 
@@ -220,8 +220,8 @@ public class DashBoardService {
 	@Path("/ussboa")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response fetchUSSBOAContent() {
-		List<USSBOA> ussBOA = DBUtil.getInstance().fetchUSSBOAContent();
+	public Response fetchUSSBOAContent(@QueryParam("vendorType") String vendorType) {
+		List<USSBOA> ussBOA = DBUtil.getInstance().fetchUSSBOAContent(vendorType);
 		return Response.status(200).entity(ussBOA).build();
 
 	}
@@ -353,5 +353,23 @@ public class DashBoardService {
 		return Response.status(200).entity(jobScheduleHistoryData).build();
 		
 	}
+	@Path("/gaslevel")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getGasLevel (@QueryParam("facilityId") String facilityId) {
+		
+		Gaslevel gaslevel = DBUtil.getInstance().getGasLevels(facilityId);
+		return Response.status(200).entity(gaslevel).build();
+		
+	}
 	
+	@Path("/gaslevel")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response saveGasLevel (Gaslevel gasLevel) {
+		
+		boolean result = DBUtil.getInstance().saveGasLevels(gasLevel);
+		return Response.status(200).entity(result).build();
+		
+	}
 }

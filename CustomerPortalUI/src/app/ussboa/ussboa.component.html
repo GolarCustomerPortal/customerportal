@@ -1,30 +1,53 @@
-<div class="height-center ui-panel ui-widget ui-widget-content ui-corner-all" >
+<div class="ui-panel ui-widget ui-widget-content ui-corner-all">
     <div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all" style="margin-bottom: 20px;margin-left: 10px">
-     <span class="ui-panel-title"> USSBOA Approved Vendors</span>
+     <span class="ui-panel-title"> USSBOA Preferred Vendor </span>
      </div>
-    <p-table [value]="ussBOAData" scrollHeight="1500px" [scrollable]="true">
+    <p-table [value]="ussBOAApprovedData" scrollHeight="300px" [scrollable]="true">
     <ng-template pTemplate="header">
         <tr>
-            <th style="width:17%">Name</th>
-            <th style="width:25%;">Address</th>
-            <th style="width:15%">Vendor Contact</th>
-            <th style="width:18%">Email</th>
-            <th style="width:10%">Phone</th>
-            <th style="width:10%">Mobile</th>
-            <th style="width:5%">Active</th>
+            <th style="width:20%">Name</th>
+            <th style="width:20%">Vendor Contact</th>
+            <th style="width:20%">Email</th>
+            <th style="width:20%">Phone</th>
+            <th style="width:20%">Mobile</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-ussboa let-rowIndex="rowIndex">
         <tr>
            
-          <td style="width:17%">{{ussboa.name}}</td>
-            <td style="width:25%;">{{ussboa.address}}</td>
-            <td style="width:15%">{{ussboa.ownerName}}</td>
-            <td style="width:18%">{{ussboa.email}}</td>
-            <td style="width:10%">{{ussboa.phone}}</td>
-            <td style="width:10%">{{ussboa.mobile}}</td>
-            <td style="width:5%;text-align: center"><input type="checkbox" name="active" checked="true" disabled="true" /></td>
+          <td style="width:20%">{{ussboa.name}}</td>
+            <td style="width:20%">{{ussboa.ownerName}}</td>
+            <td style="width:20%">{{ussboa.email}}</td>
+            <td style="width:20%">{{ussboa.phone}}</td>
+            <td style="width:20%">{{ussboa.mobile}}</td>
         </tr>
     </ng-template>
 </p-table>
 </div>
+
+<div class="ui-panel ui-widget ui-widget-content ui-corner-all"  style="margin-top:30px;border: 0px" >
+        <div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all" style="margin-bottom: 20px;margin-left: 10px">
+         <span class="ui-panel-title">USSBOA Associate Vendor</span>
+         </div>
+        <p-table [value]="ussBOAAssociateData" scrollHeight="300px" [scrollable]="true">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width:20%">Name</th>
+                <th style="width:20%">Vendor Contact</th>
+                <th style="width:20%">Email</th>
+                <th style="width:20%">Phone</th>
+                <th style="width:20%">Mobile</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ussboa let-rowIndex="rowIndex">
+            <tr>
+               
+              <td style="width:20%">{{ussboa.name}}</td>
+                <td style="width:20%">{{ussboa.ownerName}}</td>
+                <td style="width:20%">{{ussboa.email}}</td>
+                <td style="width:20%">{{ussboa.phone}}</td>
+                <td style="width:20%">{{ussboa.mobile}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+    </div>

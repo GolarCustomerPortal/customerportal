@@ -67,7 +67,7 @@ background: #ebf7ec
     margin-left: 25px;
     margin-top: 15px;
     border-radius: 10px !important;
-    background: #38b54a !important;
+    background: #38b54a!important;
     color: #FFFFFF;
     font-weight: bold;
 }
@@ -297,6 +297,11 @@ text-align: left;
     border-radius: 15px;
     min-height: 200px;
 }
+.consolidate-card-shadow{
+    border-radius: 15px;
+    /* min-height: 200px; */
+}
+
 .chart-left-padding{
     padding-left: 60px;
     padding-right: 20px;
@@ -416,9 +421,16 @@ a, a:hover, a:Visited{
     cursor: pointer;  
 }
 
+.green-background{
+    background: #38b54a !important;
+}
 
 .my-chart {
     display: block;
     width: 533px;
     height: 266px;
+}
+.right-content-error{
+    margin: 20px;
+
 }

@@ -9,18 +9,29 @@ import { DashboardService } from '../services/dashboard.service';
 export class UssboaComponent implements OnInit {
 
   constructor(private dashboardService: DashboardService) { }
-  ussBOAData;
+  ussBOAApprovedData;
+  ussBOAAssociateData;
   ngOnInit() {
-    this.dashboardService.getUSSBOAData()
+    this.dashboardService.getUSSBOAData("preferred")
     .subscribe(
       data => {
-        this.ussBOAData = JSON.parse(JSON.stringify(data));;
+        this.ussBOAApprovedData = JSON.parse(JSON.stringify(data));;
           // data.fo
           
       },
       error => {
         console.log(error);
       });
+      this.dashboardService.getUSSBOAData("associate")
+      .subscribe(
+        data => {
+          this.ussBOAAssociateData = JSON.parse(JSON.stringify(data));;
+            // data.fo
+            
+        },
+        error => {
+          console.log(error);
+        });
   }
 
 }

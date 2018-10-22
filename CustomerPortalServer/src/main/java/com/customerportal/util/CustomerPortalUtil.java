@@ -40,7 +40,7 @@ public class CustomerPortalUtil {
 					continue;
 				List<KeyValue> kvList  = new ArrayList<KeyValue>();
 				if(facilitiesList != null && user != null && !user.isAdmin())
-				 kvList = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
+				 kvList = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
 				facility.setConsolidateReport(kvList);
 				if (notificationFormList.contains(facility.getFacilityId())) {
 					facility.setNotificationFormButtonEnable("true");
@@ -112,5 +112,22 @@ public class CustomerPortalUtil {
 		} catch (IOException exception) {
 			System.out.println("Exception occred in getUserPreferences   method --" + exception.getMessage());
 		}
+	}
+
+	public static List<Facilities> remoteDuplicateRecords(List<Facilities> lst) {
+		List<Facilities> result = new ArrayList<Facilities>();
+		for (Facilities facilities : lst) {
+			boolean found = false;
+			for (Facilities resFec : result) {
+				if(resFec.getFacilityId().equalsIgnoreCase(facilities.getFacilityId())){
+					found = true;
+					break;
+				}
+			}
+			if(!found)
+				result.add(facilities);
+			
+		}
+		return result;
 	}
 }

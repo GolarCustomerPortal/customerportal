@@ -15,6 +15,7 @@ import com.customerportal.bean.ChangePassword;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Contact;
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.Gaslevel;
 import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
@@ -195,8 +196,7 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c,Compliant__c FROM Facility_Management__c";
+			String queryString = "SELECT *  FROM Facility_Management__c";
 
 			queryString += " where ";
 			if (!userId.equalsIgnoreCase("admin"))
@@ -216,12 +216,13 @@ public class DBUtil {
 				queryString += " Facility_Address__c like '%" + searchString + "%'";
 			}
 			queryString += " )";
-			Query query = session.createNativeQuery(queryString, Facilities.class);
-			List lst = query.list();
+			Query query = session.createNativeQuery(queryString,Facilities.class);
+			List<Facilities> lst = query.list();
+			List<Facilities> resultList   = CustomerPortalUtil.remoteDuplicateRecords(lst);
 			trx.commit();
 			session.close();
 			CustomerPortalUtil.fillImageURL(lst);
-			return lst;
+			return resultList;
 
 		} catch (
 
@@ -484,12 +485,12 @@ public class DBUtil {
 			// Transaction t = session.beginTransaction();
 			String queryString = "Select id from Account WHERE ((Facility_Operator_POA__c = 'Missing' OR Property_Owner_POA__c = 'Missing' OR "
 					+ "UST_Owner_POA__c = 'Missing' OR Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or "
-					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing')) AND MGT_Paid_service__c = 'true' ";
+					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing')) ";
 
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
 			}
-			Query query = session.createNativeQuery(queryString);
+			Query query = session.createNativeQuery(queryString);	
 			List lst = query.list();
 			trx.commit();
 			session.close();
@@ -520,13 +521,12 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "Select id from Account WHERE ((MGT_Paid_Service__c = 'true'  and Notification_form_Submitted__c is null) OR"
-					+ " (((Line_and_Leak_Detector_Test__c is null AND Is_LnL_Detr_Tst_requrd__c = 'true')  OR "
-					+ "(Cathodic_Protection__c is null AND Is_CP_required__c = 'true')  OR "
-					+ "(Tank_Testing_Report__c is null AND Is_Tank_Testing_Report_Required__c = 'true' ) OR "
-					+ "(Repair_Documents__c is null AND Are_Repair_Documents_Required__c = 'true') OR "
-					+ "(Release_Detection_Report__c is null AND Is_Release_Detection_Report_Required__c = 'true') OR "
-					+ "(Internal_Lining_Inspection__c is null AND Is_IL_Inspection_Required__c = 'true') ) AND MGT_Paid_Service__c = 'true' and Do_not_Trigger_emails__c = 'false' )) ";
+			String queryString = "Select id from Account WHERE ((Line_and_Leak_Detector_Test__c is null AND Is_LnL_Detr_Tst_requrd__c = 'true')"+  
+			"OR (Cathodic_Protection__c is null AND Is_CP_required__c = 'true')"  +
+			"OR (Tank_Testing_Report__c is null AND Is_Tank_Testing_Report_Required__c = 'true' )" +
+			"OR (Repair_Documents__c is null AND Are_Repair_Documents_Required__c = 'true')" +
+			"OR (Release_Detection_Report__c is null AND Is_Release_Detection_Report_Required__c = 'true') "+
+			"OR (Internal_Lining_Inspection__c is null AND Is_IL_Inspection_Required__c = 'true') )";
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
 			}
@@ -560,8 +560,8 @@ public class DBUtil {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
-			String queryString = "Select id from Account WHERE  MGT_Paid_Service__c = 'true' "
-					+ "and (Operator_A_certificate__c is null  OR Operator_B_certificate__c is null  "
+			String queryString = "Select id from Account WHERE "
+					+ "(Operator_A_certificate__c is null  OR Operator_B_certificate__c is null  "
 					+ "OR Operator_C_certificate__c is null)";
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
@@ -738,14 +738,18 @@ public class DBUtil {
 
 	}
 
-	public List<USSBOA> fetchUSSBOAContent() {
+	public List<USSBOA> fetchUSSBOAContent(String vendorType) {
 
 		Session session = HibernateUtil.getSession();
 		;
 		Transaction t = session.beginTransaction();
 		Query query = session.createNativeQuery(
 				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone "
-						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Approved Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id");
+						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Approved Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id and a.vendor_type__c =:vendorType");
+		if(vendorType.equalsIgnoreCase("preferred"))
+			query.setString("vendorType", "Preferred Vendor");
+		else
+			query.setString("vendorType", "Associate Vendor");
 
 		List<USSBOA> lst = new ArrayList<USSBOA>();
 		List<Object[]> rows = query.list();
@@ -895,26 +899,26 @@ public class DBUtil {
 				if (account.getNotificationDueDate() != null && account.getNotificationDueDate().equalsIgnoreCase("0"))
 					account.setNotificationDueDateEnable(true);
 				// compliance start
-				if (account.getLnlDetrTstRequrd() != null && !account.getLnlDetrTstRequrd().equalsIgnoreCase("true")
+				if (account.getLnlDetrTstRequrd() != null && account.getLnlDetrTstRequrd().equalsIgnoreCase("true")
 						&& account.getLineAndLeakDetector() == null)
 					account.setLnlDetrTstRequrdEnable(true);
-				if (account.getCprequired() != null && !account.getCprequired().equalsIgnoreCase("true")
+				if (account.getCprequired() != null && account.getCprequired().equalsIgnoreCase("true")
 						&& account.getCathodicProtection() == null)
 					account.setCprequiredEnable(true);
 				if (account.getTankTestingReportRequired() != null
-						&& !account.getTankTestingReportRequired().equalsIgnoreCase("true")
+						&& account.getTankTestingReportRequired().equalsIgnoreCase("true")
 						&& account.getTankTestingReport() == null)
 					account.setTankTestingReportRequiredEnable(true);
 				if (account.getRepairDocumentRequired() != null
-						&& !account.getRepairDocumentRequired().equalsIgnoreCase("true")
+						&& account.getRepairDocumentRequired().equalsIgnoreCase("true")
 						&& account.getRepairDocuments() == null)
 					account.setRepairDocumentRequiredEnable(true);
 				if (account.getReleaseDetectionReportRequired() != null
-						&& !account.getReleaseDetectionReportRequired().equalsIgnoreCase("true")
+						&& account.getReleaseDetectionReportRequired().equalsIgnoreCase("true")
 						&& account.getReleaseDetectionReport() == null)
 					account.setReleaseDetectionReportRequiredEnable(true);
 				if (account.getInternalLiningInspectionRequired() != null
-						&& !account.getInternalLiningInspectionRequired().equalsIgnoreCase("true")
+						&& account.getInternalLiningInspectionRequired().equalsIgnoreCase("true")
 						&& account.getInternalLiningInspection() == null)
 					account.setInternalLiningInspectionRequiredEnable(true);
 				// compliance end
@@ -924,7 +928,7 @@ public class DBUtil {
 				if (account.getOperatorBcertificate() == null)
 					account.setOperatorBcertificateEnable(true);
 				if (account.getOperatorCcertificate() == null)
-					account.setOperatorAcertificateEnable(true);
+					account.setOperatorCcertificateEnable(true);
 				// certification end
 
 				// if(account.getNotificationFormSubmitted() == null ||
@@ -1572,6 +1576,51 @@ public class DBUtil {
 		t.commit();
 		session.close();
 		return lst;
+	
+	}
+	public Gaslevel getGasLevels(String facilityId) {
+
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM gaslevel where  facilityId =:facilityId", Gaslevel.class);
+		query.setString("facilityId", facilityId);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		if(lst != null && lst.size()>0)
+		return (Gaslevel) lst.get(0);
+		return null;
+	
+	}
+
+	public boolean saveGasLevels(Gaslevel gasLevel) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			Gaslevel dbGasLevel = (Gaslevel) session.get(Gaslevel.class, gasLevel.getFacilityId());
+
+			if (dbGasLevel != null) {
+				dbGasLevel.setGaslevels(gasLevel.getGaslevels());
+				session.update(dbGasLevel);
+			} else {
+				session.save(gasLevel);
+			}
+			trx.commit();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in saveGasLevels   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return false;
+		} finally {
+
+		}
+		return true;
 	
 	}
 

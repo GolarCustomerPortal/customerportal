@@ -51,8 +51,8 @@ searchResults(searchType:string,searchString: string,username: string,isadmin:bo
             return folder;
         });
 }
-getUSSBOAData() {
-    return this.http.get<any>(URLConstants.USSBOA_URL)
+getUSSBOAData(vendorType) {
+    return this.http.get<any>(URLConstants.USSBOA_URL,this.getDashboardOptions(CRMConstants.VENDOR_TYPE,vendorType))
         .map(ussboaData => {
             
             return ussboaData;
@@ -143,6 +143,30 @@ resetTankAlert(tankAlertString){
          // Registration response 
          return result;
      });
+}
+getGasLevelsForFacility(FacilitiesId) {
+    return this.http.get<any>(URLConstants.GASLEVES_URL,this.getDashboardOptions(CRMConstants.FACILITY_ID,FacilitiesId))
+        .map(gaslevelData => {
+            
+            return gaslevelData;
+        });
+}
+saveGasLevelsForFacility(facilitiesId,gasLevelModal){
+    var gasLevel = this.gasLevels(gasLevelModal);
+    return this.http.post<any>(URLConstants.GASLEVES_URL, {facilityId: facilitiesId, gaslevels: gasLevel})
+     .map(tankMontiorData => {
+         // Registration response 
+         return tankMontiorData;
+     });
+}
+gasLevels(gasLevelModal){
+    var gaslevelString="";
+    for(var i=0;i<gasLevelModal.length;i++){
+        gaslevelString+=gasLevelModal[i].key+"="+gasLevelModal[i].value+",";
+    }
+    if(gaslevelString.endsWith(','))
+    gaslevelString = gaslevelString.substring(0,gaslevelString.length-1)
+return gaslevelString;
 }
 private getSearchOptions(searchType,searchString,username,isadmin) {
     return {

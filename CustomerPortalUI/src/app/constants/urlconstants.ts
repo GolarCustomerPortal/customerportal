@@ -26,4 +26,5 @@ export class URLConstants {
     public static USER_PREFERENCES = environment.server+'/CustomerPortalServer/rest/dashboard/preferences';
     public static JOB_SCHEDULE = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedule';
     public static JOB_SCHEDULE_HISTORY = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedulehistory';
+    public static GASLEVES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/gaslevel';
 }

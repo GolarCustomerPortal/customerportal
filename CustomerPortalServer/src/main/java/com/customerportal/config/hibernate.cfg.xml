@@ -25,5 +25,6 @@
 		<mapping resource="com/customerportal/config/userpreferences.hbm.xml" />
 		<mapping resource="com/customerportal/config/jobschedule.hbm.xml" />
 		<mapping resource="com/customerportal/config/jobschedulehistory.hbm.xml" />
+		<mapping resource="com/customerportal/config/gaslevel.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 

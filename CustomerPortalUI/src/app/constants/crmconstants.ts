@@ -28,6 +28,9 @@ export class CRMConstants {
     public static LOGOUT = "Logout";
     public static TANK_MONITOR_SIGNUP = "Tank Monitor signup";
     public static JOB_NAME = 'jobName';
+    public static VENDOR_TYPE = 'vendorType';
+    public static FACILITY_ID = "facilityId";
+
     
     
     

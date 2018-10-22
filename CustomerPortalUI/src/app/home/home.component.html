@@ -46,7 +46,7 @@
         </div>
       </div>
       <div [ngClass]="reportClass" *ngIf="showConsolidateReport" class="chart-right-padding">
-        <div class="ui-g-12 dashboard-boder">
+        <div class="ui-g-12 dashboard-boder" (click)="consolidateReportClick()">
           <p class="dash-board-heading">{{dashboardConst.MYINVENTORY}}</p>
           <p-chart type="bar"  [data]="consolidateReportdata" (onDataSelect)="onConsolidateDataSelect($event)" [options]="noLegendtOptions"></p-chart>
         </div>
@@ -185,6 +185,7 @@
     </div>
   </split-area>
   <split-area [visible]="area.rightVisible" [size]="area.right" order="3" style="overflow: hidden;">
+      <div class="right-content-error" *ngIf="rightsidePanelError">{{rghtsidePanelContent}}</div>
     <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
       <p-header ngClass="header-padding-left">
           <div style="width: 100%"> {{rightPaneDetailslTitle}}
@@ -227,10 +228,12 @@
         <div class="ui-g-12 margin-top" id="individual-chart">
             <p-card styleClass="ui-card-shadow">
                 <div style="width: 100%">
-                    <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Consolidate report of Gas station (Gallons)</div>
+                    <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
                       </div>
+                      <i class="fa fa-eye" title="Set Gas Levels" style="font-size:24px;float: right;cursor: pointer;z-index: 1000;position: relative"
+                       (click)="showGasLevelWindow(rightDetailsContent)"></i>
                      </div>
-              <p-chart [width]="400" [height]="400" type="bar" [data]="facilityConsolidateReportdata" [options]="noLegendtOptions"></p-chart>
+              <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
 
           </p-card>
         </div>
@@ -244,12 +247,12 @@
           </div>
           <div class="ui-g-4">
             <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
-             data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">Compliance
-              <br>Section</button>
+             data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">UST <br> Compliance
+              </button>
           </div>
           <div class="ui-g-4">
             <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
-            data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Certification</button>
+            data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Operator <br> Certificates </button>
           </div>
         </div>
 
@@ -380,7 +383,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-            <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Compliance Form </div>
+            <div class="modal-title modal-header-round" id="exampleModalCenterTitle">UST Compliance</div>
             <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
                 &times;
             </button>
@@ -457,7 +460,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-            <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Certification Form</div>
+            <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Operator Certificates</div>
             <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
                 &times;
             </button>
@@ -502,13 +505,125 @@
     </div>
   </div>
   <!-- Certification modal dialog end -->
+<!-- gaslevel modal start -->
+
+ <!-- Certification modal dialog start -->
+ <div class="modal fade" id="gasLevelModal" tabindex="-1" role="dialog" aria-labelledby="gasLevelModal" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <div class="modal-title modal-header-round green-background" id="exampleModalCenterTitle">Gas Leval for {{rightDetailsContent.facilityName}}</div>
+          <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
+              &times;
+          </button>
+      </div>
+      <div class="modal-body file-upload-model">
+
+
+          <p-table [value]="gasLevelModal" scrollHeight="300px" [scrollable]="true">
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th style="width:50%">Name</th>
+                      <th style="width:50%">Gas Level</th>
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-gas let-rowIndex="rowIndex">
+                  <tr>
+                     
+                    <td style="width:50%">{{gas.key}}</td>
+                      <td style="width:50%"> <input type="number" min="0" class="form-control"  name="value" [(ngModel)]="gas.value" maxlength="50"/></td>
+                  </tr>
+              </ng-template>
+          </p-table>
+
+
+
+
+
+
+
+       </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-primary"   (click) ="saveGasLevel()">Save</button>
+     
+        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- consolidate report dialog end -->
+
+<!-- gas level modal end -->
+ 
+ <!-- consolidate modal dialog start -->
+ <div class="modal fade" id="consolidateFacilityModal" tabindex="-1" role="dialog" aria-labelledby="consolidateFacilityModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+          <div class="modal-title modal-header-round green-background" id="exampleModalCenterTitle">Inventory Report for Facilities</div>
+          <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
+              &times;
+          </button>
+      </div>
+      <div class="modal-body file-upload-model">
+
+          <div *ngFor="let fdata of consolidateFacilitiesdata; let i = index; let even = even;" style="padding:10px;">
+          <div class="ui-g-12">
+              <p-card styleClass="consolidate-card-shadow">
+                  <div style="width: 100%">
+                      <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important"> {{fdata.name}}</div>
+                       <!-- <img class="card-image" src="{{fdata.image}}" /> -->
+                      </div>
+                   </div>
+              <!-- <div class="ui-g no-padding">
+                <div class="ui-g-4 no-padding"> Name:</div>
+                <div class="ui-g-8 no-padding">{{fdata.name}}</div>
+              </div> -->
+              <div class="ui-g no-padding">
+                <!-- <div class="ui-g-4 no-padding"> Address:</div> -->
+                <div class="ui-g-12 no-padding">{{fdata.address}}</div>
+              </div>
+            </p-card>
+          </div>
+          <div class="ui-g-12 margin-top" id="individual-chart">
+              <p-card styleClass="ui-card-shadow">
+                  <div style="width: 100%">
+                      <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Fuel Inventory (Gallons)</div>
+                        </div>
+                       </div>
+                <p-chart type="bar" [data]="fdata.consolidateReport" [options]="noLegendtOptions"></p-chart>
+  
+            </p-card>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+       </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- consolidate report dialog end -->
   <!-- search start -->
   <split direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="showSearchResults">
     <split-area [visible]="searchArea.leftVisible" [size]="searchArea.left" order="1">
        
         <div class="ui-g-12  margin-top" style="cursor: pointer;">
             <i *ngIf="showSearchResults" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to main page"
-              aria-hidden="true" (click)="showAll();fetchDashboardValues()"></i>
+              aria-hidden="true" (click)="selectedChart='dashboard'; showAll();fetchDashboardValues()"></i>
           </div>  
             <div id="rightSearchPanel" style="margin:10px;">
                 
@@ -612,6 +727,7 @@
     </split-area>
 
   <split-area [visible]="searchArea.rightVisible" [size]="searchArea.right" order="2">
+    <div class="right-content-error" *ngIf="rightsidePanelError">{{rghtsidePanelContent}}</div>
       <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
           <p-header ngClass="header-padding-left">
               <div style="width: 100%"> {{rightPaneDetailslTitle}}
@@ -648,7 +764,7 @@
             <div class="ui-g-12 margin-top" id="individual-chart">
                 <p-card styleClass="ui-card-shadow">
                     <div style="width: 100%">
-                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Consolidate report of Gas station (Gallons)</div>
+                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Fuel Inventory (Gallons)</div>
                           </div>
                          </div>
                   <p-chart [width]="400" [height]="400" type="bar" [data]="consolidateReportdata" [options]="noLegendtOptions"></p-chart>
@@ -665,12 +781,11 @@
               </div>
               <div class="ui-g-4">
                 <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
-                 data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">Compliance
-                  <br>Section</button>
+                 data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">UST <br> Compliance</button>
               </div>
               <div class="ui-g-4">
                 <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
-                data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Certification</button>
+                data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Operator <br> Certificates </button>
               </div>
             </div>
     

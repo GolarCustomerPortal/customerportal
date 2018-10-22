@@ -29,14 +29,14 @@ export class HomeComponent implements OnInit {
       $(this).find('form')[0].reset();
       self.resetCertificationForm(true);
     })
-//searchResults
-  if (this.commonService.getSearchResult() != null) {
-    var resultObj = JSON.parse(this.commonService.getSearchResult())
-    this.handleSearchResults(resultObj);
-    this.commonService.resetSearchResult();
-    return;
-  }
-//searchRestults
+    //searchResults
+    if (this.commonService.getSearchResult() != null) {
+      var resultObj = JSON.parse(this.commonService.getSearchResult())
+      this.handleSearchResults(resultObj);
+      this.commonService.resetSearchResult();
+      return;
+    }
+    //searchRestults
 
     if (this.commonService.getSelectedLeftTab() != null && this.commonService.getSelectedLeftTab() == 'facilities') {
       this.onFacilitiesDataSelect(null);
@@ -63,18 +63,22 @@ export class HomeComponent implements OnInit {
   notificationForm;
   dashboardConst = CRMConstants;
   uploadLabel = "Browse"
-  FILL_COLOR="#2c347E";
-  NON_FILL_COLOR="#ef4136";
-  GUTTER_COLOR ="#d3e8c8"; 
-  showSearchResults=false;
- 
-  selectedChart = 'facilities';
+
+  GUTTER_COLOR = "#d3e8c8";
+  showSearchResults = false;
+
+  selectedChart = 'dashboard';
   // fOperatorFileName;
   // commom properties end
-
+  //consolidate report start
+  consolidateReportColors = { "UNLEADED": "#ffffff", "PREMIUM": "#C35A3A", "RECOVERY": "#E18230", "DIESEL": "#F6C918" }
+  consolidateFacilitiesdata = [];
+  FILL_COLOR = "#2c347E";
+  NON_FILL_COLOR = "#ef4136";
+  // consolidate report end
   //search start
   searchString;
-  searchResult={};
+  searchResult = {};
   //search end
 
   // notification fileupload start
@@ -157,6 +161,8 @@ export class HomeComponent implements OnInit {
   rightPanelTitle;
   showRightContent = false;
   showRightDetailContent = false;
+  rightsidePanelError = false;
+  rghtsidePanelContent = "You have not subscribed to view this information for this facility. Please reach out to Golars team to subscribe for this service. Thank you!"
   rightDetailsContent: any = {};
   actualServerData: any = {};
   rightPaneDetailslTitle = "";
@@ -178,27 +184,32 @@ export class HomeComponent implements OnInit {
   //app component code end
 
   // middlepanel code start
-  constructor(private router: Router,public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
+  constructor(private router: Router, public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
     if (this.commonService.getSearchResult() == null)
-    this.fetchDashboardValues(true);
+      this.fetchDashboardValues(true);
   }
   fetchDashboardValues(resetview) {
     this.dashboardService.getDashboardData(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         dashboardData => {
-          if(resetview)
-          this.resetLeftSideData();
+          if (resetview)
+            this.resetLeftSideData();
           this.getFacilitiesData(dashboardData.facilitiesData);
           this.getCompanies(dashboardData.companiesData);
-          this.getConsolidateReport(dashboardData.consolidateReportData);
+          this.consolidateReportdata = this.generateInventoryReport(dashboardData.consolidateReportData, this.consolidateReportdata);
           this.getComplianceData(dashboardData.complianceData);
+          if (this.selectedChart === 'dashboard') {
+            this.setSplitwidth();
+            this.setRightSplitwidth();
+            this.area.centerVisible = false;
+          }
         },
         error => {
           console.log(error);
         });
-        if(!this.commonService.isAdmin())
-        this.retrieveTankAlarmHistory();   
+    if (!this.commonService.isAdmin())
+      this.retrieveTankAlarmHistory();
 
   }
   // Facilities
@@ -232,8 +243,8 @@ export class HomeComponent implements OnInit {
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[1]);
     this.facilitiesLabel.push(this.dashboardConst.MANAGED);
     this.facilitiesLabel.push(this.dashboardConst.UNMANAGED);
-    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + '-- ' + this.facilitiesArray[0]);
-    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + '-- ' + this.facilitiesArray[1])
+    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + ' -- ' + this.facilitiesArray[0]);
+    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + ' -- ' + this.facilitiesArray[1])
     this.totalFacilities = this.facilitiesArray[1] + this.facilitiesArray[0];
 
   }
@@ -243,9 +254,10 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
-      this.selectedChart = "facilities";
-      this.showRightContent = false;
+    this.selectedChart = "facilities";
+    this.showRightContent = false;
     this.hideSearchPanel();
+    this.area.centerVisible = true;
     this.resetrightSideData();
     console.log("onFacilitiesDataSelect", this.facilitiesLabel[event]);
     this.showCompanies = false;
@@ -253,28 +265,28 @@ export class HomeComponent implements OnInit {
     this.showConsolidateReport = false;
     this.facilitiesClass = "ui-g-12";
     this.showBack = true;
-    if ($event == null || $event == undefined){
+    if ($event == null || $event == undefined) {
       this.fetchDashboardValues(false);
       return;
     }
     this.showRightContent = true;
-    this.rightPanelTitle = this.dashboardConst.MYFACALITIES+" -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
-  
+    this.rightPanelTitle = this.dashboardConst.MYFACALITIES + " -- " + this.facilitiesLabel[event] + " (" + this.facilitiesArray[event] + ")"
+
     this.dashboardService.getFacilitiesList(this.commonService.getUserName(), this.facilitiesLabel[event]) // retrieve all thd parent folders
       .subscribe(
         facilitiesList => {
           for (var i = 0; i < facilitiesList.length; i++) {
             var faciData = facilitiesList[i];
-            if(this.facilitiesLabel[event] == this.dashboardConst.UNMANAGED)
-            faciData.compliance =false;
-            else if(faciData.compliance != null)
-            faciData.compliance = faciData.compliance == "true";
-            faciData.tankPaidService = faciData.tankPaidService=="true";
+            if (this.facilitiesLabel[event] == this.dashboardConst.UNMANAGED)
+              faciData.compliance = false;
+            else if (faciData.compliance != null)
+              faciData.compliance = faciData.compliance == "true";
+            faciData.tankPaidService = faciData.tankPaidService == "true";
             faciData.compliance = faciData.compliance && faciData.tankPaidService;
             // var image = this.commonService.gasStationImage(faciData.brand)
             // faciData.image = "assets/images/gasstation/"+image;
             // this.getFacilityConsolidateReport(faciData.consolidateReport);
-            faciData.image = environment.server+faciData.imageURL;
+            faciData.image = environment.server + faciData.imageURL;
             this.facilitiesRightdata.push(faciData);
           }
 
@@ -284,11 +296,16 @@ export class HomeComponent implements OnInit {
         });
 
   }
-  compliance=true;
+  compliance = true;
   showSpecificfacilityDetails(fdata) {
     console.log(fdata);
+    this.rightsidePanelError = false;
     this.showRightDetailPanel();
     // this.showRightContent = false;
+    if (fdata.tankPaidService == false) {
+      this.rightsidePanelError = true;
+      return;
+    }
     this.showRightDetailContent = true;
     this.rightDetailsContent.facilityId = fdata.facilityId;
     this.rightPaneDetailslTitle = fdata.name;
@@ -306,8 +323,8 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.storeManager = fdata.storeManager;
     this.rightDetailsContent.tankPm = fdata.tankPm;
     this.rightDetailsContent.compliance = fdata.compliance;
-    this.rightDetailsContent.consolidateReport  = fdata.consolidateReport;
-    this.getFacilityConsolidateReport(this.rightDetailsContent.consolidateReport);
+    this.rightDetailsContent.consolidateReport = [];
+    this.rightDetailsContent.consolidateReport = this.generateInventoryReport(fdata.consolidateReport, this.rightDetailsContent.consolidateReport);
     //actualServerData details.
     this.actualServerData.docUpdateDate = new Date();
     this.actualServerData.facilityName = fdata.name;
@@ -335,7 +352,7 @@ export class HomeComponent implements OnInit {
         {
           data: [],
           backgroundColor: [
-           this.FILL_COLOR
+            this.FILL_COLOR
           ],
           hoverBackgroundColor: [
             this.FILL_COLOR
@@ -352,31 +369,32 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index;
-      this.selectedChart = "companies";
-      this.hideSearchPanel();
+    this.selectedChart = "companies";
+    this.hideSearchPanel();
     this.resetrightSideData();
     console.log("onCompaniesDataSelect", event);
     this.showFacilities = false;
     this.showCompliance = false;
+    this.area.centerVisible = true;
     this.showConsolidateReport = false;
     this.companiesClass = "ui-g-12";
     this.showRightContent = false;
     this.showBack = true;
-    if ($event == null || $event == undefined){
+    if ($event == null || $event == undefined) {
       this.fetchDashboardValues(false);
       return;
     }
     this.showRightContent = true;
-    this.rightPanelTitle = this.dashboardConst.MYCOMPANIES+" -- " + " (" + this.totalCompanies + ")";
+    this.rightPanelTitle = this.dashboardConst.MYCOMPANIES + " -- " + " (" + this.totalCompanies + ")";
     this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         companiesList => {
           for (var i = 0; i < companiesList.length; i++) {
             var faciData = companiesList[i];
             for (var j = 0; j < faciData.facilities.length; j++) {
-               if( faciData.facilities[j].compliance != null)
-               faciData.facilities[j].compliance =  faciData.facilities[j].compliance == "true";
-              faciData.facilities[j].image =  environment.server+faciData.facilities[j].imageURL;
+              if (faciData.facilities[j].compliance != null)
+                faciData.facilities[j].compliance = faciData.facilities[j].compliance == "true";
+              faciData.facilities[j].image = environment.server + faciData.facilities[j].imageURL;
             }
             this.companiesRightdata.push(faciData);
           }
@@ -421,8 +439,8 @@ export class HomeComponent implements OnInit {
     this.complianceLabel.push("Compliant");
     this.complianceLabel.push("Non-compliant");
     // this.nonCompliance = 9;
-    this.complianceData.labels.push('Compliance ' + this.constructPercentage(this.complianceArray[0], this.complianceArray[1]));
-    this.complianceData.labels.push('Non Compliance' + this.constructPercentage(this.complianceArray[1], this.complianceArray[0]));
+    this.complianceData.labels.push('Compliance --' + this.complianceArray[0]);
+    this.complianceData.labels.push('Non Compliance --' + this.complianceArray[1]);
     this.complianceData.datasets[0].data.push(this.complianceArray[0]);
     this.complianceData.datasets[0].data.push(this.complianceArray[1]);
     this.totalCompliance = this.complianceArray[1] + this.complianceArray[0];
@@ -434,9 +452,10 @@ export class HomeComponent implements OnInit {
       event = 0;// left overlaypanel clicked
     else
       event = $event.element._index
-      this.selectedChart = "compliance";
-      this.hideSearchPanel();
+    this.selectedChart = "compliance";
+    this.hideSearchPanel();
     this.resetrightSideData();
+    this.area.centerVisible = true;
     console.log("onComplianceDataSelect" + event)
     this.showFacilities = false;
     this.showCompanies = false;
@@ -444,30 +463,30 @@ export class HomeComponent implements OnInit {
     this.complianceClass = "ui-g-12";
     this.showRightContent = false;
     this.showBack = true;
-    if ($event == null || $event == undefined){
+    if ($event == null || $event == undefined) {
       this.fetchDashboardValues(false);
       return;
     }
-    
-   
-    this.rightPanelTitle = this.dashboardConst.MYCOMPLIANCE+" -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
+
+
+    this.rightPanelTitle = this.dashboardConst.MYCOMPLIANCE + " -- " + this.complianceLabel[event] + " (" + this.complianceArray[event] + ")";
     this.showRightContent = true;
     var complianceParam = "compliant";
-    if(this.complianceLabel[event].toLowerCase() == 'compliant')
-    complianceParam = 'compliance'
+    if (this.complianceLabel[event].toLowerCase() == 'compliant')
+      complianceParam = 'compliance'
     else
-    complianceParam = 'non compliance'
+      complianceParam = 'non compliance'
     this.dashboardService.getComplianceList(this.commonService.getUserName(), complianceParam) // retrieve all thd parent folders
       .subscribe(
         complianceList => {
-          if(complianceList !== null )
-          for (var i = 0; i < complianceList.length; i++) {
-            var faciData = complianceList[i];
-            // var image = this.commonService.gasStationImage(feciData.brand)
-            faciData.tankPaidService =  faciData.tankPaidService == "true";
-            faciData.image = environment.server+faciData.imageURL;
-            this.complianceRightdata.push(faciData);
-          }
+          if (complianceList !== null)
+            for (var i = 0; i < complianceList.length; i++) {
+              var faciData = complianceList[i];
+              // var image = this.commonService.gasStationImage(feciData.brand)
+              faciData.compliance = faciData.compliance == "true";
+              faciData.image = environment.server + faciData.imageURL;
+              this.complianceRightdata.push(faciData);
+            }
 
         },
         error => {
@@ -475,12 +494,12 @@ export class HomeComponent implements OnInit {
         });
   }
 
-    // compliance end
+  // compliance end
 
 
   //consolidateReport start
   consolidateReportdata: any;
-  facilityConsolidateReportdata:any;
+  facilityConsolidateReportdata: any;
   showConsolidateReport = this.commonService.getPreferencesOfConsolidate();
   reportClass = "ui-g-6"
   // regular;
@@ -488,46 +507,31 @@ export class HomeComponent implements OnInit {
   // premium;
   // diesel;
   // totalGallons = 1000;
-  getConsolidateReport(consolidateData) {
-
-
-
-  //   this.regular = consolidateData.regular;
-  //   this.midGrade = consolidateData.midgrade;
-  //   this.premium = consolidateData.premium;
-  //   this.diesel = consolidateData.diesel;
-    this.consolidateReportdata = {
+  generateInventoryReport(consolidateData, consolidateReportdata) {
+    consolidateReportdata = {
       labels: [],
-
-
       datasets: [
         {
-          label: 'Remaining',
           data: [],
-          // backgroundColor: this.NON_FILL_COLOR,
-          // hoverBackgroundColor: this.NON_FILL_COLOR
-          backgroundColor: this.FILL_COLOR,
-          hoverBackgroundColor: this.FILL_COLOR
+          backgroundColor: [],
+          borderColor: [],
+          borderWidth: 1,
+          hoverBackgroundColor: []
         }
-        // , {
-        //   label: 'Total',
-        //   data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
-        //   backgroundColor: this.FILL_COLOR,
-        //   hoverBackgroundColor: this.FILL_COLOR
-
-        // }
       ]
     };
-    for(var i=0;i<consolidateData.length;i++){
-      this.consolidateReportdata.labels.push(consolidateData[i].key);
-      this.consolidateReportdata.datasets[0].data.push(consolidateData[i].value)
-
+    for (var i = 0; i < consolidateData.length; i++) {
+      consolidateReportdata.labels.push(consolidateData[i].key);
+      consolidateReportdata.datasets[0].data.push(consolidateData[i].value)
+      consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
+      consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
+      if (consolidateData[i].key === "UNLEADED")
+        consolidateReportdata.datasets[0].borderColor.push('#000000');
+      else
+        consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[consolidateData[i].key]);
     }
 
-  // this.consolidateReportdata.labels.push('Regular')
-  //   this.consolidateReportdata.labels.push('Mid Grade');
-  //   this.consolidateReportdata.labels.push('Premium');
-  //   this.consolidateReportdata.labels.push('diesel');
+    return consolidateReportdata;
   }
   onConsolidateDataSelect($event) {
     console.log("onConsolidateDataSelect" + $event.element._index)
@@ -538,16 +542,16 @@ export class HomeComponent implements OnInit {
     // this.showBack = true;
   }
   //consolidateReport end
-  constructPercentage(value1, value2) {
-    var value = "0";
-    if (value1 == 0 && value1 == 0) {
-      value = "0";
-    } else
-      value = ((value1 / (value1 + value2)) * 100).toFixed(2);
-    value = value.replace(".00", '');
-    value = '(' + value + "%)";
-    return value;
-  }
+  // constructPercentage(value1, value2) {
+  //   var value = "0";
+  //   if (value1 == 0 && value1 == 0) {
+  //     value = "0";
+  //   } else
+  //     value = ((value1 / (value1 + value2)) * 100).toFixed(2);
+  //   value = value.replace(".00", '');
+  //   value = '(' + value + "%)";
+  //   return value;
+  // }
 
 
 
@@ -555,7 +559,7 @@ export class HomeComponent implements OnInit {
   private options: any = {
     legend: { position: 'bottom' },
     responsive: true,
-    maintainAspectRatio :false
+    maintainAspectRatio: false
   }
   private noLegendtOptions = {
     legend: { display: false },
@@ -586,12 +590,19 @@ export class HomeComponent implements OnInit {
     }
   }
   showAll() {
+    this.selectedChart = 'dashboard';
     this.showBack = false;
     this.showRightContent = false;
+
     this.showRightDetailContent = false;
     this.hideSearchPanel();
     this.fetchDashboardValues(true);
     this.resetView();
+    this.area.centerVisible = false;
+    this.area.rightVisible = false;
+    this.setSplitwidth();
+    this.setRightSplitwidth();
+
   }
   resetView() {
     this.showFacilities = this.commonService.getPreferencesOfFacilities();
@@ -604,7 +615,7 @@ export class HomeComponent implements OnInit {
     this.reportClass = "ui-g-6";
     this.complianceClass = "ui-g-6";
     this.area.left = 50;
-    this.area.center = 50;
+    this.area.center = 0;
     this.area.right = 0;
   }
   resetLeftSideData() {
@@ -624,18 +635,19 @@ export class HomeComponent implements OnInit {
     this.area.left = 20;
     this.area.center = 80;
     this.area.right = 0;
+    this.reSetSplitwidth();
   }
   // getImage(fdata) {
   //   return "assets/images/gasstation/" + fdata.img;
   // }
   showRightDetailPanel() {
-    if(this.selectedChart =="companies" || this.selectedChart == "facilities" ||this.selectedChart == "compliance")
-    this.middlePaneClass = "ui-g-12";
+    if (this.selectedChart == "companies" || this.selectedChart == "facilities" || this.selectedChart == "compliance")
+      this.middlePaneClass = "ui-g-12";
     else
-    this.middlePaneClass = "ui-g-6";
+      this.middlePaneClass = "ui-g-6";
     this.area.center = 40;
     this.area.right = 40;
-    this.area.rightVisible =  true;
+    this.area.rightVisible = true;
   }
   hideRightContentDetails(rightDetailsContent) {
     rightDetailsContent = [];
@@ -644,7 +656,7 @@ export class HomeComponent implements OnInit {
     this.area.center = 80;
     this.area.right = 0;
     this.middlePaneClass = "ui-g-4"
-    this.area.rightVisible =  false;
+    this.area.rightVisible = false;
   }
   showMainDashBoard() {
     console.log("showDashBoard");
@@ -673,17 +685,17 @@ export class HomeComponent implements OnInit {
   }
 
   getNotificationFormButtonClass(rightDetailsContent) {
-    if ((rightDetailsContent.compliance == false && rightDetailsContent.tankPaidService =="false") ||(rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == "true"))
+    if ((rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == "true"))
       return 'facility-button-background-red'
     return ""
   }
   getComplianceButtonClass(rightDetailsContent) {
-    if ((rightDetailsContent.compliance == false && rightDetailsContent.tankPaidService =="false") || (rightDetailsContent.complianceButtonEnable != null && rightDetailsContent.complianceButtonEnable == "true"))
+    if ((rightDetailsContent.complianceButtonEnable != null && rightDetailsContent.complianceButtonEnable == "true"))
       return 'facility-button-background-red'
     return ""
   }
   getCertificationButtonClass(rightDetailsContent) {
-    if ((rightDetailsContent.compliance == false && rightDetailsContent.tankPaidService =="false") || (rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == "true"))
+    if ((rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == "true"))
       return 'facility-button-background-red'
     return ""
   }
@@ -744,7 +756,7 @@ export class HomeComponent implements OnInit {
     if (this.letterOfNetworthCertificationFile != null) {
       this.generateFileUploadObj(this.letterOfNetworthCertificationFile, frmData, 'letterOfNetworthCertification', fileuploadlabelArray)
     }
-    
+
 
     frmData.append("fileuploadlabel", JSON.stringify(fileuploadlabelArray));
     this.importNotificationDocument(frmData);
@@ -780,7 +792,7 @@ export class HomeComponent implements OnInit {
                 this.taxIdFileSuccess = result[i].value;
               if (result[i].key == 'notificationFormSubmitted')
                 this.notificationFormSubmittedFileSuccess = result[i].value;
-                if (result[i].key == 'letterOfNetworthCertification')
+              if (result[i].key == 'letterOfNetworthCertification')
                 this.letterOfNetworthCertificationFileSuccess = result[i].value;
 
             }
@@ -806,18 +818,18 @@ export class HomeComponent implements OnInit {
     this.deedLandFileName = "";
     this.taxIdFileName = "";
     this.notificationFormSubmittedFileName = "";
-    this.letterOfNetworthCertificationFileName="";
-    if(clearTick){
-    this.fOperatorfileSuccess = "false";
-    this.ownerFileSuccess = "false";
-    this.ustOwnerFileSuccess = "false";
-    this.operatorLeaseFileSuccess = "false";
-    this.notificationDueDateFileSuccess = "false";
-    this.operatoraffidavitFileSuccess = "false";
-    this.ownerAffidavitFileSuccess = "false";
-    this.deedLandFileSuccess = "false";
-    this.taxIdFileSuccess = "false";
-  }
+    this.letterOfNetworthCertificationFileName = "";
+    if (clearTick) {
+      this.fOperatorfileSuccess = "false";
+      this.ownerFileSuccess = "false";
+      this.ustOwnerFileSuccess = "false";
+      this.operatorLeaseFileSuccess = "false";
+      this.notificationDueDateFileSuccess = "false";
+      this.operatoraffidavitFileSuccess = "false";
+      this.ownerAffidavitFileSuccess = "false";
+      this.deedLandFileSuccess = "false";
+      this.taxIdFileSuccess = "false";
+    }
     this.enableNotificationuploadButton = false;
   }
   //import notification files end
@@ -894,14 +906,14 @@ export class HomeComponent implements OnInit {
     this.repairDocumentsFileName = "";
     this.releaseDetectionFile = "";
     this.internalLiningFileName = "";
-    if(clearTick){
-    this.lineLeakFileSuccess = "false";
-    this.cathodicProtectionFileSuccess = "false";
-    this.tankTestingReportFileSuccess = "false";
-    this.repairDocumentsFileSuccess = "false";
-    this.releaseDetectionFileSuccess = "false";
-    this.internalLiningFileSuccess = "false";
-  }
+    if (clearTick) {
+      this.lineLeakFileSuccess = "false";
+      this.cathodicProtectionFileSuccess = "false";
+      this.tankTestingReportFileSuccess = "false";
+      this.repairDocumentsFileSuccess = "false";
+      this.releaseDetectionFileSuccess = "false";
+      this.internalLiningFileSuccess = "false";
+    }
   }
   //import compliance end
 
@@ -955,11 +967,11 @@ export class HomeComponent implements OnInit {
     this.operatorAcertificateFileName = "";
     this.operatorBcertificateFileName = "";
     this.operatorCcertificateFileName = "";
-    if(clearCheck){
-    this.operatorAcertificateFileSuccess = "false";
-    this.operatorBcertificateFileSuccess = "false";
-    this.operatorCcertificateFileSuccess = "false";
-  }
+    if (clearCheck) {
+      this.operatorAcertificateFileSuccess = "false";
+      this.operatorBcertificateFileSuccess = "false";
+      this.operatorCcertificateFileSuccess = "false";
+    }
   }
   //import compliance end
 
@@ -974,36 +986,36 @@ export class HomeComponent implements OnInit {
     fileuploadlabel.value = file.name;
     fileuploadlabelArray.push(fileuploadlabel);
   }
-// search results start
-searchArea = {
-  left: 50,
-  right:50,
-  leftVisible: true,
-  rightVisible: true,
-  useTransition: true,
-}
-
-  handleSearchResults(searchResult){
-    if(searchResult.facilitiesList!= null && searchResult.facilitiesList.length>0){
-    for (var i = 0; i < searchResult.facilitiesList.length; i++) {
-      var faciData = searchResult.facilitiesList[i];
-      if(faciData == null)continue;
-       // var image = this.commonService.gasStationImage(feciData.brand)
-      if(faciData.tankPaidService != null)
-       faciData.tankPaidService = faciData.tankPaidService == "true";
-      // feciData.image = "assets/images/gasstation/"+image;
-      faciData.image = environment.server+faciData.imageURL;
-    }
+  // search results start
+  searchArea = {
+    left: 50,
+    right: 50,
+    leftVisible: true,
+    rightVisible: true,
+    useTransition: true,
   }
-    if(searchResult.companiesList!= null && searchResult.companiesList.length>0){
+
+  handleSearchResults(searchResult) {
+    if (searchResult.facilitiesList != null && searchResult.facilitiesList.length > 0) {
+      for (var i = 0; i < searchResult.facilitiesList.length; i++) {
+        var faciData = searchResult.facilitiesList[i];
+        if (faciData == null) continue;
+        // var image = this.commonService.gasStationImage(feciData.brand)
+        if (faciData.tankPaidService != null)
+          faciData.tankPaidService = faciData.tankPaidService == "true";
+        // feciData.image = "assets/images/gasstation/"+image;
+        faciData.image = environment.server + faciData.imageURL;
+      }
+    }
+    if (searchResult.companiesList != null && searchResult.companiesList.length > 0) {
       for (var i = 0; i < searchResult.companiesList.length; i++) {
         var faciData = searchResult.companiesList[i];
         for (var j = 0; j < faciData.facilities.length; j++) {
-          if( faciData.facilities[j] == null)continue;
+          if (faciData.facilities[j] == null) continue;
           // var image = this.commonService.gasStationImage(feciData.brand)
-         if( faciData.facilities[j].tankPaidService != null)
-         faciData.facilities[j].tankPaidService =  faciData.facilities[j].tankPaidService == "true";
-          faciData.facilities[j].image = faciData.image = environment.server+faciData.facilities[j].imageURL;
+          if (faciData.facilities[j].tankPaidService != null)
+            faciData.facilities[j].tankPaidService = faciData.facilities[j].tankPaidService == "true";
+          faciData.facilities[j].image = faciData.image = environment.server + faciData.facilities[j].imageURL;
         }
         this.companiesRightdata.push(faciData);
       }
@@ -1012,92 +1024,182 @@ searchArea = {
     this.searchResult["companiesList"] = searchResult.companiesList;
     this.hideMainPanal();
   }
-  hideMainPanal(){
-    this.showSearchResults=true;
+  hideMainPanal() {
+    this.showSearchResults = true;
   }
-  hideSearchPanel(){
+  hideSearchPanel() {
     this.appcomponent.searchString = "";
-    this.showSearchResults=false;
+    this.showSearchResults = false;
   }
 
   //search results end
-  setSplitwidth(){
-//     console.log("set")
+  setSplitwidth() {
+    //     console.log("set")
     var sidebarDiv = document.getElementById("left-split-panel")
-    var mainDiv =document.getElementById("split-panel") 
-    if(sidebarDiv != null && mainDiv !== null )
-{
-  sidebarDiv.style.display = "";
-  mainDiv.style.width="calc(100% - 320px)";
-}     
-//     // if(this.area.leftVisible)
+    var mainDiv = document.getElementById("split-panel")
+    if (sidebarDiv != null && mainDiv !== null) {
+      sidebarDiv.style.display = "";
+      if (this.selectedChart == 'dashboard')
+        mainDiv.style.width = "calc(100vh - 1000px)";
+      else
+        mainDiv.style.width = "calc(100% - 320px)";
+    }
+    //     // if(this.area.leftVisible)
   }
-  reSetSplitwidth(){
+  setRightSplitwidth() {
+    var mainDiv = document.getElementById("split-panel")
+    if (mainDiv !== null) {
+      mainDiv.style.width = "calc(100% - 640px)";
+    }
+  }
+  reSetSplitwidth() {
+    if (this.selectedChart === 'dashboard') return;
     var sidebarDiv = document.getElementById("left-split-panel")
-    var mainDiv =document.getElementById("split-panel") 
-    if(sidebarDiv != null && mainDiv !== null )
-{
-  sidebarDiv.style.display = "none";
-  mainDiv.style.width="100%";
-}   
+    var mainDiv = document.getElementById("split-panel")
+    if (sidebarDiv != null && mainDiv !== null) {
+      sidebarDiv.style.display = "none";
+      mainDiv.style.width = "100%";
+    }
   }
-  checkCertificationDisabled(enableData){
+  checkCertificationDisabled(enableData) {
     console.log(enableData)
-    if(enableData == null) return false;
+    if (enableData == null) return false;
     return true;
 
   }
   getFacilityConsolidateReport(consolidateData) {
 
-this.facilityConsolidateReportdata = null;;
+    this.facilityConsolidateReportdata = null;;
 
     //   this.regular = consolidateData.regular;
     //   this.midGrade = consolidateData.midgrade;
     //   this.premium = consolidateData.premium;
     //   this.diesel = consolidateData.diesel;
-      this.facilityConsolidateReportdata = {
-        labels: [],
-  
-  
-        datasets: [
-          {
-            label: 'Remaining',
-            data: [],
-            // backgroundColor: this.NON_FILL_COLOR,
-            // hoverBackgroundColor: this.NON_FILL_COLOR
-            backgroundColor: this.FILL_COLOR,
-            hoverBackgroundColor: this.FILL_COLOR
-          }
-          // , {
-          //   label: 'Total',
-          //   data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
-          //   backgroundColor: this.FILL_COLOR,
-          //   hoverBackgroundColor: this.FILL_COLOR
-  
-          // }
-        ]
-      };
-      for(var i=0;i<consolidateData.length;i++){
-        this.facilityConsolidateReportdata.labels.push(consolidateData[i].key);
-        this.facilityConsolidateReportdata.datasets[0].data.push(consolidateData[i].value)
-  
-      }
-      // return this.facilityConsolidateReportdata;
+    this.facilityConsolidateReportdata = {
+      labels: [],
+
+
+      datasets: [
+        {
+          label: 'Remaining',
+          data: [],
+          // backgroundColor: this.NON_FILL_COLOR,
+          // hoverBackgroundColor: this.NON_FILL_COLOR
+          backgroundColor: this.FILL_COLOR,
+          hoverBackgroundColor: this.FILL_COLOR
+        }
+        // , {
+        //   label: 'Total',
+        //   data: [this.totalGallons - this.regular, (this.totalGallons - this.midGrade), (this.totalGallons - this.premium)],
+        //   backgroundColor: this.FILL_COLOR,
+        //   hoverBackgroundColor: this.FILL_COLOR
+
+        // }
+      ]
+    };
+    for (var i = 0; i < consolidateData.length; i++) {
+      this.facilityConsolidateReportdata.labels.push(consolidateData[i].key);
+      this.facilityConsolidateReportdata.datasets[0].data.push(consolidateData[i].value)
+
     }
-  onUSSBOASelect(){
+    // return this.facilityConsolidateReportdata;
+  }
+  onUSSBOASelect() {
     this.router.navigate(['ussboa']);
   }
-  retrieveTankAlarmHistory(){
+  retrieveTankAlarmHistory() {
     this.dashboardService.getTankAlarmHistory(this.commonService.getUserName()) // retrieve all thd parent folders
-    .subscribe(
-      tankAlaramList => {
-        if(tankAlaramList!=null){
-          this.commonService.setTankAlert(tankAlaramList);
-          console.log(tankAlaramList.length)
-        }
-      },
-      error => {
-        console.log(error);
-      });
+      .subscribe(
+        tankAlaramList => {
+          if (tankAlaramList != null) {
+            this.commonService.setTankAlert(tankAlaramList);
+            console.log(tankAlaramList.length)
+          }
+        },
+        error => {
+          console.log(error);
+        });
+  }
+  consolidateReportClick() {
+    this.consolidateFacilitiesdata = [];
+    if (this.commonService.isAdmin())
+      return;
+    $('#consolidateFacilityModal').modal('show');
+    this.dashboardService.getFacilitiesList(this.commonService.getUserName(), "managed") // retrieve all thd parent folders
+      .subscribe(
+        facilitiesList => {
+          for (var i = 0; i < facilitiesList.length; i++) {
+            var faciData = facilitiesList[i];
+            // var image = this.commonService.gasStationImage(faciData.brand)
+            // faciData.image = "assets/images/gasstation/"+image;
+            // this.getFacilityConsolidateReport(faciData.consolidateReport);
+            faciData.image = environment.server + faciData.imageURL;
+            var consolidateReportdata: any;
+            consolidateReportdata = this.generateInventoryReport(faciData.consolidateReport, consolidateReportdata);
+            faciData.consolidateReport = consolidateReportdata;
+            this.consolidateFacilitiesdata.push(faciData);
+          }
+
+        },
+        error => {
+          console.log(error);
+        });
+  }
+  gasLevelModal = [];
+  showGasLevelWindow(rightDetailsContent) {
+    if (rightDetailsContent.consolidateReport == null || rightDetailsContent.consolidateReport.labels == null || rightDetailsContent.consolidateReport.labels.length == 0)
+      return;
+    $('#gasLevelModal').modal('show');
+  this.gasLevelModal=[]
+    this.dashboardService.getGasLevelsForFacility(rightDetailsContent.facilityId) // retrieve all thd parent folders
+      .subscribe(
+        gaslevelData => {
+          if (gaslevelData == null || gaslevelData.length==0) {
+            for (var i = 0; i < rightDetailsContent.consolidateReport.labels.length; i++) {
+              var row = {};
+              row['key'] = rightDetailsContent.consolidateReport.labels[i];
+              row["value"] = 0;
+              this.gasLevelModal.push(row)
+            }
+          } else {
+            var gasResult = this.getGasLevels(gaslevelData);
+            for (var i = 0; i < gasResult.length; i++) {
+              var row = {};
+              row["key"] = gasResult[i].key;
+              row["value"] = gasResult[i].value;
+              this.gasLevelModal.push(row)
+            }
+          }
+        },
+        error => {
+          console.log(error);
+        });
+
+  }
+  getGasLevels(gaslevelData) {
+    var str = gaslevelData.gaslevels;
+    var res = str.split(",");
+    var result = []
+    for (var i = 0; i < res.length; i++) {
+      var splitString = res[i].split("=");
+      var resultObj={};
+      resultObj['key']=splitString[0];
+      resultObj['value']= (Number)(splitString[1]);
+      result.push(resultObj);
+    }
+    return result;
+
+  }
+  saveGasLevel() {
+    this.dashboardService.saveGasLevelsForFacility(this.rightDetailsContent.facilityId, this.gasLevelModal)
+      .subscribe(
+        result => {
+          $('#gasLevelModal').modal('hide');
+        },
+        error => {
+          console.log(error);
+          $('#gasLevelModal').modal('hide');
+        });
+
   }
 }
