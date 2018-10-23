@@ -6,6 +6,7 @@ import { AppComponent } from '../app.component';
 import { CRMConstants } from '../constants/crmconstants';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import 'chartjs-plugin-datalabels';
 declare var $: any;
 @Component({
   selector: 'crm-home',
@@ -243,8 +244,8 @@ export class HomeComponent implements OnInit {
     this.facilitiesdata.datasets[0].data.push(this.facilitiesArray[1]);
     this.facilitiesLabel.push(this.dashboardConst.MANAGED);
     this.facilitiesLabel.push(this.dashboardConst.UNMANAGED);
-    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + ' -- ' + this.facilitiesArray[0]);
-    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + ' -- ' + this.facilitiesArray[1])
+    this.facilitiesdata.labels.push(this.facilitiesLabel[0] + ' ' );
+    this.facilitiesdata.labels.push(this.facilitiesLabel[1] + ' ' )
     this.totalFacilities = this.facilitiesArray[1] + this.facilitiesArray[0];
 
   }
@@ -361,7 +362,7 @@ export class HomeComponent implements OnInit {
     };
     this.totalCompanies = compData.companies;
     this.companiesdata.datasets[0].data.push(this.totalCompanies);
-    this.companiesdata.labels.push('Total -- ' + this.totalCompanies)
+    this.companiesdata.labels.push('Total ')
   }
   onCompaniesDataSelect($event) {
     var event;
@@ -439,8 +440,8 @@ export class HomeComponent implements OnInit {
     this.complianceLabel.push("Compliant");
     this.complianceLabel.push("Non-compliant");
     // this.nonCompliance = 9;
-    this.complianceData.labels.push('Compliance --' + this.complianceArray[0]);
-    this.complianceData.labels.push('Non Compliance --' + this.complianceArray[1]);
+    this.complianceData.labels.push('Compliance ');
+    this.complianceData.labels.push('Non Compliance ');
     this.complianceData.datasets[0].data.push(this.complianceArray[0]);
     this.complianceData.datasets[0].data.push(this.complianceArray[1]);
     this.totalCompliance = this.complianceArray[1] + this.complianceArray[0];
@@ -522,7 +523,7 @@ export class HomeComponent implements OnInit {
     };
     for (var i = 0; i < consolidateData.length; i++) {
       consolidateReportdata.labels.push(consolidateData[i].key);
-      consolidateReportdata.datasets[0].data.push(consolidateData[i].value)
+      consolidateReportdata.datasets[0].data.push(Number(consolidateData[i].value));
       consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
       consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
       if (consolidateData[i].key === "UNLEADED")
@@ -565,7 +566,14 @@ export class HomeComponent implements OnInit {
     legend: { display: false },
     responsive: false,
     maintainAspectRatio: false,
-
+    plugins: {
+      datalabels: {
+         display: true,
+         align: 'top',
+         anchor: 'top',
+         font: { weight: 'bold',size:'14' }
+      }
+   },
     scales: {
       xAxes: [{
         stacked: true // this should be set to make the bars stacked
