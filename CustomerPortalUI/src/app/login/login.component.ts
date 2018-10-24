@@ -88,7 +88,8 @@ this.authenticationService.changePassword(this.model) .subscribe(
   data => {
      // console.log(message)
      if(data === true){
-  this.showSuccessMessage=true;
+  // this.showSuccessMessage=true;
+  this.login();
   // this.authenticationService.logout();
   
     //  console.log(data)

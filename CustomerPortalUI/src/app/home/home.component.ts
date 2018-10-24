@@ -169,6 +169,7 @@ export class HomeComponent implements OnInit {
   rightPaneDetailslTitle = "";
   middlePaneClass = "ui-g-6";
   visibleSidebar = false;
+  showUploadLoading=false;
   //right side panel variables end
 
 
@@ -362,7 +363,7 @@ export class HomeComponent implements OnInit {
     };
     this.totalCompanies = compData.companies;
     this.companiesdata.datasets[0].data.push(this.totalCompanies);
-    this.companiesdata.labels.push('Total ')
+    this.companiesdata.labels.push('Total')
   }
   onCompaniesDataSelect($event) {
     var event;
@@ -560,7 +561,16 @@ export class HomeComponent implements OnInit {
   private options: any = {
     legend: { position: 'bottom' },
     responsive: true,
-    maintainAspectRatio: false
+    maintainAspectRatio: false,
+      plugins: {
+        datalabels: {
+         display: true,
+         align: 'center',
+         anchor: 'center',
+         color:'#FFFFFF',
+         font: { weight: 'bold',size:'20' }
+      }
+    }
   }
   private noLegendtOptions = {
     legend: { display: false },
@@ -723,6 +733,7 @@ export class HomeComponent implements OnInit {
 
   //import notification files start
   importNotificationDocuments() {
+    this.showUploadLoading = true;
     // console.log(this.fileInput.files.length)
     var frmData = new FormData();
 
@@ -780,28 +791,50 @@ export class HomeComponent implements OnInit {
             // this.successMessage = "File(s) Uploaded Successfully !!";
             this.notificationResultList = result;
             for (var i = 0; i < result.length; i++) {
-              if (result[i].key == 'facilityOperatorPOA')
+              if (result[i].key == 'facilityOperatorPOA'){
                 this.fOperatorfileSuccess = result[i].value;
-              if (result[i].key == 'propertyOwnerPOA')
+                this.modalData.facilityOperatorPOAEnable = false;
+              }
+              if (result[i].key == 'propertyOwnerPOA'){
                 this.ownerFileSuccess = result[i].value;
-              if (result[i].key == 'ustOwnerPOA')
+                this.modalData.propertyOwnerPOAEnable = false;
+              }
+              if (result[i].key == 'ustOwnerPOA'){
                 this.ustOwnerFileSuccess = result[i].value;
-              if (result[i].key == 'operatorAffidevitOfLease')
+                this.modalData.ustOwnerPOAEnable = false;
+              }
+              if (result[i].key == 'operatorAffidevitOfLease'){
                 this.operatorLeaseFileSuccess = result[i].value;
-              if (result[i].key == 'notificationDueDate')
+                this.modalData.operatorLeaseAgreementEnable = false;
+              }
+                if (result[i].key == 'notificationDueDate'){
                 this.notificationDueDateFileSuccess = result[i].value;
-              if (result[i].key == 'operatoraffidavitFile')
+                this.modalData.notificationDueDateEnable = false;
+              }
+              if (result[i].key == 'operatoraffidavitFile'){
                 this.operatoraffidavitFileSuccess = result[i].value;
-              if (result[i].key == 'ownerAffidevitOfLease')
+                this.modalData.operatorAffidevitOfLeaseEnable = false;
+              }
+              if (result[i].key == 'ownerAffidevitOfLease'){
                 this.ownerAffidavitFileSuccess = result[i].value;
-              if (result[i].key == 'propertyDeedLandContract')
+                this.modalData.ownerAffidevitOfLeaseEnable= false; 
+              }
+              if (result[i].key == 'propertyDeedLandContract'){
                 this.deedLandFileSuccess = result[i].value;
-              if (result[i].key == 'taxIDInformation')
+                this.modalData.propertyDeedLandContractEnable = false;
+              }
+              if (result[i].key == 'taxIDInformation'){
                 this.taxIdFileSuccess = result[i].value;
-              if (result[i].key == 'notificationFormSubmitted')
-                this.notificationFormSubmittedFileSuccess = result[i].value;
-              if (result[i].key == 'letterOfNetworthCertification')
+                this.modalData.taxIDInformationEnable = false;
+              }
+              // if (result[i].key == 'notificationFormSubmitted'){
+              //   this.notificationFormSubmittedFileSuccess = result[i].value;
+              //   this.modalData.ustOwnerPOAEnable = false;
+              // }
+              if (result[i].key == 'letterOfNetworthCertification'){
                 this.letterOfNetworthCertificationFileSuccess = result[i].value;
+                this.modalData.letterOfNetworthCertificationEnable = false;
+              }
 
             }
 
@@ -809,6 +842,8 @@ export class HomeComponent implements OnInit {
             this.resetNotificationForm(false);
             //notification form end
           }
+          this.showUploadLoading = false;
+
         },
         error => {
           console.log(error);
@@ -816,6 +851,7 @@ export class HomeComponent implements OnInit {
 
   }
   resetNotificationForm(clearTick) {
+    this.showUploadLoading = false;
     this.fOperatorFileName = "";
     this.ownerFileName = "";
     this.ustOwnerFileName = "";
@@ -846,6 +882,7 @@ export class HomeComponent implements OnInit {
   //import compliance files start
   importComplianceDocuments() {
     // console.log(this.fileInput.files.length)
+    this.showUploadLoading = true;
     var frmData = new FormData();
 
     var complianceUploadArray = [];
@@ -883,24 +920,38 @@ export class HomeComponent implements OnInit {
             // this.successMessage = "File(s) Uploaded Successfully !!";
             this.complianceResultList = result;
             for (var i = 0; i < result.length; i++) {
-              if (result[i].key == 'lineAndLeakDetector')
+              if (result[i].key == 'lineAndLeakDetector'){
                 this.lineLeakFileSuccess = result[i].value;
-              if (result[i].key == 'cathodicProtection')
+                this.modalData.lnlDetrTstRequrdEnable = false;
+              }
+              if (result[i].key == 'cathodicProtection'){
                 this.cathodicProtectionFileSuccess = result[i].value;
-              if (result[i].key == 'tankTestingReport')
+                this.modalData.cprequiredEnable=false;
+              }
+              if (result[i].key == 'tankTestingReport'){
                 this.tankTestingReportFileSuccess = result[i].value;
-              if (result[i].key == 'repairDocuments')
+                this.modalData.tankTestingReportRequired=false;
+              }
+              if (result[i].key == 'repairDocuments'){
                 this.repairDocumentsFileSuccess = result[i].value;
-              if (result[i].key == 'releaseDetectionReport')
+                this.modalData.repairDocumentRequiredEnable=false
+              }
+              if (result[i].key == 'releaseDetectionReport'){
                 this.releaseDetectionFileSuccess = result[i].value;
-              if (result[i].key == 'internalLiningInspection')
+                this.modalData.releaseDetectionReportRequiredEnable=false;
+              }
+              if (result[i].key == 'internalLiningInspection'){
                 this.internalLiningFileSuccess = result[i].value;
+                this.modalData.internalLiningInspectionRequiredEnable=false;
+              }
             }
 
             //notification form start
             this.resetComplianceForm(false);
             //notification form end
           }
+          this.showUploadLoading = false;
+
         },
         error => {
           console.log(error);
@@ -908,8 +959,9 @@ export class HomeComponent implements OnInit {
 
   }
   resetComplianceForm(clearTick) {
+    this.showUploadLoading = false;
     this.lineLeakFileName = "";
-    this.cathodicProtectionFile = "";
+    this.cathodicProtectionFileName = "";
     this.tankTestingReportFileName = "";
     this.repairDocumentsFileName = "";
     this.releaseDetectionFile = "";
@@ -928,6 +980,7 @@ export class HomeComponent implements OnInit {
   //import Certification files start
   importCertificationDocuments() {
     // console.log(this.fileInput.files.length)
+    this.showUploadLoading = true;
     var frmData = new FormData();
 
     var certificationUploadArray = [];
@@ -956,15 +1009,22 @@ export class HomeComponent implements OnInit {
             // this.successMessage = "File(s) Uploaded Successfully !!";
             this.complianceResultList = result;
             for (var i = 0; i < result.length; i++) {
-              if (result[i].key == 'operatorAcertificate')
+              if (result[i].key == 'operatorAcertificate'){
                 this.operatorAcertificateFileSuccess = result[i].value;
-              if (result[i].key == 'operatorBcertificate')
+                this.modalData.operatorAcertificateEnable = false;
+              }
+              if (result[i].key == 'operatorBcertificate'){
                 this.operatorBcertificateFileSuccess = result[i].value;
-              if (result[i].key == 'operatorCcertificate')
+                this.modalData.operatorBcertificateEnable = false;
+              }
+              if (result[i].key == 'operatorCcertificate'){
                 this.operatorCcertificateFileSuccess = result[i].value;
+                this.modalData.operatorCcertificateEnable = false;
+              }
             }
             this.resetCertificationForm(false);
           }
+          this.showUploadLoading = false;
         },
         error => {
           console.log(error);
@@ -972,6 +1032,7 @@ export class HomeComponent implements OnInit {
 
   }
   resetCertificationForm(clearCheck) {
+    this.showUploadLoading = false;
     this.operatorAcertificateFileName = "";
     this.operatorBcertificateFileName = "";
     this.operatorCcertificateFileName = "";
@@ -1057,7 +1118,7 @@ export class HomeComponent implements OnInit {
   setRightSplitwidth() {
     var mainDiv = document.getElementById("split-panel")
     if (mainDiv !== null) {
-      mainDiv.style.width = "calc(100% - 640px)";
+      mainDiv.style.width = "calc(100% - 840px)";
     }
   }
   reSetSplitwidth() {

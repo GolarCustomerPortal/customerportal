@@ -334,7 +334,7 @@
               <p-fileUpload name="ownerAffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #ownerAffidavitfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;ownerAffidavitFile = $event.files[0]; ownerAffidavitFileName=$event.files[0].name"
                 [disabled]="!modalData?.ownerAffidevitOfLeaseEnable"></p-fileUpload>
-                <span *ngIf='ownerAffidavitFile == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
+                <span *ngIf='ownerAffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-first">
@@ -371,7 +371,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" [disabled]="!enableNotificationuploadButton" (click) ="importNotificationDocuments()">Upload</button>
+        <button type="button" class="btn btn-primary" [disabled]="!enableNotificationuploadButton || showUploadLoading" (click) ="importNotificationDocuments()">Upload <i *ngIf="showUploadLoading" class="fa fa-spinner fa-spin" style="font-size:24px"></i></button>
       </div>
     </div>
   </div>
@@ -448,7 +448,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
-          <button type="button" class="btn btn-primary" [disabled]="!enableComplianceuploadButton"  (click) ="importComplianceDocuments()">Upload</button>
+          <button type="button" class="btn btn-primary" [disabled]="!enableComplianceuploadButton || showUploadLoading"
+            (click) ="importComplianceDocuments()">Upload<i *ngIf="showUploadLoading" class="fa fa-spinner fa-spin" style="font-size:24px"></i></button>
         </div>
       </div>
     </div>
@@ -499,7 +500,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" [disabled]="!enableCertificationuploadButton"  (click) ="importCertificationDocuments()">Upload</button>
+          <button type="button" class="btn btn-primary" [disabled]="!enableCertificationuploadButton  || showUploadLoading"  
+          (click) ="importCertificationDocuments()">Upload<i *ngIf="showUploadLoading" class="fa fa-spinner fa-spin" style="font-size:24px"></i></button>
         </div>
       </div>
     </div>
@@ -767,7 +769,7 @@
                         <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Fuel Inventory (Gallons)</div>
                           </div>
                          </div>
-                  <p-chart [width]="400" [height]="400" type="bar" [data]="consolidateReportdata" [options]="noLegendtOptions"></p-chart>
+                  <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
     
               </p-card>
             </div>
