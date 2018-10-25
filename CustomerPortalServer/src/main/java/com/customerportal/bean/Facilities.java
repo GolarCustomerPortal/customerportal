@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Facilities {
 
-	private String externalId;
+	private String id;
 	private String contact;
 	private String address;
 	private String company;
@@ -24,15 +24,15 @@ public class Facilities {
 	private String certificationButtonEnable;
 	private String compliance;
 	private String imageURL;
+	private Gaslevel gasLevel;
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-	}
+public void setId(String id) {
+	this.id = id;
+}
+public String getId() {
+	return id;
+}
 
 	public String getContact() {
 		return contact;
@@ -184,5 +184,13 @@ public class Facilities {
 
 	public String getImageURL() {
 		return imageURL;
+	}
+
+	public void setGasLevel(Gaslevel gasLevel) {
+		this.gasLevel = gasLevel;
+	}
+
+	public Gaslevel getGasLevel() {
+		return gasLevel;
 	}
 }

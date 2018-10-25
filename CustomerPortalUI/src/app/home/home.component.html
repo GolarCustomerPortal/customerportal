@@ -571,28 +571,14 @@
       <div class="modal-body file-upload-model">
 
           <div *ngFor="let fdata of consolidateFacilitiesdata; let i = index; let even = even;" style="padding:10px;">
-          <div class="ui-g-12">
-              <p-card styleClass="consolidate-card-shadow">
-                  <div style="width: 100%">
-                      <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important"> {{fdata.name}}</div>
-                       <!-- <img class="card-image" src="{{fdata.image}}" /> -->
-                      </div>
-                   </div>
-              <!-- <div class="ui-g no-padding">
-                <div class="ui-g-4 no-padding"> Name:</div>
-                <div class="ui-g-8 no-padding">{{fdata.name}}</div>
-              </div> -->
-              <div class="ui-g no-padding">
-                <!-- <div class="ui-g-4 no-padding"> Address:</div> -->
-                <div class="ui-g-12 no-padding">{{fdata.address}}</div>
-              </div>
-            </p-card>
-          </div>
+
           <div class="ui-g-12 margin-top" id="individual-chart">
               <p-card styleClass="ui-card-shadow">
                   <div style="width: 100%">
                       <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Fuel Inventory (Gallons)</div>
-                        </div>
+                     <p class="consolidate-card-title-right">{{fdata.name}}</p><br/>
+                      <p class="consolidate-card-title-right">{{fdata.address}}  </p>   
+                    </div>
                        </div>
                 <p-chart type="bar" [data]="fdata.consolidateReport" [options]="noLegendtOptions"></p-chart>
   

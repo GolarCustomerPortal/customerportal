@@ -36,7 +36,7 @@ public class Account {
 	private String city;
 	private String state;
 	private String postalCode;
-	
+	private String documentLink;
 
 	private boolean facilityOperatorPOAEnable = false;
 	private boolean propertyOwnerPOAEnable = false;
@@ -51,23 +51,20 @@ public class Account {
 	private boolean notificationDueDateEnable = false;
 	private boolean propertyDeedLandContractEnable = false;
 	private boolean notificationFormSubmittedEnable = false;
-	
+
 	// compliance enable start
-	
+
 	private boolean lnlDetrTstRequrdEnable = false;
 	private boolean cprequiredEnable = false;
 	private boolean tankTestingReportRequiredEnable = false;
 	private boolean repairDocumentRequiredEnable = false;
 	private boolean releaseDetectionReportRequiredEnable = false;
 	private boolean internalLiningInspectionRequiredEnable = false;
-	
-	//certification start
+
+	// certification start
 	private boolean operatorAcertificateEnable = false;
 	private boolean operatorBcertificateEnable = false;
 	private boolean operatorCcertificateEnable = false;
-	
-	
-	
 
 	public String getId() {
 		return Id;
@@ -140,7 +137,6 @@ public class Account {
 	public void setLetterOfNetworthCertification(String letterOfNetworthCertification) {
 		this.letterOfNetworthCertification = letterOfNetworthCertification;
 	}
-
 
 	public String getOperatorLeaseAgreement() {
 		return operatorLeaseAgreement;
@@ -313,11 +309,11 @@ public class Account {
 	public void setFid(String fid) {
 		this.fid = fid;
 	}
+
 	public String getFid() {
 		return fid;
 	}
-	
-	
+
 	public String getStreet() {
 		return street;
 	}
@@ -348,6 +344,14 @@ public class Account {
 
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
+	}
+
+	public void setDocumentLink(String documentLink) {
+		this.documentLink = documentLink;
+	}
+
+	public String getDocumentLink() {
+		return documentLink;
 	}
 
 	public void setFacilityOperatorPOAEnable(boolean facilityOperatorPOAEnable) {
@@ -429,21 +433,27 @@ public class Account {
 	public void setOperatorLeaseAgreementEnable(boolean operatorLeaseAgreementEnable) {
 		this.operatorLeaseAgreementEnable = operatorLeaseAgreementEnable;
 	}
+
 	public void setNotificationDueDateEnable(boolean notificationDueDateEnable) {
 		this.notificationDueDateEnable = notificationDueDateEnable;
 	}
+
 	public boolean isNotificationDueDateEnable() {
 		return notificationDueDateEnable;
 	}
+
 	public void setPropertyDeedLandContractEnable(boolean propertyDeedLandContractEnable) {
 		this.propertyDeedLandContractEnable = propertyDeedLandContractEnable;
 	}
+
 	public boolean isPropertyDeedLandContractEnable() {
 		return propertyDeedLandContractEnable;
 	}
+
 	public void setNotificationFormSubmittedEnable(boolean notificationFormSubmittedEnable) {
 		this.notificationFormSubmittedEnable = notificationFormSubmittedEnable;
 	}
+
 	public boolean isNotificationFormSubmittedEnable() {
 		return notificationFormSubmittedEnable;
 	}

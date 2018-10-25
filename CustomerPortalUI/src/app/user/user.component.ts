@@ -51,6 +51,7 @@ export class UserComponent implements OnInit {
     this.model.lastName = this.user.lastName;
     this.model.email = this.user.emailAddress;
     this.model.admin = this.user.admin;
+    this.model.userManager = this.user.userManager;
     // this.model.active = this.user.active;
     this.model.username = this.user.username;
     this.model.password = this.user.password;
@@ -149,6 +150,16 @@ var self=this;
       error => {
         console.log(error);
       });
+  }
+  changeAdminUserManagerValue(type){
+    if(type === "user"){
+      if(this.model.userManager === false)return;
+      this.model.admin= !this.model.userManager;
+    }else{
+      if(this.model.admin === false)return;
+    this.model.userManager= !this.model.admin;
+  }
+
   }
   cancelClick(){
     this.commonService.removeEditUser();

@@ -75,6 +75,7 @@ export class HomeComponent implements OnInit {
   consolidateReportColors = { "UNLEADED": "#ffffff", "PREMIUM": "#C35A3A", "RECOVERY": "#E18230", "DIESEL": "#F6C918" }
   consolidateFacilitiesdata = [];
   FILL_COLOR = "#2c347E";
+  GAL_LEVEL_BELOW_COLOR = "#FF0000";
   NON_FILL_COLOR = "#ef4136";
   // consolidate report end
   //search start
@@ -192,6 +193,7 @@ export class HomeComponent implements OnInit {
       this.fetchDashboardValues(true);
   }
   fetchDashboardValues(resetview) {
+    if(this.commonService.getUserName() != null && this.commonService.getUserName() != undefined){
     this.dashboardService.getDashboardData(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         dashboardData => {
@@ -212,6 +214,7 @@ export class HomeComponent implements OnInit {
         });
     if (!this.commonService.isAdmin())
       this.retrieveTankAlarmHistory();
+    }
 
   }
   // Facilities
@@ -299,6 +302,7 @@ export class HomeComponent implements OnInit {
 
   }
   compliance = true;
+  selectedFacility;
   showSpecificfacilityDetails(fdata) {
     console.log(fdata);
     this.rightsidePanelError = false;
@@ -308,6 +312,7 @@ export class HomeComponent implements OnInit {
       this.rightsidePanelError = true;
       return;
     }
+    this.selectedFacility = fdata;
     this.showRightDetailContent = true;
     this.rightDetailsContent.facilityId = fdata.facilityId;
     this.rightPaneDetailslTitle = fdata.name;
@@ -325,8 +330,9 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.storeManager = fdata.storeManager;
     this.rightDetailsContent.tankPm = fdata.tankPm;
     this.rightDetailsContent.compliance = fdata.compliance;
+    this.rightDetailsContent.backConsolidateReport = fdata.consolidateReport;
     this.rightDetailsContent.consolidateReport = [];
-    this.rightDetailsContent.consolidateReport = this.generateInventoryReport(fdata.consolidateReport, this.rightDetailsContent.consolidateReport);
+    this.rightDetailsContent.consolidateReport = this.generateInventoryReportForRightSideData(fdata.consolidateReport, this.rightDetailsContent.consolidateReport,fdata.gasLevel);
     //actualServerData details.
     this.actualServerData.docUpdateDate = new Date();
     this.actualServerData.facilityName = fdata.name;
@@ -396,6 +402,8 @@ export class HomeComponent implements OnInit {
             for (var j = 0; j < faciData.facilities.length; j++) {
               if (faciData.facilities[j].compliance != null)
                 faciData.facilities[j].compliance = faciData.facilities[j].compliance == "true";
+                if (faciData.facilities[j].tankPaidService != null)
+                faciData.facilities[j].tankPaidService = faciData.facilities[j].tankPaidService == "true";
               faciData.facilities[j].image = environment.server + faciData.facilities[j].imageURL;
             }
             this.companiesRightdata.push(faciData);
@@ -486,6 +494,7 @@ export class HomeComponent implements OnInit {
               var faciData = complianceList[i];
               // var image = this.commonService.gasStationImage(feciData.brand)
               faciData.compliance = faciData.compliance == "true";
+              faciData.tankPaidService = faciData.tankPaidService == "true";
               faciData.image = environment.server + faciData.imageURL;
               this.complianceRightdata.push(faciData);
             }
@@ -531,6 +540,55 @@ export class HomeComponent implements OnInit {
         consolidateReportdata.datasets[0].borderColor.push('#000000');
       else
         consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[consolidateData[i].key]);
+    }
+
+    return consolidateReportdata;
+  }
+  generateInventoryReportForRightSideData(consolidateData, consolidateReportdata,gasLevel) {
+    consolidateReportdata = {
+      labels: [],
+      datasets: [
+        {
+          data: [],
+          backgroundColor: [],
+          borderColor: [],
+          borderWidth: 1,
+          hoverBackgroundColor: []
+        }
+      ]
+    };
+    var gasResult = this.getGasLevels(gasLevel);
+    var gasLevelArray=[]
+            for (var i = 0; i < gasResult.length; i++) {
+              var row = {};
+              row["key"] = gasResult[i].key;
+              row["value"] = gasResult[i].value;
+              gasLevelArray.push(row)
+            }
+    for (var i = 0; i < consolidateData.length; i++) {
+      consolidateReportdata.labels.push(consolidateData[i].key);
+      consolidateReportdata.datasets[0].data.push(Number(consolidateData[i].value));
+      var result=false;
+      for(var j=0;j<gasLevelArray.length;j++){
+        if(gasLevelArray[j].key === consolidateData[i].key){
+          if(gasLevelArray[j].value > consolidateData[i].value){
+            result=true;
+            break;
+          }
+        }
+      }
+      if(result){
+        consolidateReportdata.datasets[0].backgroundColor.push(this.GAL_LEVEL_BELOW_COLOR);
+      consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.GAL_LEVEL_BELOW_COLOR);
+      }else{
+      consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
+      consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
+      if (consolidateData[i].key === "UNLEADED")
+        consolidateReportdata.datasets[0].borderColor.push('#000000');
+      else
+        consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[consolidateData[i].key]);
+    }
+      
     }
 
     return consolidateReportdata;
@@ -581,7 +639,7 @@ export class HomeComponent implements OnInit {
          display: true,
          align: 'top',
          anchor: 'top',
-         font: { weight: 'bold',size:'14' }
+         font: { weight: 'bold',size:'12' }
       }
    },
     scales: {
@@ -1264,6 +1322,10 @@ export class HomeComponent implements OnInit {
       .subscribe(
         result => {
           $('#gasLevelModal').modal('hide');
+          this.rightDetailsContent.consolidateReport=[];
+          this.selectedFacility.gasLevel = result;
+          this.rightDetailsContent.consolidateReport = this.generateInventoryReportForRightSideData(this.rightDetailsContent.backConsolidateReport, this.rightDetailsContent.consolidateReport,result);
+    
         },
         error => {
           console.log(error);

@@ -18,5 +18,6 @@
   <property name="imageContent" column="imageContent" />
   <property name="lastLoginTime" column="lastLoginTime" />
 <property name="golarsEmployee" column="isGolarsEmployee" />
+ <property name="userManager" column="isUserManager" />
  </class>
 </hibernate-mapping>

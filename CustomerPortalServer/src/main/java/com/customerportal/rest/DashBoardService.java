@@ -78,7 +78,7 @@ public class DashBoardService {
 //		dashboardMap.put("premium", 310);
 //		dashboardMap.put("diesel", 500);
 		List<KeyValue> kvList  = new ArrayList<KeyValue>();
-		if(facilitiesList != null && user != null && !user.isAdmin())
+		if(facilitiesList != null && user != null && !user.isAdmin()&& !user.isUserManager())
 		 kvList = DBUtil.getInstance().retrieveConsolidateReport(facilitiesList);
 		
 		resultMap.put("consolidateReportData", kvList);
@@ -141,7 +141,7 @@ public class DashBoardService {
 
 	}
 	
-	@Path("/facilities")
+	@Path("/facilities")	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
@@ -368,7 +368,7 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response saveGasLevel (Gaslevel gasLevel) {
 		
-		boolean result = DBUtil.getInstance().saveGasLevels(gasLevel);
+		Gaslevel result = DBUtil.getInstance().saveGasLevels(gasLevel);
 		return Response.status(200).entity(result).build();
 		
 	}

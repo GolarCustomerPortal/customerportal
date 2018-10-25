@@ -135,6 +135,7 @@ public class DBUtil {
 			user.setLastName(userObj.getLastName());
 			user.setActive(userObj.isActive());
 			user.setAdmin(userObj.isAdmin());
+			user.setUserManager(userObj.isUserManager());
 			user.setEmailAddress(userObj.getEmailAddress());
 			user.setPassword(userObj.getPassword());
 			if (userObj.getImageContent() != null)
@@ -163,12 +164,13 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c,Compliant__c FROM Facility_Management__c";
-			if (!userId.equalsIgnoreCase("admin"))
+			User user = getSpecificUser(userId);
+			String queryString = "SELECT * FROM Facility_Management__c";
+			if (user == null || !user.isAdmin() && !user.isUserManager())
 				queryString += " where Contact__c= '" + userId + "'";
 			Query query = session.createNativeQuery(queryString, Facilities.class);
-			List lst = query.list();
+			List<Facilities>  lst = query.list();
+			setGasLevels(lst);
 			trx.commit();
 			session.close();
 			return lst;
@@ -191,15 +193,25 @@ public class DBUtil {
 		}
 	}
 
+	private void setGasLevels(List<Facilities> lst) {
+		for (Facilities facility : lst) {
+			if(facility== null)continue;
+			Gaslevel gasLevel = getGasLevels(facility.getFacilityId());
+			facility.setGasLevel(gasLevel);
+		}
+		
+	}
+
 	public List<Facilities> searchFacilities(String searchType, String userId, String searchString) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
+			User user = getSpecificUser(userId);
 			String queryString = "SELECT *  FROM Facility_Management__c";
 
 			queryString += " where ";
-			if (!userId.equalsIgnoreCase("admin"))
+			if (user == null || !user.isAdmin() && !user.isUserManager())
 				queryString += " Contact__c= '" + userId + "'  and ";
 			queryString += " ( ";
 			if (searchType.equalsIgnoreCase("all")) {
@@ -219,9 +231,10 @@ public class DBUtil {
 			Query query = session.createNativeQuery(queryString,Facilities.class);
 			List<Facilities> lst = query.list();
 			List<Facilities> resultList   = CustomerPortalUtil.remoteDuplicateRecords(lst);
+			setGasLevels(resultList);
 			trx.commit();
 			session.close();
-			CustomerPortalUtil.fillImageURL(lst);
+			CustomerPortalUtil.fillImageURL(resultList);
 			return resultList;
 
 		} catch (
@@ -297,14 +310,14 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Compliant__c,"
-					+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c "
-					+ "FROM Facility_Management__c f where f.Golars_Tank_Paid_Service__c =:tankService ";
-			if (!userId.equalsIgnoreCase("admin")) {
-				queryString += " and f.Contact__c =:userId";
+			String queryString = "Select * "
+					+ "FROM Facility_Management__c  where Golars_Tank_Paid_Service__c =:tankService ";
+			User user = getSpecificUser(userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager()) {
+				queryString += " and Contact__c =:userId";
 			}
 			Query query = session.createNativeQuery(queryString, Facilities.class);
-			if (!userId.equalsIgnoreCase("admin")) {
+			if (user == null || !user.isAdmin() && !user.isUserManager()) {
 				query.setString("userId", userId);
 			}
 			if (facilitiesType.equalsIgnoreCase("managed"))
@@ -312,6 +325,7 @@ public class DBUtil {
 			else
 				query.setString("tankService", "false");
 			List<Facilities> lst = query.list();
+			setGasLevels(lst);
 			trx.commit();
 			session.close();
 			CustomerPortalUtil.fillImageURL(lst);
@@ -344,8 +358,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-							+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c "
+					"SELECT * "
 							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Facility__c =:facilityId",
 					Facilities.class);
 			query.setString("userId", userId);
@@ -381,7 +394,8 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
-			if (!userId.equalsIgnoreCase("admin"))
+			User user = getSpecificUser(userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager())
 				queryString += " where Company_Owner__c='" + userId + "'";
 			Query query = session.createNativeQuery(queryString, Company.class);
 			// query.setString("contactId", userId);
@@ -648,14 +662,15 @@ public class DBUtil {
 			// Transaction t = session.beginTransaction();
 			Query query = session
 					.createNativeQuery(
-							"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,"
-									+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c, Compliant__c "
+							"SELECT * "
 									+ "FROM Facility_Management__c f where f.company__c =:companyName",
 							Facilities.class);
 			// query.setString("userId", companyOwner);
 
 			query.setString("companyName", companyName);
-			List lst = query.list();
+			List<Facilities> lst = query.list();
+			setGasLevels(lst);
+
 			trx.commit();
 			session.close();
 			CustomerPortalUtil.fillImageURL(lst);
@@ -687,9 +702,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT Company__c,Contact__c,External_ID__c,Facility_Address__c,Facility__c,FID__c,"
-							+ "Golars_Tank_Paid_Service__c,MGT_Project__c,Facility_Name__c,Facility_Brand__c,Compliant__c,"
-							+ "State__c,Street__c,City__c,USSBOA_Paid_Service__c FROM "
+					"SELECT * FROM "
 							+ "Facility_Management__c where contact__c =:userId",
 					Facilities.class);
 			// if (compliance.equalsIgnoreCase("compliance")) {
@@ -744,7 +757,7 @@ public class DBUtil {
 		;
 		Transaction t = session.beginTransaction();
 		Query query = session.createNativeQuery(
-				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone "
+				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone, a.USSBOA_Documents_Link__c "
 						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Approved Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id and a.vendor_type__c =:vendorType");
 		if(vendorType.equalsIgnoreCase("preferred"))
 			query.setString("vendorType", "Preferred Vendor");
@@ -781,6 +794,8 @@ public class DBUtil {
 				ussboa.setPhone(row[8].toString());
 			if (row[9] != null)
 				ussboa.setMobile(row[9].toString());
+			if (row[10] != null)
+				ussboa.setDocumentLink(row[10].toString());
 			lst.add(ussboa);
 		}
 		t.commit();
@@ -1021,7 +1036,8 @@ public class DBUtil {
 			// Transaction t = session.beginTransaction();
 			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
 			queryString += " where ";
-			if (!userId.equalsIgnoreCase("admin"))
+			User user = getSpecificUser(userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager())
 				queryString += " Company_Owner__c='" + userId + "'  and ";
 			queryString += "( ";
 			if (searchType.equalsIgnoreCase("all")) {
@@ -1378,6 +1394,8 @@ public class DBUtil {
 	}
 
 	public List<TankAarmHistory> getTankalarmHistory(String facilitiesIdString) {
+		if(facilitiesIdString != null || facilitiesIdString.trim().length()==0)
+			return new ArrayList<TankAarmHistory>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -1412,6 +1430,7 @@ public class DBUtil {
 		Exception exception)
 
 		{
+			exception.printStackTrace();
 			System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
@@ -1594,7 +1613,7 @@ public class DBUtil {
 	
 	}
 
-	public boolean saveGasLevels(Gaslevel gasLevel) {
+	public Gaslevel saveGasLevels(Gaslevel gasLevel) {
 
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
@@ -1616,11 +1635,11 @@ public class DBUtil {
 				trx.rollback();
 			if (session != null)
 				session.close();
-			return false;
+			return gasLevel;
 		} finally {
 
 		}
-		return true;
+		return gasLevel;
 	
 	}
 

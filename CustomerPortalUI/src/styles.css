@@ -434,3 +434,9 @@ a, a:hover, a:Visited{
     margin: 20px;
 
 }
+.consolidate-card-title-right{
+    float: right;
+    width: -moz-max-content !important;
+    width: -webkit-max-content !important;
+    width: -o-max-content !important;
+}

@@ -41,6 +41,7 @@
 		<property name="internalLiningInspection" column="Internal_Lining_Inspection__c" />
 		<property name="internalLiningInspectionRequired" column="Is_IL_Inspection_Required__c" />
 		<property name="mgtPaidService" column="MGT_Paid_Service__c" />
+		<property name="documentLink" column="USSBOA_Documents_Link__c" />
 
 	</class>
 </hibernate-mapping>

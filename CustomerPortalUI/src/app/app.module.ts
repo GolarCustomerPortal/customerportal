@@ -35,6 +35,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {CalendarModule} from 'primeng/calendar';
 import { UssboaComponent } from './ussboa/ussboa.component';
 import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-signup.component';
+import { SafePipe } from './services/SafePipe';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-s
     ScheduleComponent,
     UssboaComponent,
     TankMonitorSignupComponent,
+    SafePipe
   ],  
   imports: [
     routing,

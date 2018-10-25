@@ -10,6 +10,7 @@ public class USSBOA {
 	private String mobile;
 	private String ownerName;
 	private String address;
+	private String documentLink;
 
 	public String getName() {
 		return name;
@@ -27,7 +28,6 @@ public class USSBOA {
 		return active;
 	}
 
-	
 	public String getEmail() {
 		return email;
 	}
@@ -74,5 +74,13 @@ public class USSBOA {
 
 	public String getAddress() {
 		return address;
+	}
+
+	public void setDocumentLink(String documentLink) {
+		this.documentLink = documentLink;
+	}
+
+	public String getDocumentLink() {
+		return documentLink;
 	}
 }

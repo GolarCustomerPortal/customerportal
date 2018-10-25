@@ -254,7 +254,20 @@ export class CommonService {
     var user = localStorage.getItem('primaryUser');
     if (user != null && user != undefined) {
       var localuser = JSON.parse(user);
+      if(localuser.userManager!= null && localuser.userManager == true )
+      return true;
       return localuser.admin;
+
+    }
+  }
+  isUserManager(){
+    if (localStorage.getItem('secondaryUser')) {
+      return false;
+    }
+    var user = localStorage.getItem('primaryUser');
+    if (user != null && user != undefined) {
+      var localuser = JSON.parse(user);
+      return localuser.userManager;
 
     }
   }

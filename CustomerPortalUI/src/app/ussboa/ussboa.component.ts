@@ -11,6 +11,8 @@ export class UssboaComponent implements OnInit {
   constructor(private dashboardService: DashboardService) { }
   ussBOAApprovedData;
   ussBOAAssociateData;
+  selectedUSSBOA;
+  renderIframe= false;
   ngOnInit() {
     this.dashboardService.getUSSBOAData("preferred")
     .subscribe(
@@ -33,5 +35,12 @@ export class UssboaComponent implements OnInit {
           console.log(error);
         });
   }
-
+  setUSSBOA(ussboa){
+this.selectedUSSBOA =ussboa; 
+this.renderIframe=true
+  }
+  
+  getDocURL() {
+    return this.selectedUSSBOA.documentLink + "#zoom=75"
+  }
 }

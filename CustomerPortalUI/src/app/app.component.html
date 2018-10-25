@@ -21,7 +21,7 @@
                 <a class="dropdown-item" routerLink="users">{{crmConst.lISTOFUSERS}}</a>
                 <a class="dropdown-item" routerLink="newuser">{{crmConst.ADDUSER}}</a>
                 <a class="dropdown-item" routerLink="tankmonitorsignup">{{crmConst.TANK_MONITOR_SIGNUP}}</a>
-                <a class="dropdown-item" routerLink="schedule">{{crmConst.SCHEDULE}}</a>
+                <a *ngIf="!commonService?.isUserManager()" class="dropdown-item" routerLink="schedule">{{crmConst.SCHEDULE}}</a>
             </div>
         </li>
         <li><div  [hidden]="commonService.isAdmin()" class="tank-alert" (click)="getAlertData()" title="Tank Alarm History"><a  data-toggle="modal" data-target="#tankalert" ><i class="fa fa-bell" aria-hidden="true" 

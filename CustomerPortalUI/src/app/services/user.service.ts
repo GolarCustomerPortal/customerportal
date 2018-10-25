@@ -24,7 +24,7 @@ export class UserService {
 }
   registerUser(modal){
     return this.http.post<any>(URLConstants.USERS_URL, {id: modal.id, firstName: modal.firstName, lastName: modal.lastName, emailAddress:modal.email, active: modal.active,
-      edit: modal.edit,permission:this.getPermission(modal),  admin: modal.admin,username:modal.username,password:modal.password,newlyCreated:modal.newlyCreated,imageContent:modal.imageContent })
+      edit: modal.edit,permission:this.getPermission(modal),  admin: modal.admin,userManager:modal.userManager,username:modal.username,password:modal.password,newlyCreated:modal.newlyCreated,imageContent:modal.imageContent })
     .map(user => {
         // Registration response 
         return user;
