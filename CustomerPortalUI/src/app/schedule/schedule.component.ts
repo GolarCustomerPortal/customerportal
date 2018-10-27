@@ -16,7 +16,7 @@ export class ScheduleComponent implements OnInit {
   job: any;
   selectedJob;
   jobScheduleData = [];
-  jobScheduleHistoryData=[];
+  jobScheduleHistoryData = [];
   duplicateName = false;
 
   ngOnInit() {
@@ -28,6 +28,7 @@ export class ScheduleComponent implements OnInit {
       { field: 'jobPath', header: 'Job Path' },
       { field: 'sourceFilePath', header: 'Source File Name' },
       { field: 'endFilePath', header: 'End File Name' },
+      { field: 'startTime', header: 'Start Time' },
       { field: 'schedule', header: 'Schedule' },
       { field: 'recurrence', header: 'Recurrence' }
     ];
@@ -65,11 +66,21 @@ export class ScheduleComponent implements OnInit {
     //   this.setTime(this.job)
     // }
     if (this.newJob == true) {
-      this.setTime(this.job)
+      this.setTime(this.job);
+     
     } else if ((this.job.schedule != null && this.job.schedule != this.selectedJob.schedule) && this.job.schedule !== "NaN:NaN")
       this.setTime(this.job)
-      if(this.job.schedule == "NaN:NaN")
-      this.job.schedule !== 0;
+     
+      if (this.newJob == true) {
+        this.setStartTime(this.job)
+      }else if ((this.job.startTime != null && this.job.startTime != this.selectedJob.startTime) && this.job.startTime !== "NaN:NaN")
+      this.setStartTime(this.job)
+
+    if (this.job.schedule == "NaN:NaN")
+      this.job.schedule == 0;
+      if (this.job.startTime == "NaN:NaN")
+      this.job.startTime == 0;
+
     if (this.job.recurrence == false) {
       this.job.schedule = "";
     }
@@ -107,6 +118,13 @@ export class ScheduleComponent implements OnInit {
     let min = new Date(job.schedule).getMinutes();
     job.schedule = `${hour}:${min}`;
   }
+  setStartTime(job) {
+    if (job.startTime == undefined || job.startTime === "")
+      job.startTime = 0;
+    let hour = new Date(job.startTime).getHours();
+    let min = new Date(job.startTime).getMinutes();
+    job.startTime = `${hour}:${min}`;
+  }
   onSelect($event, job) {
     let hour = new Date($event).getHours();
     let min = new Date($event).getMinutes();
@@ -136,14 +154,14 @@ export class ScheduleComponent implements OnInit {
     // this.displayDialog = false;
   }
   checkFormValues() {
-    if (this.job != null && (this.job.jobName != null && this.job.jobName.trim().length != 0 && 
-    this.job.jobPath != null && this.job.jobPath.trim().length != 0
+    if (this.job != null && (this.job.jobName != null && this.job.jobName.trim().length != 0 &&
+      this.job.jobPath != null && this.job.jobPath.trim().length != 0
       && this.job.endFilePath != null && this.job.endFilePath.trim().length != 0 && !this.duplicateName))
       return false;
     return true;
 
   }
-  fetchScheduleJobHistory(){
+  fetchScheduleJobHistory() {
     this.dashboardService.getScheduleJobHisotryData(this.commonService.getUserName())
       .subscribe(
         jobScheduleHistoryData => {
@@ -153,15 +171,14 @@ export class ScheduleComponent implements OnInit {
           console.log(error);
         });
   }
-  getDate(milli)
-  {
+  getDate(milli) {
     return new Date(milli);
   }
-  checkNameValid(jobName){
-    this.duplicateName=false;
-    for(var i=0;i<this.jobScheduleData.length;i++)
-    if(this.jobScheduleData[i].jobName === jobName){
-      this.duplicateName= true;
-    }
+  checkNameValid(jobName) {
+    this.duplicateName = false;
+    for (var i = 0; i < this.jobScheduleData.length; i++)
+      if (this.jobScheduleData[i].jobName === jobName) {
+        this.duplicateName = true;
+      }
   }
 }

@@ -1,11 +1,14 @@
 package com.customerportal.util;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -1496,6 +1499,7 @@ public class DBUtil {
 				scheduleDB.setSourceFilePath(schedule.getSourceFilePath());
 				scheduleDB.setJobPath(schedule.getJobPath());
 				scheduleDB.setSchedule(schedule.getSchedule());
+				scheduleDB.setStartTime(schedule.getStartTime());
 				session.update(scheduleDB);
 			} else {
 				session.save(schedule);
@@ -1643,4 +1647,7 @@ public class DBUtil {
 	
 	}
 
+public static void main(String[] args) {
+	
+}
 }

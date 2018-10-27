@@ -6,7 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -38,9 +42,9 @@ public class CustomerPortalUtil {
 			for (Facilities facility : facilitiesList) {
 				if (facility == null)
 					continue;
-				List<KeyValue> kvList  = new ArrayList<KeyValue>();
-				if(facilitiesList != null && user != null && !user.isAdmin())
-				 kvList = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
+				List<KeyValue> kvList = new ArrayList<KeyValue>();
+				if (facilitiesList != null && user != null && !user.isAdmin())
+					kvList = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
 				facility.setConsolidateReport(kvList);
 				if (notificationFormList.contains(facility.getFacilityId())) {
 					facility.setNotificationFormButtonEnable("true");
@@ -75,12 +79,13 @@ public class CustomerPortalUtil {
 		fetchURLProperties();
 		String contextpath = imageProperties.getProperty("contextPath");
 		for (Facilities facility : lst) {
-			if(facility == null) continue;
+			if (facility == null)
+				continue;
 			String imageURL = "/" + contextpath + "/images/gasstation/not_found_logo.png";
 			if (facility.getBrand() != null) {
-				String brand=facility.getBrand().replace(" ", "_");
+				String brand = facility.getBrand().replace(" ", "_");
 				String brandURL = imageProperties.getProperty(brand);
-				brandURL = brandURL == null? "not_found_logo.png":brandURL;
+				brandURL = brandURL == null ? "not_found_logo.png" : brandURL;
 				imageURL = "/" + contextpath + "/images/gasstation/" + imageProperties.getProperty(brand);
 			}
 			facility.setImageURL(imageURL);
@@ -92,8 +97,8 @@ public class CustomerPortalUtil {
 		try {
 			fetchURLProperties();
 			String filePath = DBUtil.getInstance().getUserPreferences("tankMonitorPath");
-			if(filePath == null)
-				filePath=imageProperties.getProperty("defultTankMonitorPath");
+			if (filePath == null)
+				filePath = imageProperties.getProperty("defultTankMonitorPath");
 			File fout = new File(filePath + "\\" + imageProperties.getProperty("tankMonitorFile"));
 			if (!fout.exists())
 
@@ -104,7 +109,7 @@ public class CustomerPortalUtil {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
 			for (int i = 0; i < tankMonitorSignup.size(); i++) {
-				bw.write(tankMonitorSignup.get(i).getIpAddress()+" "+tankMonitorSignup.get(i).getFid());
+				bw.write(tankMonitorSignup.get(i).getIpAddress() + " " + tankMonitorSignup.get(i).getFid());
 				bw.newLine();
 			}
 
@@ -119,15 +124,40 @@ public class CustomerPortalUtil {
 		for (Facilities facilities : lst) {
 			boolean found = false;
 			for (Facilities resFec : result) {
-				if(resFec.getFacilityId().equalsIgnoreCase(facilities.getFacilityId())){
+				if (resFec.getFacilityId().equalsIgnoreCase(facilities.getFacilityId())) {
 					found = true;
 					break;
 				}
 			}
-			if(!found)
+			if (!found)
 				result.add(facilities);
-			
+
 		}
 		return result;
 	}
+	public static  int getMilliSeconds(String schedule) {
+		if (schedule == null || schedule.equalsIgnoreCase("") || schedule.equalsIgnoreCase("0"))
+			return 0;
+		String[] minArray = schedule.split(":");
+		int milliseconds = 0;
+		milliseconds = Integer.parseInt(minArray[0]) * 60 * 60;
+		milliseconds += Integer.parseInt(minArray[1]) * 60;
+		return milliseconds * 1000;
+
+	}
+
+	public static Date atEndOfDay(Date date) {
+		LocalDateTime localDateTime = dateToLocalDateTime(date);
+		LocalDateTime endOfDay = localDateTime.with(LocalTime.MAX);
+		return localDateTimeToDate(endOfDay);
+	}
+
+	private static LocalDateTime dateToLocalDateTime(Date date) {
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+	}
+
+	private static Date localDateTimeToDate(LocalDateTime localDateTime) {
+		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
 }

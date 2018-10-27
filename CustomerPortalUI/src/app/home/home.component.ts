@@ -1175,7 +1175,7 @@ export class HomeComponent implements OnInit {
   }
   setRightSplitwidth() {
     var mainDiv = document.getElementById("split-panel")
-    if (mainDiv !== null) {
+    if (mainDiv !== null &&  this.selectedChart == 'dashboard') {
       mainDiv.style.width = "calc(100% - 840px)";
     }
   }

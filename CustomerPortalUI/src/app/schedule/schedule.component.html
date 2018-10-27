@@ -77,7 +77,14 @@
         <input class="schedule-fullwidth" pInputText id="endFilePath" [(ngModel)]="job.endFilePath" />
       </div>
     </div>
-
+    <div class="ui-grid-row margin-top-bottom">
+      <div class="ui-grid-col-4">
+        <label for="schedule">Start Time (Mins)</label>
+      </div>
+      <div class="ui-grid-col-8">
+        <p-calendar class="schedule-fullwidth" [(ngModel)]="job.startTime" [timeOnly]="true"></p-calendar>
+      </div>
+    </div>
     <div class="ui-grid-row margin-top-bottom">
       <div class="ui-grid-col-4">
         <label for="recurrence">Recurrence</label>
@@ -128,9 +135,9 @@
                           <td style="width:50px;">
                                  {{rowIndex+1}}
                           </td>
-                          <td  style="width:20%;">{{job.jobName}}</td>
-                          <td style="width:60%;">{{getDate(job.jobExeuctionTime)}}</td>
-                          <td style="width:10%;">{{job.result}}</td>
+                          <td  style="width:20%;" class="break-word">{{job.jobName}}</td>
+                          <td style="width:60%;" class="break-word">{{getDate(job.jobExeuctionTime)}}</td>
+                          <td style="width:10%;" class="break-word">{{job.result}}</td>
                       </tr>
                   </ng-template>
               </p-table>

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
+import com.customerportal.util.CustomerPortalUtil;
 import com.customerportal.util.DBUtil;
 
 public class ScheduleService extends HttpServlet {
@@ -30,12 +31,18 @@ public class ScheduleService extends HttpServlet {
 	private void fetchParentJobs() {
 		scheduleList = DBUtil.getInstance().getParentSchedulejobs();
 		for (JobSchedule jobSchedule : scheduleList) {
-			int milliSeconds = getMilliSeconds(jobSchedule.getSchedule());
+			int milliSeconds = CustomerPortalUtil.getMilliSeconds(jobSchedule.getSchedule());
 			startThread(jobSchedule, milliSeconds);
 		}
 	}
 
 	private void startThread(final JobSchedule jobSchedule, final int milliSeconds) {
+
+		int startMilli = CustomerPortalUtil.getMilliSeconds(jobSchedule.getStartTime());
+		Date date = CustomerPortalUtil.atEndOfDay(new Date());
+		int currMilli = (int) (date.getTime() - System.currentTimeMillis());
+		int acutlMilli = startMilli == 0 ? 1 : startMilli + currMilli;
+		System.out.println("The Job \""+jobSchedule.getJobName()+"\" stats at "+new Date(System.currentTimeMillis()+acutlMilli));
 		Timer t = new Timer();
 		t.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -44,7 +51,7 @@ public class ScheduleService extends HttpServlet {
 
 			}
 
-		}, 1, milliSeconds);
+		}, acutlMilli, milliSeconds);
 	}
 
 	private void checkAndExecuteJob(final JobSchedule jobSchedule) {
@@ -61,7 +68,7 @@ public class ScheduleService extends HttpServlet {
 	private void handleChildJobs(final JobSchedule parentJob) {
 		List<JobSchedule> scheduleList = DBUtil.getInstance().getChildSchedulejobs(parentJob.getJobName());
 		for (JobSchedule jobSchedule : scheduleList) {
-			int milliSeconds = getMilliSeconds(jobSchedule.getSchedule());
+			int milliSeconds = CustomerPortalUtil.getMilliSeconds(jobSchedule.getSchedule());
 			try {
 				Thread.sleep(milliSeconds);
 			} catch (InterruptedException e) {
@@ -87,12 +94,12 @@ public class ScheduleService extends HttpServlet {
 			}
 		} catch (Exception e) {
 		}
-			writeOutputFile(jobSchedule.getEndFilePath());
-			JobScheduleHistory history = new JobScheduleHistory();
-			history.setJobName(jobSchedule.getJobName());
-			history.setJobExeuctionTime(new Date());
-			history.setResult(false);
-			DBUtil.getInstance().writeSchduleHistory(history);
+		writeOutputFile(jobSchedule.getEndFilePath());
+		JobScheduleHistory history = new JobScheduleHistory();
+		history.setJobName(jobSchedule.getJobName());
+		history.setJobExeuctionTime(new Date());
+		history.setResult(false);
+		DBUtil.getInstance().writeSchduleHistory(history);
 		return false;
 	}
 
@@ -117,14 +124,4 @@ public class ScheduleService extends HttpServlet {
 		return false;
 	}
 
-	protected int getMilliSeconds(String schedule) {
-		if (schedule == null || schedule.equalsIgnoreCase("") || schedule.equalsIgnoreCase("0"))
-			return 0;
-		String[] minArray = schedule.split(":");
-		int milliseconds = 0;
-		milliseconds = Integer.parseInt(minArray[0]) * 60 * 60;
-		milliseconds += Integer.parseInt(minArray[1]) * 60;
-		return milliseconds * 1000;
-
-	}
 }
