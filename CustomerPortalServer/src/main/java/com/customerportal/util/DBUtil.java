@@ -1397,7 +1397,7 @@ public class DBUtil {
 	}
 
 	public List<TankAarmHistory> getTankalarmHistory(String facilitiesIdString) {
-		if(facilitiesIdString != null || facilitiesIdString.trim().length()==0)
+		if(facilitiesIdString == null || facilitiesIdString.trim().length()==0)
 			return new ArrayList<TankAarmHistory>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();

@@ -24,12 +24,13 @@ export class CommonService {
   }
   checkAndUpdateLoginTime(){
     var loginTime = localStorage.getItem('loginTime');
+    // console.log("login time ---"+loginTime);
     if(loginTime != undefined){
     var loginDate = new Date(loginTime);
     var currentTime  =new Date();
     var timeDiff = Math.abs(currentTime.getTime() - loginDate.getTime());
     var seconds = Math.ceil(timeDiff / 1000); 
-    console.log(seconds);
+    // console.log(seconds);
     if(seconds > CRMConstants.LOGOUT_TIME)
     {
       this.logout(true);
@@ -40,6 +41,8 @@ export class CommonService {
     return true;
   }
     
+  }else{
+    this.logout(true);
   }
   }
   getUserName(){
