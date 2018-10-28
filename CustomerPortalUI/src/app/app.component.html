@@ -34,7 +34,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a *ngIf="!commonService.isSecondaryUserPresent()" class="dropdown-item" href="#"  (click)="editUser('editprofile')">{{crmConst.EDITPROFILE}}</a>
-                <a class="dropdown-item" href="#" (click)="authService.logout()">{{crmConst.LOGOUT}}</a>
+                <a class="dropdown-item" href="#" (click)="commonService.logout(false)">{{crmConst.LOGOUT}}</a>
             </div>
         </li>
     </ul>

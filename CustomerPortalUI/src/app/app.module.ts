@@ -36,6 +36,7 @@ import {CalendarModule} from 'primeng/calendar';
 import { UssboaComponent } from './ussboa/ussboa.component';
 import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-signup.component';
 import { SafePipe } from './services/SafePipe';
+import { HttpService } from './services/http.service';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { SafePipe } from './services/SafePipe';
     AuthenticationService,
     DashboardService,
     ImportService,
+    HttpService,
     {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
   bootstrap: [AppComponent]

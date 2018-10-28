@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/Rx';
 import { URLConstants } from '../constants/urlconstants';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { CRMConstants } from '../constants/crmconstants';
+import { CommonService } from './common.service';
+import { HttpService } from './http.service';
 
 @Injectable()
 export class DashboardService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpService,private commonService: CommonService) { }
 
   getDashboardData(userId) {
-      return this.http.get<any>(URLConstants.DASHBOARD_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+   
+      return this.http.get(URLConstants.DASHBOARD_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
           .map(dashboardData => {
               
               return dashboardData;
@@ -17,63 +20,63 @@ export class DashboardService {
   }
   
   getFacilitiesList(userId,type) {
-    return this.http.get<any>(URLConstants.FaCILITIES_URL,this.getFacilitiesOptions(userId,type))
+    return this.http.get(URLConstants.FaCILITIES_URL,this.getFacilitiesOptions(userId,type))
         .map(FacilitiesData => {
             
             return FacilitiesData;
         });
 }
 getCompaniesList(userId) {
-  return this.http.get<any>(URLConstants.COMPANIES_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+  return this.http.get(URLConstants.COMPANIES_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
       .map(companiesData => {
           
           return companiesData;
       });
 }
 getComplianceList(userId,type) {
-  return this.http.get<any>(URLConstants.COMPLIANCE_URL,this.getFacilitiesOptions(userId,type))
+  return this.http.get(URLConstants.COMPLIANCE_URL,this.getFacilitiesOptions(userId,type))
       .map(facilityNotificationData => {
           
           return facilityNotificationData;
       });
 }
 getNotifictionUploadData(FacilitiesId){
-  return this.http.get<any>(URLConstants.FACILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
+  return this.http.get(URLConstants.FACILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
       .map(FacilitiesData => {
           
           return FacilitiesData;
       });
 }
 searchResults(searchType:string,searchString: string,username: string,isadmin:boolean) {
-    return this.http.get<any>(URLConstants.SEARCH_URL,this.getSearchOptions(searchType,searchString,username,isadmin))
+    return this.http.get(URLConstants.SEARCH_URL,this.getSearchOptions(searchType,searchString,username,isadmin))
         .map(folder => {
             
             return folder;
         });
 }
 getUSSBOAData(vendorType) {
-    return this.http.get<any>(URLConstants.USSBOA_URL,this.getDashboardOptions(CRMConstants.VENDOR_TYPE,vendorType))
+    return this.http.get(URLConstants.USSBOA_URL,this.getDashboardOptions(CRMConstants.VENDOR_TYPE,vendorType))
         .map(ussboaData => {
             
             return ussboaData;
         });
 }
 getTankMonitorSignupData() {
-    return this.http.get<any>(URLConstants.TANK_MONITOR_URL)
+    return this.http.get(URLConstants.TANK_MONITOR_URL)
         .map(tankMontiorData => {
             
             return tankMontiorData;
         });
 }
 getTankMonitorSearch(searchString){
-    return this.http.get<any>(URLConstants.TANK_MONITOR_SEARCH_URL,this.getDashboardOptions(CRMConstants.FACILITIES_ID,searchString))
+    return this.http.get(URLConstants.TANK_MONITOR_SEARCH_URL,this.getDashboardOptions(CRMConstants.FACILITIES_ID,searchString))
     .map(searchTankData => {
         
         return searchTankData;
     });
 }
 addOrUpdateTankMonitorSignup(tankSignup){
-    return this.http.post<any>(URLConstants.TANK_MONITOR_URL, {name: tankSignup.name, fid: tankSignup.fid,
+    return this.http.post(URLConstants.TANK_MONITOR_URL, {name: tankSignup.name, fid: tankSignup.fid,
          address: tankSignup.address, ipAddress:tankSignup.ipAddress})
       .map(tankMontiorData => {
           // Registration response 
@@ -81,14 +84,14 @@ addOrUpdateTankMonitorSignup(tankSignup){
       });
 }
 deleteTankMonitorSignup(fid){
-    return this.http.delete<any>(URLConstants.TANK_MONITOR_URL,this.getDashboardOptions(CRMConstants.FACILITIES_ID,fid))
+    return this.http.delete(URLConstants.TANK_MONITOR_URL,this.getDashboardOptions(CRMConstants.FACILITIES_ID,fid))
     .map(tankMontiorData => {
         
         return tankMontiorData;
     });
 }
 saveUserPreferences(name,value){
-    return this.http.post<any>(URLConstants.USER_PREFERENCES, {name: name, value: value})
+    return this.http.post(URLConstants.USER_PREFERENCES, {name: name, value: value})
      .map(preferencesResult => {
          // Registration response 
          return preferencesResult;
@@ -96,56 +99,56 @@ saveUserPreferences(name,value){
 }
 
 getUserPreferences(){
-    return this.http.get<any>(URLConstants.USER_PREFERENCES)
+    return this.http.get(URLConstants.USER_PREFERENCES)
      .map(preferencesList => {
          // Registration response 
          return preferencesList;
      });
 }
 getJobScheduleData(userId) {
-    return this.http.get<any>(URLConstants.JOB_SCHEDULE,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+    return this.http.get(URLConstants.JOB_SCHEDULE,this.getDashboardOptions(CRMConstants.USER_ID,userId))
         .map(jobScheduleData => {
             
             return jobScheduleData;
         });
 }
 saveJobScheduleData(job) {
-    return this.http.post<any>(URLConstants.JOB_SCHEDULE,job)
+    return this.http.post(URLConstants.JOB_SCHEDULE,job)
         .map(jobScheduleData => {
             
             return jobScheduleData;
         });
 }
 deleteJobScheduleData(jobName) {
-    return this.http.delete<any>(URLConstants.JOB_SCHEDULE,this.getDashboardOptions(CRMConstants.JOB_NAME,jobName))
+    return this.http.delete(URLConstants.JOB_SCHEDULE,this.getDashboardOptions(CRMConstants.JOB_NAME,jobName))
         .map(result => {
             
             return result;
         });
 }
 getScheduleJobHisotryData(userId) {
-    return this.http.get<any>(URLConstants.JOB_SCHEDULE_HISTORY,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+    return this.http.get(URLConstants.JOB_SCHEDULE_HISTORY,this.getDashboardOptions(CRMConstants.USER_ID,userId))
         .map(jobScheduleHistoryData => {
             
             return jobScheduleHistoryData;
         });
 }
 getTankAlarmHistory(userId) {
-    return this.http.get<any>(URLConstants.TANK_ALARM_HISTORY_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
+    return this.http.get(URLConstants.TANK_ALARM_HISTORY_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
         .map(tankAlaramList => {
             
             return tankAlaramList;
         });
 }
 resetTankAlert(tankAlertString){
-    return this.http.post<any>(URLConstants.TANK_ALARM_HISTORY_URL, tankAlertString)
+    return this.http.post(URLConstants.TANK_ALARM_HISTORY_URL, tankAlertString)
      .map(result => {
          // Registration response 
          return result;
      });
 }
 getGasLevelsForFacility(FacilitiesId) {
-    return this.http.get<any>(URLConstants.GASLEVES_URL,this.getDashboardOptions(CRMConstants.FACILITY_ID,FacilitiesId))
+    return this.http.get(URLConstants.GASLEVES_URL,this.getDashboardOptions(CRMConstants.FACILITY_ID,FacilitiesId))
         .map(gaslevelData => {
             
             return gaslevelData;
@@ -153,7 +156,7 @@ getGasLevelsForFacility(FacilitiesId) {
 }
 saveGasLevelsForFacility(facilitiesId,gasLevelModal){
     var gasLevel = this.gasLevels(gasLevelModal);
-    return this.http.post<any>(URLConstants.GASLEVES_URL, {facilityId: facilitiesId, gaslevels: gasLevel})
+    return this.http.post(URLConstants.GASLEVES_URL, {facilityId: facilitiesId, gaslevels: gasLevel})
      .map(tankMontiorData => {
          // Registration response 
          return tankMontiorData;

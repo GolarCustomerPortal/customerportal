@@ -25,24 +25,7 @@ export class AuthenticationService {
             });
     }
 
-    logout() {
-        // remove user from local storage to log user out
-        if(localStorage.getItem('secondaryUser')!=null){
-            localStorage.removeItem('secondaryUser'); 
-            // localStorage.removeItem('secondaryusername');
-            // localStorage.removeItem('secondaryadmin');
-            // localStorage.removeItem('secondaryuserfullname');
-            location.reload();
-        }else{
-            localStorage.removeItem('currentUser');
-            // localStorage.removeItem('primaryusername');
-            // localStorage.removeItem('primaryadmin');
-            // localStorage.removeItem('primaryuserfullname');
-            localStorage.clear();
-            this.commonService.resetLogin();
-            location.reload();
-        }
-    }
+
     changePassword(modal){
         return this.http.post<any>(URLConstants.USER_CHANGE_PASSWORD_URL, { username: modal.username, password: modal.password, updatedPassword:modal.confirmPassword,reset:modal.reset })
         .map(successMessage => {

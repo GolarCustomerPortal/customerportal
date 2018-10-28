@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 
 import { URLConstants } from '../constants/urlconstants';
-import { HttpClient } from '@angular/common/http';
+import { HttpService } from './http.service';
 
 @Injectable()
 export class ImportService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpService) { }
   importDocuments(frmData:FormData) {
-    return this.http.post<any>(URLConstants.IMPORT_DOC_URL, frmData)
+    return this.http.post(URLConstants.IMPORT_DOC_URL, frmData)
         .map(success => {
             
             return success;

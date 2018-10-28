@@ -1,7 +1,11 @@
 import { Subject } from "rxjs";
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { CRMConstants } from "../constants/crmconstants";
 
-
+@Injectable()
 export class CommonService {
+  constructor(private router: Router) { }
   // gasStationImages={'bp':'bp.png','shell':'shell.png'}
   gasStationImages={1:'bp.png',2:'shell.png'}
   loginSuccessful = false;;
@@ -13,9 +17,30 @@ export class CommonService {
   validLogin() {
     this.loginSuccessful = true;
     localStorage.setItem('loginSuccessful', this.loginSuccessful + "");
+    localStorage.setItem('loginTime', new Date()+"");
   }
   resetLogin() {
     localStorage.setItem('loginSuccessful', false + "");
+  }
+  checkAndUpdateLoginTime(){
+    var loginTime = localStorage.getItem('loginTime');
+    if(loginTime != undefined){
+    var loginDate = new Date(loginTime);
+    var currentTime  =new Date();
+    var timeDiff = Math.abs(currentTime.getTime() - loginDate.getTime());
+    var seconds = Math.ceil(timeDiff / 1000); 
+    console.log(seconds);
+    if(seconds > CRMConstants.LOGOUT_TIME)
+    {
+      this.logout(true);
+      return false;
+      // this.router.navigate(['ussboa']);
+    }else{
+    localStorage.setItem('loginTime', new Date()+"");
+    return true;
+  }
+    
+  }
   }
   getUserName(){
     var user;
@@ -303,4 +328,29 @@ export class CommonService {
       return JSON.parse(alertList)
     }
   }
+  logout(complete) {
+
+    if(complete){
+      localStorage.clear();
+      this.resetLogin();
+      location.reload();
+      return;
+    }
+    // remove user from local storage to log user out
+    if(localStorage.getItem('secondaryUser')!=null){
+        localStorage.removeItem('secondaryUser'); 
+        // localStorage.removeItem('secondaryusername');
+        // localStorage.removeItem('secondaryadmin');
+        // localStorage.removeItem('secondaryuserfullname');
+        location.reload();
+    }else{
+        localStorage.removeItem('currentUser');
+        // localStorage.removeItem('primaryusername');
+        // localStorage.removeItem('primaryadmin');
+        // localStorage.removeItem('primaryuserfullname');
+        localStorage.clear();
+        this.resetLogin();
+        location.reload();
+    }
+}
 }

@@ -1,29 +1,30 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/Rx';
 import { URLConstants } from '../constants/urlconstants';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { CRMConstants } from '../constants/crmconstants';
+import { HttpService } from './http.service';
 
 @Injectable()
 export class UserService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpService) { }
 
   getAllUsers() {
-      return this.http.get<any>(URLConstants.USERS_URL)
+      return this.http.get(URLConstants.USERS_URL)
           .map(users => {
               
               return users;
           });
   }
   getAllUsersWithSearch(key,searchString) {
-    return this.http.get<any>(URLConstants.USERS_SEARCH_URL,this.getSearchOptions(key,searchString))
+    return this.http.get(URLConstants.USERS_SEARCH_URL,this.getSearchOptions(key,searchString))
         .map(users => {
             
             return users;
         });
 }
   registerUser(modal){
-    return this.http.post<any>(URLConstants.USERS_URL, {id: modal.id, firstName: modal.firstName, lastName: modal.lastName, emailAddress:modal.email, active: modal.active,
+    return this.http.post(URLConstants.USERS_URL, {id: modal.id, firstName: modal.firstName, lastName: modal.lastName, emailAddress:modal.email, active: modal.active,
       edit: modal.edit,permission:this.getPermission(modal),  admin: modal.admin,userManager:modal.userManager,username:modal.username,password:modal.password,newlyCreated:modal.newlyCreated,imageContent:modal.imageContent })
     .map(user => {
         // Registration response 
@@ -32,7 +33,7 @@ export class UserService {
 
   }
   getUserHistory(username){
-    return this.http.get<any>(URLConstants.USERS_HISTORY_URL,this.getLoginHistoryOption(username))
+    return this.http.get(URLConstants.USERS_HISTORY_URL,this.getLoginHistoryOption(username))
         .map(userloginHistory => {
             
             return userloginHistory;

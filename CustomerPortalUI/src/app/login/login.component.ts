@@ -103,7 +103,7 @@ this.authenticationService.changePassword(this.model) .subscribe(
   }
 }
   logout(){
-    this.authenticationService.logout();
+    this.commonService.logout(false);
   }
   // reset password end
  }
