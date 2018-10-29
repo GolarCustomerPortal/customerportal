@@ -332,6 +332,7 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.compliance = fdata.compliance;
     this.rightDetailsContent.backConsolidateReport = fdata.consolidateReport;
     this.rightDetailsContent.consolidateReport = [];
+    if(fdata.gasLevel!=null)
     this.rightDetailsContent.consolidateReport = this.generateInventoryReportForRightSideData(fdata.consolidateReport, this.rightDetailsContent.consolidateReport,fdata.gasLevel);
     //actualServerData details.
     this.actualServerData.docUpdateDate = new Date();
@@ -809,7 +810,7 @@ export class HomeComponent implements OnInit {
       this.generateFileUploadObj(this.ustOwnerFile, frmData, 'ustOwnerPOA', fileuploadlabelArray)
     }
     if (this.operatorLeaseFile != null) {
-      this.generateFileUploadObj(this.operatorLeaseFile, frmData, 'operatorAffidevitOfLease', fileuploadlabelArray)
+      this.generateFileUploadObj(this.operatorLeaseFile, frmData, 'operatorLeaseAgreement', fileuploadlabelArray)
     }
     if (this.notificationDueDateFile != null) {
       this.generateFileUploadObj(this.notificationDueDateFile, frmData, 'notificationDueDate', fileuploadlabelArray)
@@ -861,7 +862,7 @@ export class HomeComponent implements OnInit {
                 this.ustOwnerFileSuccess = result[i].value;
                 this.modalData.ustOwnerPOAEnable = false;
               }
-              if (result[i].key == 'operatorAffidevitOfLease'){
+              if (result[i].key == 'operatorLeaseAgreement'){
                 this.operatorLeaseFileSuccess = result[i].value;
                 this.modalData.operatorLeaseAgreementEnable = false;
               }
@@ -931,6 +932,7 @@ export class HomeComponent implements OnInit {
       this.ownerAffidavitFileSuccess = "false";
       this.deedLandFileSuccess = "false";
       this.taxIdFileSuccess = "false";
+      this.letterOfNetworthCertificationFileSuccess = "false"
     }
     this.enableNotificationuploadButton = false;
   }
