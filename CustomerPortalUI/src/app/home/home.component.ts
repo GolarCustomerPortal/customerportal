@@ -638,9 +638,9 @@ export class HomeComponent implements OnInit {
     plugins: {
       datalabels: {
          display: true,
-         align: 'top',
+         align: '100',
          anchor: 'top',
-         font: { weight: 'bold',size:'12' }
+         font: { weight: 'bold',size:'14' }
       }
    },
     scales: {
