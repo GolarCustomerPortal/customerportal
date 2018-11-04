@@ -88,6 +88,9 @@ public class CustomerPortalUtil {
 				brandURL = brandURL == null ? "not_found_logo.png" : brandURL;
 				imageURL = "/" + contextpath + "/images/gasstation/" + imageProperties.getProperty(brand);
 			}
+			if(facility.getTankPaidService().equalsIgnoreCase("false")){
+				facility.setFacilityTankPaidMessage(imageProperties.getProperty("facilityTankPaidMessage"));
+			}
 			facility.setImageURL(imageURL);
 		}
 

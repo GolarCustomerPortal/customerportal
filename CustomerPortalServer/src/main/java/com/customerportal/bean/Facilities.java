@@ -25,14 +25,19 @@ public class Facilities {
 	private String compliance;
 	private String imageURL;
 	private Gaslevel gasLevel;
+	private String projectManager;
+	private String projectManagerPhone;
+	private String facilityTankPaidMessage;
+
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
-public void setId(String id) {
-	this.id = id;
-}
-public String getId() {
-	return id;
-}
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
 
 	public String getContact() {
 		return contact;
@@ -192,5 +197,29 @@ public String getId() {
 
 	public Gaslevel getGasLevel() {
 		return gasLevel;
+	}
+
+	public void setProjectManager(String projectManager) {
+		this.projectManager = projectManager;
+	}
+
+	public String getProjectManager() {
+		return projectManager;
+	}
+
+	public void setProjectManagerPhone(String projectManagerPhone) {
+		this.projectManagerPhone = projectManagerPhone;
+	}
+
+	public String getProjectManagerPhone() {
+		return projectManagerPhone;
+	}
+
+	public void setFacilityTankPaidMessage(String facilityTankPaidMessage) {
+		this.facilityTankPaidMessage = facilityTankPaidMessage;
+	}
+
+	public String getFacilityTankPaidMessage() {
+		return facilityTankPaidMessage;
 	}
 }

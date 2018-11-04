@@ -1037,7 +1037,7 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
+			String queryString = "SELECT * FROM affiliate_company__c";
 			queryString += " where ";
 			User user = getSpecificUser(userId);
 			if (user == null || !user.isAdmin() && !user.isUserManager())

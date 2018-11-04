@@ -162,9 +162,6 @@ export class HomeComponent implements OnInit {
   //rightside panel variables start
   rightPanelTitle;
   showRightContent = false;
-  showRightDetailContent = false;
-  rightsidePanelError = false;
-  rghtsidePanelContent = "You have not subscribed to view this information for this facility. Please reach out to Golars team to subscribe for this service. Thank you!"
   rightDetailsContent: any = {};
   actualServerData: any = {};
   rightPaneDetailslTitle = "";
@@ -305,15 +302,14 @@ export class HomeComponent implements OnInit {
   selectedFacility;
   showSpecificfacilityDetails(fdata) {
     console.log(fdata);
-    this.rightsidePanelError = false;
+    this.rightDetailsContent.facilityTankPaidMessage = null;
     this.showRightDetailPanel();
     // this.showRightContent = false;
     if (fdata.tankPaidService == false) {
-      this.rightsidePanelError = true;
+      this.rightDetailsContent.facilityTankPaidMessage = fdata.facilityTankPaidMessage;
       return;
     }
     this.selectedFacility = fdata;
-    this.showRightDetailContent = true;
     this.rightDetailsContent.facilityId = fdata.facilityId;
     this.rightPaneDetailslTitle = fdata.name;
     this.rightDetailsContent.image = fdata.image;
@@ -328,7 +324,10 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.address = fdata.address;
     this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
     this.rightDetailsContent.storeManager = fdata.storeManager;
+    this.rightDetailsContent.projectManager = fdata.projectManager;
+    this.rightDetailsContent.projectManagerPhone = fdata.projectManagerPhone;
     this.rightDetailsContent.tankPm = fdata.tankPm;
+    
     this.rightDetailsContent.compliance = fdata.compliance;
     this.rightDetailsContent.backConsolidateReport = fdata.consolidateReport;
     this.rightDetailsContent.consolidateReport = [];
@@ -671,7 +670,6 @@ export class HomeComponent implements OnInit {
     this.showBack = false;
     this.showRightContent = false;
 
-    this.showRightDetailContent = false;
     this.hideSearchPanel();
     this.fetchDashboardValues(true);
     this.resetView();
@@ -707,7 +705,6 @@ export class HomeComponent implements OnInit {
     this.complianceRightdata = [];
     this.companiesRightdata = [];
     this.middlePaneClass = "ui-g-4"
-    this.showRightDetailContent = false;
     this.newsFeedVisible = false;
     this.area.left = 20;
     this.area.center = 80;

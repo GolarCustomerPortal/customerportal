@@ -70,10 +70,7 @@
                              <div> <div ngClass="header-padding-left ui-card-header">{{facilitiesRightdata[i+j].name}}</div>
                               <img class="card-image" src="{{facilitiesRightdata[i+j].image}}" /></div>
                           </div>
-                            <div class="ui-g no-padding">
-                              <div class="ui-g-3 no-padding"> Name:</div>
-                              <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].name}}</div>
-                            </div>
+
                             <div class="ui-g no-padding">
                               <div class="ui-g-3 no-padding"> Fid:</div>
                               <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].fid}}</div>
@@ -81,6 +78,14 @@
                             <div class="ui-g no-padding">
                               <div class="ui-g-3 no-padding"> Address:</div>
                               <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].address}}</div>
+                            </div>
+                            <div class="ui-g no-padding"  *ngIf="facilitiesRightdata[i+j].projectManager != null">
+                              <div class="ui-g-3 no-padding"> PM Name:</div>
+                              <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].projectManager}}</div>
+                            </div>
+                            <div class="ui-g no-padding" *ngIf="facilitiesRightdata[i+j].projectManagerPhone != null">
+                              <div class="ui-g-3 no-padding"> PM Phone:</div>
+                              <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].projectManagerPhone}}</div>
                             </div>
                             <div class="ui-g no-padding">
                               <div class="ui-g-3 no-padding"> Compliance:</div>
@@ -110,10 +115,7 @@
                              <div> <div ngClass="header-padding-left ui-card-header"> {{companyData.facilities[i+j].name}}</div>
                               <img class="card-image" src="{{companyData.facilities[i+j].image}}" /></div>
                           </div>
-                        <div class="ui-g no-padding">
-                          <div class="ui-g-3 no-padding"> Name:</div>
-                          <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].name}}</div>
-                        </div>
+
                         <div class="ui-g no-padding">
                           <div class="ui-g-3 no-padding"> Fid:</div>
                           <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].fid}}</div>
@@ -121,6 +123,14 @@
                         <div class="ui-g no-padding">
                           <div class="ui-g-3 no-padding"> Address:</div>
                           <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].address}}</div>
+                        </div>
+                        <div class="ui-g no-padding"  *ngIf="companyData.facilities[i+j].projectManager != null">
+                          <div class="ui-g-3 no-padding"> PM Name:</div>
+                          <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].projectManager}}</div>
+                        </div>
+                        <div class="ui-g no-padding" *ngIf="companyData.facilities[i+j].projectManagerPhone != null">
+                          <div class="ui-g-3 no-padding"> PM Phone:</div>
+                          <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].projectManagerPhone}}</div>
                         </div>
                         <div class="ui-g no-padding">
                           <div class="ui-g-3 no-padding"> Compliance:</div>
@@ -155,16 +165,20 @@
                                      <img class="card-image" src="{{complianceRightdata[i+j].image}}" /></div>
                                  </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-3 no-padding"> Name:</div>
-                                    <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].name}}</div>
-                                  </div>
-                                  <div class="ui-g no-padding">
                                     <div class="ui-g-3 no-padding"> Fid:</div>
                                     <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].fid}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
                                     <div class="ui-g-3 no-padding"> Address:</div>
                                     <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].address}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding"  *ngIf="complianceRightdata[i+j].projectManager != null">
+                                    <div class="ui-g-3 no-padding"> PM Name:</div>
+                                    <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].projectManager}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding" *ngIf="complianceRightdata[i+j].projectManagerPhone != null">
+                                    <div class="ui-g-3 no-padding"> PM Phone:</div>
+                                    <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].projectManagerPhone}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
                                     <div class="ui-g-3 no-padding"> Compliance:</div>
@@ -185,8 +199,8 @@
     </div>
   </split-area>
   <split-area [visible]="area.rightVisible" [size]="area.right" order="3" style="overflow: hidden;">
-      <div class="right-content-error" *ngIf="rightsidePanelError">{{rghtsidePanelContent}}</div>
-    <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
+      <div class="right-content-error" *ngIf="rightDetailsContent.facilityTankPaidMessage != null">{{rightDetailsContent.facilityTankPaidMessage}}</div>
+    <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="rightDetailsContent.tankPaidService == true  && rightDetailsContent.facilityTankPaidMessage == null">
       <p-header ngClass="header-padding-left">
           <div style="width: 100%"> {{rightPaneDetailslTitle}}
         <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
@@ -200,16 +214,20 @@
                      <img class="card-image" src="{{rightDetailsContent.image}}" /></div>
                  </div>
             <div class="ui-g no-padding">
-              <div class="ui-g-4 no-padding"> Name:</div>
-              <div class="ui-g-8 no-padding">{{rightDetailsContent.facilityName}}</div>
-            </div>
-            <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Fid:</div>
               <div class="ui-g-8 no-padding">{{rightDetailsContent.fid}}</div>
             </div>
             <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Address:</div>
               <div class="ui-g-8 no-padding">{{rightDetailsContent.address}}</div>
+            </div>
+            <div class="ui-g no-padding"  *ngIf="rightDetailsContent.projectManager != null">
+              <div class="ui-g-4 no-padding"> PM Name:</div>
+              <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManager}}</div>
+            </div>
+            <div class="ui-g no-padding" *ngIf="rightDetailsContent.projectManagerPhone != null">
+              <div class="ui-g-4 no-padding"> PM Phone:</div>
+              <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
             </div>
             <div class="ui-g no-padding" *ngIf="selectedChart !== 'compliance'">
               <div class="ui-g-4 no-padding"> Compliance:</div>
@@ -633,16 +651,20 @@
                                     <img class="card-image" src="{{searchResult.facilitiesList[i+j].image}}" /></div>
                                 </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-4 no-padding"> Name:</div>
-                                    <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].name}}</div>
-                                  </div>
-                                  <div class="ui-g no-padding">
                                     <div class="ui-g-4 no-padding"> Fid:</div>
                                     <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].fid}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
                                     <div class="ui-g-4 no-padding"> Address:</div>
                                     <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].address}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding"  *ngIf="searchResult.facilitiesList[i+j].projectManager != null">
+                                    <div class="ui-g-4 no-padding"> PM Name:</div>
+                                    <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].projectManager}}</div>
+                                  </div>
+                                  <div class="ui-g no-padding" *ngIf="searchResult.facilitiesList[i+j].projectManagerPhone != null">
+                                    <div class="ui-g-4 no-padding"> PM Phone:</div>
+                                    <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].projectManagerPhone}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
                                     <div class="ui-g-4 no-padding"> Compliance:</div>
@@ -677,16 +699,20 @@
                                     <img class="card-image" src="{{companyData.facilities[i+j].image}}" /></div>
                                 </div>
                               <div class="ui-g no-padding">
-                                <div class="ui-g-4 no-padding"> Name:</div>
-                                <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].name}}</div>
-                              </div>
-                              <div class="ui-g no-padding">
                                 <div class="ui-g-4 no-padding"> Fid:</div>
                                 <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].fid}}</div>
                               </div>
                               <div class="ui-g no-padding">
                                 <div class="ui-g-4 no-padding"> Address:</div>
                                 <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].address}}</div>
+                              </div>
+                              <div class="ui-g no-padding"  *ngIf="companyData.facilities[i+j].projectManager != null">
+                                <div class="ui-g-4 no-padding"> PM Name:</div>
+                                <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].projectManager}}</div>
+                              </div>
+                              <div class="ui-g no-padding" *ngIf="companyData.facilities[i+j].projectManagerPhone != null">
+                                <div class="ui-g-4 no-padding"> PM Phone:</div>
+                                <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].projectManagerPhone}}</div>
                               </div>
                               <div class="ui-g no-padding">
                                 <div class="ui-g-4 no-padding"> Compliance:</div>
@@ -715,8 +741,8 @@
     </split-area>
 
   <split-area [visible]="searchArea.rightVisible" [size]="searchArea.right" order="2">
-    <div class="right-content-error" *ngIf="rightsidePanelError">{{rghtsidePanelContent}}</div>
-      <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="showRightDetailContent">
+    <div class="right-content-error" *ngIf="rightDetailsContent.facilityTankPaidMessage != null">{{rightDetailsContent.facilityTankPaidMessage  }}</div>
+      <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="rightDetailsContent.tankPaidService == true && rightDetailsContent.facilityTankPaidMessage == null" >
           <p-header ngClass="header-padding-left">
               <div style="width: 100%"> {{rightPaneDetailslTitle}}
             <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>

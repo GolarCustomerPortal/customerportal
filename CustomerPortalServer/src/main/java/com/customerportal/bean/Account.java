@@ -37,8 +37,6 @@ public class Account {
 	private String state;
 	private String postalCode;
 	private String documentLink;
-	private String projectManager;
-	private String projectManagerPhone;
 
 	private boolean facilityOperatorPOAEnable = false;
 	private boolean propertyOwnerPOAEnable = false;
@@ -355,18 +353,7 @@ public class Account {
 	public String getDocumentLink() {
 		return documentLink;
 	}
-	public void setProjectManager(String projectManager) {
-		this.projectManager = projectManager;
-	}
-	public String getProjectManager() {
-		return projectManager;
-	}
-	public void setProjectManagerPhone(String projectManagerPhone) {
-		this.projectManagerPhone = projectManagerPhone;
-	}
-	public String getProjectManagerPhone() {
-		return projectManagerPhone;
-	}
+
 	
 	// UI parameters
 
