@@ -329,24 +329,24 @@
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-second">
-            <div class="ui-g-8">Notification Form Due Date</div>
+            <div class="ui-g-8">Facility Site Map</div>
             <div class="ui-g-4">
-              <p-fileUpload name="notificationDueDateFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #notificationDueDatefileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;notificationDueDateFile = $event.files[0]; notificationDueDateFileName=$event.files[0].name"
-                [disabled]="!modalData?.notificationDueDateEnable"></p-fileUpload>
-                <span *ngIf='notificationDueDateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{notificationDueDateFileName}}</span>
+              <p-fileUpload name="facilitySiteMapDateFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #facilitySiteMapfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;facilitySiteMapFile = $event.files[0]; facilitySiteMapFileName=$event.files[0].name"
+                [disabled]="!modalData?.facilitySiteMapEnable"></p-fileUpload>
+                <span *ngIf='facilitySiteMapSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{facilitySiteMapFileName}}</span>
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Operator Affidavit of Lease</div>
+            <div class="ui-g-8">Business Registration Status</div>
             <div class="ui-g-4">
-              <p-fileUpload name="operatoraffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #operatoraffidavitUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatoraffidavitFile = $event.files[0]; operatoraffidavitFileName=$event.files[0].name"
-                [disabled]="!modalData?.operatorAffidevitOfLeaseEnable"></p-fileUpload>
-                <span *ngIf='operatoraffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatoraffidavitFileName}}</span>
+              <p-fileUpload name="sosStatusFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                #operatoraffidavitUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;sosStatusFile = $event.files[0]; sosStatusFileName=$event.files[0].name"
+                [disabled]="!modalData?.sosStatusEnable"></p-fileUpload>
+                <span *ngIf='sosStatusFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{sosStatusFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-second">
+          <!-- <div class="ui-g-12 form-upload-padding file-upload-second">
             <div class="ui-g-8">Owner Affidavit Of Lease</div>
             <div class="ui-g-4">
               <p-fileUpload name="ownerAffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
@@ -354,7 +354,7 @@
                 [disabled]="!modalData?.ownerAffidevitOfLeaseEnable"></p-fileUpload>
                 <span *ngIf='ownerAffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
             </div>
-          </div>
+          </div> -->
           <div class="ui-g-12 form-upload-padding file-upload-first">
             <div class="ui-g-8">Deed or Land Contract</div>
             <div class="ui-g-4">
@@ -374,7 +374,7 @@
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Letter of Networth or COI</div>
+            <div class="ui-g-8">Certificate of Insurance</div>
             <div class="ui-g-4">
               <p-fileUpload name="letterOfNetworthCertificationFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                 #letterOfNetworthCertificationFileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;letterOfNetworthCertificationFile = $event.files[0]; letterOfNetworthCertificationFileName=$event.files[0].name"
@@ -431,7 +431,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="tankTestingReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #tankTestingReportFileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;tankTestingReportFile = $event.files[0]; tankTestingReportFileName=$event.files[0].name"
-                  [disabled]="(modalData?.tankTestingReportRequired != true && modalData?.tankTestingReport ==null)"></p-fileUpload>
+                  [disabled]="!modalData?.tankTestingReportRequired"></p-fileUpload>
                   <span *ngIf='tankTestingReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankTestingReportFileName}}</span>
               </div>
             </div>

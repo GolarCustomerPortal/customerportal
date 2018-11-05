@@ -501,7 +501,7 @@ public class DBUtil {
 		try {
 			// Transaction t = session.beginTransaction();
 			String queryString = "Select id from Account WHERE ((Facility_Operator_POA__c = 'Missing' OR Property_Owner_POA__c = 'Missing' OR "
-					+ "UST_Owner_POA__c = 'Missing' OR Operator_Affidevit_of_Lease__c = 'Missing' OR Owner_Affidavit_Of_Lease__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or "
+					+ "UST_Owner_POA__c = 'Missing' OR Facility_Site_Map__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or "
 					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing')) ";
 
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
@@ -916,6 +916,8 @@ public class DBUtil {
 					account.setOperatorLeaseAgreementEnable(true);
 				if (account.getNotificationDueDate() != null && account.getNotificationDueDate().equalsIgnoreCase("0"))
 					account.setNotificationDueDateEnable(true);
+				if (account.getFacilitySiteMap() != null && account.getFacilitySiteMap().equalsIgnoreCase("Missing"))
+					account.setFacilitySiteMapEnable(true);
 				// compliance start
 				if (account.getLnlDetrTstRequrd() != null && account.getLnlDetrTstRequrd().equalsIgnoreCase("true")
 						&& account.getLineAndLeakDetector() == null)

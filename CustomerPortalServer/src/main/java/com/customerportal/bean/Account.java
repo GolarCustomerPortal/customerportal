@@ -37,6 +37,7 @@ public class Account {
 	private String state;
 	private String postalCode;
 	private String documentLink;
+	private String facilitySiteMap;
 
 	private boolean facilityOperatorPOAEnable = false;
 	private boolean propertyOwnerPOAEnable = false;
@@ -51,6 +52,7 @@ public class Account {
 	private boolean notificationDueDateEnable = false;
 	private boolean propertyDeedLandContractEnable = false;
 	private boolean notificationFormSubmittedEnable = false;
+	private boolean facilitySiteMapEnable = false;
 
 	// compliance enable start
 
@@ -354,8 +356,16 @@ public class Account {
 		return documentLink;
 	}
 
+	public String getFacilitySiteMap() {
+		return facilitySiteMap;
+	}
+
+	public void setFacilitySiteMap(String facilitySiteMap) {
+		this.facilitySiteMap = facilitySiteMap;
+	}
 	
 	// UI parameters
+
 
 	public void setFacilityOperatorPOAEnable(boolean facilityOperatorPOAEnable) {
 		this.facilityOperatorPOAEnable = facilityOperatorPOAEnable;
@@ -531,6 +541,14 @@ public class Account {
 
 	public void setOperatorCcertificateEnable(boolean operatorCcertificateEnable) {
 		this.operatorCcertificateEnable = operatorCcertificateEnable;
+	}
+
+	public boolean isFacilitySiteMapEnable() {
+		return facilitySiteMapEnable;
+	}
+
+	public void setFacilitySiteMapEnable(boolean facilitySiteMapEnable) {
+		this.facilitySiteMapEnable = facilitySiteMapEnable;
 	}
 
 }
