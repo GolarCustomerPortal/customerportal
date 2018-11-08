@@ -14,6 +14,7 @@ import com.customerportal.bean.ChangePassword;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.User;
 import com.customerportal.util.DBUtil;
+import com.customerportal.util.MailUtil;
 
 @Path("/users")
 public class UsersService {
@@ -25,12 +26,14 @@ public class UsersService {
 		List<User> userList = DBUtil.getInstance().getAllUsers();
 		return Response.status(201).entity(userList).build();
 	}
+
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response retrieveAllUsersWIthSearch(@QueryParam("userSearchOption") String searchOption,@QueryParam("userSearchString") String searchString) {
+	public Response retrieveAllUsersWIthSearch(@QueryParam("userSearchOption") String searchOption,
+			@QueryParam("userSearchString") String searchString) {
 
-		List<User> userList = DBUtil.getInstance().getAllUsers(searchOption,searchString);
+		List<User> userList = DBUtil.getInstance().getAllUsers(searchOption, searchString);
 		return Response.status(201).entity(userList).build();
 	}
 
@@ -42,39 +45,35 @@ public class UsersService {
 		List<LoginHistory> userList = DBUtil.getInstance().getLoginHistory(userId);
 		return Response.status(201).entity(userList).build();
 	}
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response registerUser(User user) {
-		boolean result =false;
-		User userobj = null; 
-		if(user.isEdit()){
-			userobj	=DBUtil.getInstance().editUser(user);
-		}else{
+		User userobj = null;
+		if (user.isEdit()) {
+			userobj = DBUtil.getInstance().editUser(user);
+		} else {
 			userobj = DBUtil.getInstance().register(user);
 		}
-//		if(userobj!=null){
-			result=true;
-			if(userobj!=null){
-				userobj.setFullName(userobj.getFirstName()+" "+userobj.getLastName());
-			}
-//			new MailUtil().sendEmail(userobj,user.isEdit());
-//		}
+		if (userobj != null) {
+			userobj.setFullName(userobj.getFirstName() + " " + userobj.getLastName());
+			new MailUtil().sendEmail(userobj, user.isEdit());
+		}
 		return Response.status(201).entity(userobj).build();
 	}
+
 	@POST
 	@Path("/changepassword")
 	@Produces(MediaType.APPLICATION_JSON)
-	
+
 	public Response changePassword(ChangePassword changePasswordObj) {
 		boolean result;
-		if(changePasswordObj.isReset())
+		if (changePasswordObj.isReset())
 			result = DBUtil.getInstance().resetPassword(changePasswordObj);
 		else
-		result = DBUtil.getInstance().changePassword(changePasswordObj);
-		
+			result = DBUtil.getInstance().changePassword(changePasswordObj);
+
 		return Response.status(201).entity(result).build();
 	}
-	
-		
 
 }

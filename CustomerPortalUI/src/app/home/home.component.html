@@ -431,7 +431,7 @@
               <div class="ui-g-4">
                 <p-fileUpload name="tankTestingReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                   #tankTestingReportFileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;tankTestingReportFile = $event.files[0]; tankTestingReportFileName=$event.files[0].name"
-                  [disabled]="!modalData?.tankTestingReportRequired"></p-fileUpload>
+                  [disabled]="!modalData?.tankTestingReportRequiredEnable"></p-fileUpload>
                   <span *ngIf='tankTestingReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankTestingReportFileName}}</span>
               </div>
             </div>
