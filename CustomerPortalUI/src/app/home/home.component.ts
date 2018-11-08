@@ -1004,7 +1004,7 @@ export class HomeComponent implements OnInit {
               }
               if (result[i].key == 'tankTestingReport'){
                 this.tankTestingReportFileSuccess = result[i].value;
-                this.modalData.tankTestingReportRequired=false;
+                this.modalData.tankTestingReportRequiredEnable=false;
               }
               if (result[i].key == 'repairDocuments'){
                 this.repairDocumentsFileSuccess = result[i].value;
