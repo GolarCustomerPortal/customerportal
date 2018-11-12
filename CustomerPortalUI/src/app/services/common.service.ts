@@ -22,6 +22,15 @@ export class CommonService {
   resetLogin() {
     localStorage.setItem('loginSuccessful', false + "");
   }
+  setMobileAccess(mobileAccess){
+    localStorage.setItem("mobileAccess",mobileAccess);
+  }
+  getMobileAccess(){
+    var mobileAccess = localStorage.getItem("mobileAccess"); 
+    if(mobileAccess == "true")
+    return true;
+    return false;
+  }
   checkAndUpdateLoginTime(){
     var loginTime = localStorage.getItem('loginTime');
     // console.log("login time ---"+loginTime);

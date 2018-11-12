@@ -189,8 +189,10 @@ export class HomeComponent implements OnInit {
   // middlepanel code start
   constructor(private router: Router, public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
     // this.loadLeftPanelData();
-    if (this.commonService.getSearchResult() == null)
+    if (this.commonService.getSearchResult() == null){
+      if(!this.commonService.getMobileAccess())
       this.fetchDashboardValues(true);
+    }
   }
   fetchDashboardValues(resetview) {
     if(this.commonService.getUserName() != null && this.commonService.getUserName() != undefined){
@@ -203,7 +205,7 @@ export class HomeComponent implements OnInit {
           this.getCompanies(dashboardData.companiesData);
           this.consolidateReportdata = this.generateInventoryReport(dashboardData.consolidateReportData, this.consolidateReportdata);
           this.getComplianceData(dashboardData.complianceData);
-          if (this.selectedChart === 'dashboard') {
+          if (this.selectedChart === 'dashboard' && !this.commonService.getMobileAccess()) {
             this.setSplitwidth();
             this.setRightSplitwidth();
             this.area.centerVisible = false;
@@ -225,6 +227,11 @@ export class HomeComponent implements OnInit {
   facilitiesLabel = [];
   totalFacilities;
   facilitiesRightdata = [];
+  nonManagedfacilitiesRightdata = [];
+  showMobileFacilities=false;
+  showMobileFacilityDetails=false
+  showMobileCompanies=false;
+  showMobileCompliance = false;
   getFacilitiesData(fecData) {
     this.facilitiesdata = {
       labels: [],
@@ -254,6 +261,11 @@ export class HomeComponent implements OnInit {
 
   }
   onFacilitiesDataSelect($event) {
+    if(this.commonService.getMobileAccess())
+    {
+      this.fetchManagedAndNonManagedFacitlities();
+      return;
+    }
     var event;
     if ($event == null || $event == undefined)
       event = 0;// left overlaypanel clicked
@@ -301,6 +313,94 @@ export class HomeComponent implements OnInit {
         });
 
   }
+  fetchManagedAndNonManagedFacitlities(){
+    this.facilitiesRightdata=[];
+    this.nonManagedfacilitiesRightdata =[];
+    this.companiesRightdata=[];
+    this.showMobileFacilities=true;
+    this.showMobileFacilityDetails=false
+    this.dashboardService.getFacilitiesList(this.commonService.getUserName(), this.dashboardConst.MANAGED) // retrieve all thd parent folders
+      .subscribe(
+        facilitiesList => {
+          for (var i = 0; i < facilitiesList.length; i++) {
+            var faciData = facilitiesList[i];
+           if (faciData.compliance != null)
+              faciData.compliance = faciData.compliance == "true";
+            faciData.tankPaidService = faciData.tankPaidService == "true";
+            faciData.compliance = faciData.compliance && faciData.tankPaidService;
+            // var image = this.commonService.gasStationImage(faciData.brand)
+            // faciData.image = "assets/images/gasstation/"+image;
+            // this.getFacilityConsolidateReport(faciData.consolidateReport);
+            faciData.image = environment.server + faciData.imageURL;
+            this.facilitiesRightdata.push(faciData);
+          }
+
+        },
+        error => {
+          console.log(error);
+        });
+        this.dashboardService.getFacilitiesList(this.commonService.getUserName(), this.dashboardConst.UNMANAGED) // retrieve all thd parent folders
+        .subscribe(
+          facilitiesList => {
+            for (var i = 0; i < facilitiesList.length; i++) {
+              var faciData = facilitiesList[i];
+                faciData.compliance = false;
+              faciData.tankPaidService = faciData.tankPaidService == "true";
+              faciData.compliance = faciData.compliance && faciData.tankPaidService;
+              // var image = this.commonService.gasStationImage(faciData.brand)
+              // faciData.image = "assets/images/gasstation/"+image;
+              // this.getFacilityConsolidateReport(faciData.consolidateReport);
+              faciData.image = environment.server + faciData.imageURL;
+              this.nonManagedfacilitiesRightdata.push(faciData);
+            }
+  
+          },
+          error => {
+            console.log(error);
+          });
+
+  }
+  fetchComplianceNonComplianceFacitlities(){
+    this.facilitiesRightdata=[];
+    this.nonManagedfacilitiesRightdata =[];
+    this.companiesRightdata=[];
+    this.showMobileFacilities=true;
+    this.showMobileFacilityDetails=false;
+  this.dashboardService.getComplianceList(this.commonService.getUserName(), "compliance") // retrieve all thd parent folders
+    .subscribe(
+      complianceList => {
+        if (complianceList !== null)
+          for (var i = 0; i < complianceList.length; i++) {
+            var faciData = complianceList[i];
+            // var image = this.commonService.gasStationImage(feciData.brand)
+            faciData.compliance = faciData.compliance == "true";
+            faciData.tankPaidService = faciData.tankPaidService == "true";
+            faciData.image = environment.server + faciData.imageURL;
+            this.facilitiesRightdata.push(faciData);
+          }
+
+      },
+      error => {
+        console.log(error);
+      });
+      this.dashboardService.getComplianceList(this.commonService.getUserName(), "non compliance") // retrieve all thd parent folders
+      .subscribe(
+        complianceList => {
+          if (complianceList !== null)
+            for (var i = 0; i < complianceList.length; i++) {
+              var faciData = complianceList[i];
+              // var image = this.commonService.gasStationImage(feciData.brand)
+              faciData.compliance = faciData.compliance == "true";
+              faciData.tankPaidService = faciData.tankPaidService == "true";
+              faciData.image = environment.server + faciData.imageURL;
+              this.nonManagedfacilitiesRightdata.push(faciData);
+            }
+  
+        },
+        error => {
+          console.log(error);
+        });
+  }
   compliance = true;
   selectedFacility;
   showSpecificfacilityDetails(fdata) {
@@ -334,7 +434,7 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.compliance = fdata.compliance;
     this.rightDetailsContent.backConsolidateReport = fdata.consolidateReport;
     this.rightDetailsContent.consolidateReport = [];
-    if(fdata.gasLevel!=null)
+    if(fdata.consolidateReport!=null)
     this.rightDetailsContent.consolidateReport = this.generateInventoryReportForRightSideData(fdata.consolidateReport, this.rightDetailsContent.consolidateReport,fdata.gasLevel);
     //actualServerData details.
     this.actualServerData.docUpdateDate = new Date();
@@ -385,13 +485,18 @@ export class HomeComponent implements OnInit {
     this.resetrightSideData();
     console.log("onCompaniesDataSelect", event);
     this.showFacilities = false;
+    this.showMobileCompanies=true;
+    this.facilitiesRightdata=[];
+    this.nonManagedfacilitiesRightdata =[];
+    this.showMobileFacilities=false;
+    this.showMobileFacilityDetails=false
     this.showCompliance = false;
     this.area.centerVisible = true;
     this.showConsolidateReport = false;
     this.companiesClass = "ui-g-12";
     this.showRightContent = false;
     this.showBack = true;
-    if ($event == null || $event == undefined) {
+    if (!this.commonService.getMobileAccess() &&($event == null || $event == undefined)) {
       this.fetchDashboardValues(false);
       return;
     }
@@ -460,6 +565,11 @@ export class HomeComponent implements OnInit {
   }
 
   onComplianceDataSelect($event) {
+     if(this.commonService.getMobileAccess())
+    {
+      this.fetchComplianceNonComplianceFacitlities();
+      return;
+    }
     var event;
     if ($event == null || $event == undefined)
       event = 0;// left overlaypanel clicked
@@ -560,14 +670,18 @@ export class HomeComponent implements OnInit {
         }
       ]
     };
-    var gasResult = this.getGasLevels(gasLevel);
     var gasLevelArray=[]
-            for (var i = 0; i < gasResult.length; i++) {
-              var row = {};
-              row["key"] = gasResult[i].key;
-              row["value"] = gasResult[i].value;
-              gasLevelArray.push(row)
-            }
+    if(gasLevel){
+    var gasResult = this.getGasLevels(gasLevel);
+    
+    if(gasResult)
+        for (var i = 0; i < gasResult.length; i++) {
+          var row = {};
+          row["key"] = gasResult[i].key;
+          row["value"] = gasResult[i].value;
+          gasLevelArray.push(row)
+        }
+      }
     for (var i = 0; i < consolidateData.length; i++) {
       consolidateReportdata.labels.push(consolidateData[i].key);
       consolidateReportdata.datasets[0].data.push(Number(consolidateData[i].value));

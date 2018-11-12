@@ -1,5 +1,6 @@
 package com.customerportal.util;
 
+import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -16,14 +17,20 @@ import com.customerportal.bean.User;
 public class MailUtil {
 	public static void main(String[] args) {
 		User userobj = new User();
+		userobj.setFirstName("Srinivasa");
+		userobj.setLastName("Reddy");
 		userobj.setEmailAddress("avsrinivasa@gmail.com");
-		userobj.setPassword("password");
+		userobj.setUsername("avsrinivasa");
+		userobj.setPassword("cGFzc3dvcmQ=");
 		MailUtil util = new MailUtil();
+		util.fetchEmailProperties();
+//		String value = MessageFormat.format(emailProperties.getProperty("registerEmail"),new Object[] {"Srinivas ",emailProperties.getProperty("baseURL"),"testusername","testpassword" });
+//		System.out.println(value);
 		util.sendEmail(userobj, true);
 
 	}
 
-	Properties emailProperties = new Properties();
+	static Properties emailProperties = new Properties();
 
 	Message fetchEmailProperties() {
 
@@ -68,25 +75,24 @@ public class MailUtil {
 				System.out.println("Sending Email is disabled. To enable change 'sendEmail' property value to true in emailconfig.properties and restart the server");
 				return;
 			}
-
+			
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userobj.getEmailAddress()));
 			String messageText = "";
-			if (isEdit)
-				messageText = emailProperties.getProperty("editEmail")+"<p>Please use <a href='"
-						+ emailProperties.get("baseURL") + "'>link</a> to login. </p>";
-			else
-				messageText = emailProperties.getProperty("registerEmail")+"<p>Please use <a href='"
-						+ emailProperties.get("baseURL") + "'>link</a> to login. </p>";
+//			if (isEdit)
+//				messageText = emailProperties.getProperty("editEmail")+"<p>Please use <a href='"
+//						+ emailProperties.get("baseURL") + "'>link</a> to login. </p>";
+//			else
+				messageText = MessageFormat.format(emailProperties.getProperty("registerEmail"),new Object[] {userobj.getFirstName()+" "+userobj.getLastName(),emailProperties.getProperty("baseURL"),userobj.getUsername(),new String(Base64.getDecoder().decode(userobj.getPassword().getBytes())) });;
 
-			messageText += "<p>Below are the login details: </p>" + "<p>username: " + userobj.getUsername() + "</p>"
-					+ "<p>password: " + new String(Base64.getDecoder().decode(userobj.getPassword().getBytes()))
-					+ "</p>";
+//			messageText += "<p>Below are the login details: </p>" + "<p>username: " + userobj.getUsername() + "</p>"
+//					+ "<p>password: " + new String(Base64.getDecoder().decode(userobj.getPassword().getBytes()))
+//					+ "</p>";
 			message.setContent(messageText, "text/html");
-			message.setSubject("New user registration with Golars 360");
+			message.setSubject(emailProperties.getProperty("mailsubject", "Welcome to Golars Tank"));
 
 			Transport.send(message);
 
-			System.out.println("Mail sent succesfully to : " + userobj);
+			System.out.println("Mail sent succesfully to : " + userobj.getEmailAddress());
 
 		} catch (MessagingException e) {
 			System.out.println("Exception occured during mail send --" + e.getMessage());
@@ -128,7 +134,7 @@ public class MailUtil {
 
 			Transport.send(message);
 
-			System.out.println("Mail sent succesfully to : " + userobj);
+			System.out.println("Mail sent succesfully to : " + userobj.getEmailAddress());
 
 		} catch (MessagingException e) {
 			System.out.println("Exception occured during mail send --" + e.getMessage());

@@ -33,15 +33,30 @@ export class LoginComponent implements OnInit {
   @ViewChild('f') formGroup: FormGroup; 
   username; 
   passwordDoesnotmatch=false; 
+  mobileAccess=false;
   //reset password end
   ngOnInit() {
+    this.mobileCheck();
     if(this.commonService.checkValidLogin()){
       
 console.log("login init")
     this.router.navigate(['/']);
     }
   }
-  
+  mobileCheck(){
+      this.mobileAccess = false;
+      if( navigator.userAgent.match(/Android/i)
+      || navigator.userAgent.match(/webOS/i)
+      || navigator.userAgent.match(/iPhone/i)
+      || navigator.userAgent.match(/iPad/i)
+      || navigator.userAgent.match(/iPod/i)
+      || navigator.userAgent.match(/BlackBerry/i)
+      || navigator.userAgent.match(/Windows Phone/i)
+      ) 
+      this.mobileAccess = true;
+      console.log("accessing from mobile?? ",this.mobileAccess);
+      this.commonService.setMobileAccess(this.mobileAccess); 
+    }
 
   login() {
     this.authenticationService.login(this.model.username, this.model.password,false)
@@ -88,6 +103,7 @@ this.authenticationService.changePassword(this.model) .subscribe(
   data => {
      // console.log(message)
      if(data === true){
+      this.model.password=this.model.newPassword;
   // this.showSuccessMessage=true;
   this.login();
   // this.authenticationService.logout();

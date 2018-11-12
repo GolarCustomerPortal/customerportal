@@ -1,5 +1,8 @@
 package com.customerportal.rest;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -12,7 +15,18 @@ import com.customerportal.util.DBUtil;
 
 @Path("/login")
 public class LoginService {
+	static{
+		Timer t = new Timer( );
+		t.scheduleAtFixedRate(new TimerTask() {
 
+		    @Override
+		    public void run() {
+		    	System.out.println("Db call-------------");
+		    	DBUtil.getInstance().getAllUsers();
+
+		    }
+		}, 10000,3600000);
+	}
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_JSON })

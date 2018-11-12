@@ -1201,7 +1201,7 @@ public class DBUtil {
 						selectedKeyValue.setValue(gallonsIntValue + "");
 					} else {
 						KeyValue kv = new KeyValue();
-						kv.setKey(iReport.getProduct());
+						kv.setKey(iReport.getProduct().toUpperCase());
 						kv.setName(iReport.getTank());
 						kv.setValue(iReport.getGallons());
 						consolidateList.add(kv);
@@ -1251,7 +1251,7 @@ public class DBUtil {
 					selectedKeyValue.setValue(gallonsIntValue + "");
 				} else {
 					KeyValue kv = new KeyValue();
-					kv.setKey(iReport.getProduct());
+					kv.setKey(iReport.getProduct().toUpperCase());
 					kv.setValue(iReport.getGallons());
 					consolidateList.add(kv);
 				}

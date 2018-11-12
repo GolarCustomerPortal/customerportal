@@ -2,20 +2,20 @@
 <p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000" (onShow)="setSplitwidth();setRightSplitwidth()" (onHide)="reSetSplitwidth()" id="main_side_bar">
   &nbsp;
   <p-accordion id="leftpanel">
-    <p-accordionTab header="{{dashboardConst.DASHBOARD}}" [selected]="true" (click)="showAll();visibleSidebar=false;">
+    <p-accordionTab [hidden]="commonService.getMobileAccess()" header="{{dashboardConst.DASHBOARD}}" [selected]="true" (click)="showAll();visibleSidebar=false;">
     </p-accordionTab>
-    <p-accordionTab header="{{dashboardConst.FACALITIES}}" (click)="onFacilitiesDataSelect(null);showFacilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFacilities()==false">
+    <p-accordionTab header="{{dashboardConst.FACALITIES}}" (click)="onFacilitiesDataSelect(null);showFacilities=true;showMobileCompliance=false;showMobileFacilities=true;visibleSidebar=false;"  [hidden]="commonService.getPreferencesOfFacilities()==false">
     </p-accordionTab>
-    <p-accordionTab header="{{dashboardConst.COMPANIES}}" (click)="onCompaniesDataSelect(null);showCompanies=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
+    <p-accordionTab header="{{dashboardConst.COMPANIES}}" (click)="onCompaniesDataSelect(null);showCompanies=true;showMobileCompliance=false;showMobileCompanies=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompanies()==false">
     </p-accordionTab>
-    <p-accordionTab header="{{dashboardConst.FACALITIESINCOMPLIANCE}}" (click)="onComplianceDataSelect(null);showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
+    <p-accordionTab header="{{dashboardConst.FACALITIESINCOMPLIANCE}}" (click)="onComplianceDataSelect(null);showMobileCompliance=true;showCompliance=true;visibleSidebar=false;" [hidden]="commonService.getPreferencesOfCompliance()==false">
     </p-accordionTab>
-    <p-accordionTab header="{{dashboardConst.USSBOAVENDORS}}" (click)="onUSSBOASelect();;visibleSidebar=false;">
+    <p-accordionTab [hidden]="commonService.getMobileAccess()" header="{{dashboardConst.USSBOAVENDORS}}" (click)="onUSSBOASelect();;visibleSidebar=false;">
     </p-accordionTab>
   </p-accordion>
 </p-sidebar>
-<div style="width: 320px;height:100px;float:left;display:none" id="left-split-panel"></div>
-<split id="split-panel" direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults"> 
+<div [hidden]="commonService.getMobileAccess()" style="width: 320px;height:100px;float:left;display:none" id="left-split-panel"></div>
+<split [hidden]="commonService.getMobileAccess()" id="split-panel" direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults"> 
    
   <split-area [visible]="area.leftVisible" [size]="area.left" order="1" id="left-split-panel">
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
@@ -59,7 +59,7 @@
       </div>
     <div *ngIf="newsFeedVisible==false">
       <p-panel id="rightPanel" header="{{rightPanelTitle}}" styleClass="height-center" *ngIf="showRightContent">
-        <div style="height:calc(100vh - 164px);overflow-y: auto">
+        <div style="height:calc(100vh - 138px);overflow-y: auto">
           <div *ngIf="facilitiesRightdata.length>0">
             <div *ngFor="let fdata of facilitiesRightdata; let i = index;" style="padding:10px;">
               <div *ngIf="i%3 == 0" class="ui-g-12">
@@ -206,7 +206,7 @@
         <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
       </div>
       </p-header>
-      <div style="height:calc(100vh - 185px);overflow-y: auto">
+      <div style="height:calc(100vh - 155px);overflow-y: auto">
         <div class="ui-g-12">
             <p-card styleClass="ui-card-shadow">
                 <div style="width: 100%">
@@ -748,7 +748,7 @@
             <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
           </div>
           </p-header>
-          <div style="height:calc(100vh - 185px);overflow-y: auto">
+          <div style="height:calc(100vh - 155px);overflow-y: auto">
             <div class="ui-g-12">
                 <p-card styleClass="ui-card-shadow">
                     <div style="width: 100%">
@@ -807,5 +807,201 @@
         </p-panel>
     </split-area>
   </split>
+  <div [hidden]="!commonService.getMobileAccess()">
+    <div class="ui-g-12" *ngIf="showMobileCompanies==false && showMobileFacilities==false && showMobileFacilityDetails == false">
+        <div class="ui-g-6">
+          <a href="https://play.google.com/store/apps/details?id=com.golarstank" target="_blank">
+            <img alt="Grey" class="download-app" src="assets/images/Play-store-logo.png" title="Download Golars Tank App on Google Play"
+            ></a>
+        </div>
+        <div class="ui-g-6">
+            <a href="https://itunes.apple.com/us/app/golars-tank/id1441898686?ls=1&mt=8" target="_blank">
+              <img alt="Grey" class="download-app" src="assets/images/appstore.png" title="Download Golars Tank App on App Store"
+              ></a>
+          </div>
+    </div>
+    <!-- companies start -->
+      <div *ngIf="companiesRightdata.length>0 && showMobileCompanies==true">
+          <div class="ui-g-12 no-padding mobile-tile-header">
+              <div style="width: 100%" style="padding: 10px;padding-left:15px">
+                <div>COMPANIES</div>
+              </div>
+         </div>
+
+          <div *ngFor="let fdata of companiesRightdata; let i = index;">
+            <div class="ui-g-12 no-padding" style="border-bottom: 1px solid #C1C3CA">
+                <div *ngFor="let number of [0] let j = index;"  style="padding:10px">
+                    <div *ngIf="companiesRightdata[i+j] != null && companiesRightdata[i+j] != undefined"  class="ui-g-12  no-padding" 
+                    (click)="facilitiesRightdata =companiesRightdata[i+j].facilities;showMobileCompanies=false;showMobileFacilities= true;showMobileFacilityDetails=false;" style="cursor: pointer;padding-bottom: 10px !important" title="Click for more details">
+                        <div>
+                          <div style="width: 100%">
+                              <!-- <img class="card-mobile-image" src="{{companiesRightdata[i+j].image}}" /> -->
+                            <div> <div >{{companiesRightdata[i+j].name}} <i class="fa fa-angle-right card-mobile-right-image" style="font-size:24px;"></i></div>
+                            
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- companies end -->
+        <div *ngIf="companiesRightdata.length>0 && showMobileFacilities==true"> <i  i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to Companies"
+          aria-hidden="true" (click)="showMobileCompanies=true;showMobileFacilities=false;showMobileFacilityDetails=false"></i>
+      </div>
+      <div *ngIf="facilitiesRightdata.length>0 && showMobileFacilities==true">
+          <div class="ui-g-12 no-padding mobile-tile-header" *ngIf="companiesRightdata.length > 0">
+              <div style="width: 100%" style="padding: 10px;padding-left:15px">
+                <div>FACILITIES</div>
+              </div>
+         </div>
+          <div class="ui-g-12 no-padding mobile-tile-header" *ngIf="companiesRightdata.length == 0">
+              <div style="width: 100%" style="padding: 10px;padding-left:15px">
+                <div *ngIf="showMobileCompliance == false">MANAGED FACILITIES</div>
+                <div *ngIf="showMobileCompliance == true">COMPLIANT</div>
+              </div>
+         </div>
+
+          <div *ngFor="let fdata of facilitiesRightdata; let i = index;">
+            <div class="ui-g-12 no-padding" style="border-bottom: 1px solid #C1C3CA">
+                <div *ngFor="let number of [0] let j = index;"  style="padding:10px">
+                    <div *ngIf="facilitiesRightdata[i+j] != null && facilitiesRightdata[i+j] != undefined"  class="ui-g-12  no-padding" 
+                    (click)="showSpecificfacilityDetails(facilitiesRightdata[i+j]);showMobileFacilities= false;showMobileFacilityDetails=true;" style="cursor: pointer;padding-bottom: 10px !important" title="Click for more details">
+                        <div>
+                          <div style="width: 100%">
+                              <img class="card-mobile-image" src="{{facilitiesRightdata[i+j].image}}" />
+                            <div> <div >{{facilitiesRightdata[i+j].name}} <i class="fa fa-angle-right card-mobile-right-image" style="font-size:24px;"></i></div>
+                            
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                </div>
+
+            </div>
+          </div>
+        </div>
+<!-- non managed -->
+<div *ngIf="nonManagedfacilitiesRightdata.length>0  && showMobileFacilities==true">
+    <div class="ui-g-12 no-padding mobile-tile-header" *ngIf="companiesRightdata.length > 0 && facilitiesRightdata.length == 0">
+        <div style="width: 100%" style="padding: 10px;padding-left:15px">
+          <div>FACILITIES</div>
+        </div>
+   </div>
+    <div class="ui-g-12 no-padding mobile-tile-header"  *ngIf="companiesRightdata.length == 0" >
+        <div style="width: 100%" style="padding: 10px;padding-left:15px">
+          <div *ngIf="showMobileCompliance == false">NON-MANAGED FACILITIES</div>
+          <div *ngIf="showMobileCompliance == true">NON-COMPLIANT</div>
+        </div>
+   </div>
+
+    <div *ngFor="let fdata of nonManagedfacilitiesRightdata; let i = index;">
+      <div class="ui-g-12 no-padding" style="border-bottom: 1px solid #C1C3CA">
+          <div *ngFor="let number of [0] let j = index;"  style="padding:10px">
+              <div *ngIf="nonManagedfacilitiesRightdata[i+j] != null && nonManagedfacilitiesRightdata[i+j] != undefined"  class="ui-g-12  no-padding"
+               (click)="showSpecificfacilityDetails(nonManagedfacilitiesRightdata[i+j]);showMobileFacilities= false;showMobileFacilityDetails=true;" style="cursor: pointer;padding-bottom: 10px !important" title="Click for more details">
+                  <div>
+                    <div style="width: 100%">
+                        <img class="card-mobile-image" src="{{nonManagedfacilitiesRightdata[i+j].image}}" />
+                      <div> <div >{{nonManagedfacilitiesRightdata[i+j].name}} <i class="fa fa-angle-right card-mobile-right-image" style="font-size:24px;"></i></div>
+                      
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+          </div>
+
+      </div>
+    </div>
+
+  </div>
+<!-- right side panel start -->
+<div *ngIf="showMobileFacilityDetails==true">
+    <i  i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="Back to Facilities"
+    aria-hidden="true" (click)="showMobileFacilities=true;showMobileFacilityDetails=false"></i>
+<div class="right-content-error" *ngIf="rightDetailsContent.facilityTankPaidMessage != null">{{rightDetailsContent.facilityTankPaidMessage}}</div>
+<p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="rightDetailsContent.tankPaidService == true  && rightDetailsContent.facilityTankPaidMessage == null">
+  <p-header ngClass="header-padding-left">
+      <div style="width: 100%"> {{rightPaneDetailslTitle}}
+  </div>
+  </p-header>
+  <div style="height:calc(100vh - 155px);overflow-y: auto">
+    <div class="ui-g-12">
+        <p-card styleClass="ui-card-shadow">
+            <div style="width: 100%">
+                <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important"> {{rightDetailsContent.facilityName}}</div>
+                 <img class="card-image" src="{{rightDetailsContent.image}}" /></div>
+             </div>
+        <div class="ui-g no-padding">
+          <div class="ui-g-4 no-padding"> Fid:</div>
+          <div class="ui-g-8 no-padding">{{rightDetailsContent.fid}}</div>
+        </div>
+        <div class="ui-g no-padding">
+          <div class="ui-g-4 no-padding"> Address:</div>
+          <div class="ui-g-8 no-padding">{{rightDetailsContent.address}}</div>
+        </div>
+        <div class="ui-g no-padding"  *ngIf="rightDetailsContent.projectManager != null">
+          <div class="ui-g-4 no-padding"> PM Name:</div>
+          <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManager}}</div>
+        </div>
+        <div class="ui-g no-padding" *ngIf="rightDetailsContent.projectManagerPhone != null">
+          <div class="ui-g-4 no-padding"> PM Phone:</div>
+          <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
+        </div>
+        <div class="ui-g no-padding" *ngIf="selectedChart !== 'compliance'">
+          <div class="ui-g-4 no-padding"> Compliance:</div>
+          <div class="ui-g-8 no-padding">
+            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
+          </div>
+        </div>
+        <div class="ui-g no-padding" *ngIf="selectedChart == 'compliance'">
+          <div class="ui-g-4 no-padding"> Compliance</div>
+          <div class="ui-g-8 no-padding">
+            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <div class="ui-g-12 margin-top" id="individual-chart">
+        <p-card styleClass="ui-card-shadow">
+            <div style="width: 100%">
+                <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
+                  </div>
+                 </div>
+                <div style="width: 100%" class="ui-g no-padding"> View this graph in mobile app or in desktop</div>
+
+      </p-card>
+    </div>
+    <div class="ui-g-12 margin-top">
+      <div class="ui-g-4">
+        <button type="button" class="btn btn-default btn-mobile-circle btn-lg" style=""  ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
+        
+         disabled
+        >Notification
+          <br>Form</button>
+      </div>
+      <div class="ui-g-4">
+        <button type="button" class="btn btn-default btn-mobile-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
+         disabled>UST <br> Compliance
+          </button>
+      </div>
+      <div class="ui-g-4">
+        <button type="button" class="btn btn-default btn-mobile-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
+        disabled>Operator <br> Certificates </button>
+      </div>
+    </div>
+
+  </div>
+</p-panel>
+</div>
+<!-- right side panel end -->
+
+
+  </div>
 
   <!-- search end -->
