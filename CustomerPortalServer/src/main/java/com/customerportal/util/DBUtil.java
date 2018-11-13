@@ -1167,13 +1167,14 @@ public class DBUtil {
 	}
 
 	public List<KeyValue> retrieveConsolidateReport(List<Facilities> facilitiesList) {
-		Session session = HibernateUtil.getSession();
-		Transaction t = session.beginTransaction();
 		// Map<String, Object> consolidateMap = new HashMap<String, Object>();
 		List<KeyValue> consolidateList = new ArrayList<KeyValue>();
 		for (Facilities facilities : facilitiesList) {
 			if (facilities == null)
 				continue;
+			Session session = HibernateUtil.getSession();
+			Transaction t = session.beginTransaction();
+
 			Query query = session.createNativeQuery(
 					"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
 							+ facilities.getFacilityId()
@@ -1209,11 +1210,12 @@ public class DBUtil {
 					System.out.println(iReport);
 				}
 			}
+			t.commit();
+			session.close();
 		}
 
 		// query.setString("userId", userId);
-		t.commit();
-		session.close();
+	
 		return consolidateList;
 	}
 
