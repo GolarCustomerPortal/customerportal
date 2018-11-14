@@ -183,7 +183,7 @@
                                   <div class="ui-g no-padding">
                                     <div class="ui-g-3 no-padding"> Compliance:</div>
                                     <div class="ui-g-9 no-padding">
-                                      <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                                      <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+j].compliance" [disabled]="true"></p-inputSwitch>
                                     </div>
                                   </div>
                                 </p-card>
@@ -229,16 +229,11 @@
               <div class="ui-g-4 no-padding"> PM Phone:</div>
               <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
             </div>
-            <div class="ui-g no-padding" *ngIf="selectedChart !== 'compliance'">
-              <div class="ui-g-4 no-padding"> Compliance:</div>
-              <div class="ui-g-8 no-padding">
-                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
-              </div>
-            </div>
-            <div class="ui-g no-padding" *ngIf="selectedChart == 'compliance'">
+
+            <div class="ui-g no-padding">
               <div class="ui-g-4 no-padding"> Compliance</div>
               <div class="ui-g-8 no-padding">
-                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
               </div>
             </div>
           </p-card>
@@ -755,10 +750,10 @@
                         <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important"> {{rightDetailsContent.facilityName}}</div>
                          <img class="card-image" src="{{rightDetailsContent.image}}" /></div>
                      </div>
-                <div class="ui-g no-padding">
+                <!-- <div class="ui-g no-padding">
                   <div class="ui-g-4 no-padding"> Name:</div>
                   <div class="ui-g-8 no-padding">{{rightDetailsContent.facilityName}}</div>
-                </div>
+                </div> -->
                 <div class="ui-g no-padding">
                   <div class="ui-g-4 no-padding"> Fid:</div>
                   <div class="ui-g-8 no-padding">{{rightDetailsContent.fid}}</div>
@@ -766,6 +761,14 @@
                 <div class="ui-g no-padding">
                   <div class="ui-g-4 no-padding"> Address:</div>
                   <div class="ui-g-8 no-padding">{{rightDetailsContent.address}}</div>
+                </div>
+                <div class="ui-g no-padding"  *ngIf="rightDetailsContent.projectManager != null">
+                  <div class="ui-g-4 no-padding"> PM Name:</div>
+                  <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManager}}</div>
+                </div>
+                <div class="ui-g no-padding" *ngIf="rightDetailsContent.projectManagerPhone != null">
+                  <div class="ui-g-4 no-padding"> PM Phone:</div>
+                  <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
                 </div>
                 <div class="ui-g no-padding">
                   <div class="ui-g-4 no-padding"> Compliance:</div>
@@ -953,16 +956,11 @@
           <div class="ui-g-4 no-padding"> PM Phone:</div>
           <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
         </div>
-        <div class="ui-g no-padding" *ngIf="selectedChart !== 'compliance'">
-          <div class="ui-g-4 no-padding"> Compliance:</div>
-          <div class="ui-g-8 no-padding">
-            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
-          </div>
-        </div>
-        <div class="ui-g no-padding" *ngIf="selectedChart == 'compliance'">
+      
+        <div class="ui-g no-padding" >
           <div class="ui-g-4 no-padding"> Compliance</div>
           <div class="ui-g-8 no-padding">
-            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
           </div>
         </div>
       </p-card>
@@ -979,7 +977,7 @@
     </div>
     <div class="ui-g-12 margin-top">
       <div class="ui-g-4">
-        <button type="button" class="btn btn-default btn-mobile-circle btn-lg" style=""  ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
+        <button type="button" class="btn btn-default btn-mobile-circle btn-lg"   ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
         
          disabled
         >Notification

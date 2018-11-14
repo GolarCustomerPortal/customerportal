@@ -557,8 +557,8 @@ export class HomeComponent implements OnInit {
     this.complianceLabel.push("Compliant");
     this.complianceLabel.push("Non-compliant");
     // this.nonCompliance = 9;
-    this.complianceData.labels.push('Compliance ');
-    this.complianceData.labels.push('Non Compliance ');
+    this.complianceData.labels.push('Compliant ');
+    this.complianceData.labels.push('Non-compliant ');
     this.complianceData.datasets[0].data.push(this.complianceArray[0]);
     this.complianceData.datasets[0].data.push(this.complianceArray[1]);
     this.totalCompliance = this.complianceArray[1] + this.complianceArray[0];
