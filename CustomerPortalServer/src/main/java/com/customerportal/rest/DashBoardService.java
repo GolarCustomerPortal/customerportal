@@ -46,7 +46,7 @@ public class DashBoardService {
 		String facilitiesIdString = CustomerPortalUtil.getfacilitiesIdString(facilitiesList);
 		if(facilitiesList != null){
 		for (Facilities facilitiy : facilitiesList) {
-			if(facilitiy!=null && facilitiy.getPaidService()!= null && facilitiy.getPaidService().equalsIgnoreCase("true"))
+			if(facilitiy!=null && facilitiy.getTankPaidService()!= null && facilitiy.getTankPaidService().equalsIgnoreCase("true"))
 				facilitiesSigned++;
 			else
 				facilitiesUnsigned++;
