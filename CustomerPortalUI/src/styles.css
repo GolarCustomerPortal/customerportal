@@ -295,8 +295,9 @@ background: #ebf7ec
 overflow: auto !important;
 }
 .text-align-center{
-text-align: left;
+text-align: center;
 }
+
 .register-search-padding{
     padding: 5px !important;
     padding-left: 10px !important;

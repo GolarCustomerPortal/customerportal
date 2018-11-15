@@ -88,11 +88,22 @@
                               <div class="ui-g-9 no-padding">{{facilitiesRightdata[i+j].projectManagerPhone}}</div>
                             </div>
                             <div class="ui-g no-padding">
-                              <div class="ui-g-3 no-padding"> Compliance:</div>
-                              <div class="ui-g-9 no-padding">
+                              <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+                              <div class="ui-g-12 no-padding text-align-center">
                                 <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="facilitiesRightdata[i+j].compliance" [disabled]="true"></p-inputSwitch>
                               </div>
                             </div>
+                           <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+                            <div class="ui-g-12 no-padding text-align-center">
+                              <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="facilitiesRightdata[i+j].paidService" [disabled]="true"></p-inputSwitch>
+                            </div>
+                          </div>
+                          <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+                          <div class="ui-g-12 no-padding text-align-center">
+                            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="facilitiesRightdata[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                          </div>
+                        </div>
+                      </div>
                           </p-card>
                         </div>
                         
@@ -133,11 +144,22 @@
                           <div class="ui-g-9 no-padding">{{companyData.facilities[i+j].projectManagerPhone}}</div>
                         </div>
                         <div class="ui-g no-padding">
-                          <div class="ui-g-3 no-padding"> Compliance:</div>
-                          <div class="ui-g-9 no-padding">
+                          <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+                          <div class="ui-g-12 no-padding text-align-center">
                             <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
                           </div>
                         </div>
+                       <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+                        <div class="ui-g-12 no-padding text-align-center">
+                          <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].paidService" [disabled]="true"></p-inputSwitch>
+                        </div>
+                      </div>
+                      <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+                      <div class="ui-g-12 no-padding text-align-center">
+                        <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                      </div>
+                    </div>
+                  </div>
                       </p-card>
                     </div>
                     
@@ -181,11 +203,22 @@
                                     <div class="ui-g-9 no-padding">{{complianceRightdata[i+j].projectManagerPhone}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-3 no-padding"> Compliance:</div>
-                                    <div class="ui-g-9 no-padding">
+                                    <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+                                    <div class="ui-g-12 no-padding text-align-center">
                                       <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+j].compliance" [disabled]="true"></p-inputSwitch>
                                     </div>
                                   </div>
+                                 <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+                                  <div class="ui-g-12 no-padding text-align-center">
+                                    <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+j].paidService" [disabled]="true"></p-inputSwitch>
+                                  </div>
+                                </div>
+                                <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+                                <div class="ui-g-12 no-padding text-align-center">
+                                  <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="complianceRightdata[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                                </div>
+                              </div>
+                            </div>
                                 </p-card>
                               </div>
                               
@@ -231,11 +264,22 @@
             </div>
 
             <div class="ui-g no-padding">
-              <div class="ui-g-4 no-padding"> Compliance</div>
-              <div class="ui-g-8 no-padding">
+              <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+              <div class="ui-g-12 no-padding text-align-center">
                 <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
               </div>
             </div>
+           <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+            <div class="ui-g-12 no-padding text-align-center">
+              <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.paidService" [disabled]="true"></p-inputSwitch>
+            </div>
+          </div>
+          <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+          <div class="ui-g-12 no-padding text-align-center">
+            <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+          </div>
+        </div>
+      </div>
           </p-card>
         </div>
         <div class="ui-g-12 margin-top" id="individual-chart">
@@ -662,11 +706,22 @@
                                     <div class="ui-g-8 no-padding">{{searchResult.facilitiesList[i+j].projectManagerPhone}}</div>
                                   </div>
                                   <div class="ui-g no-padding">
-                                    <div class="ui-g-4 no-padding"> Compliance:</div>
-                                    <div class="ui-g-8 no-padding">
-                                      <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="searchResult.facilitiesList[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                                    <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+                                    <div class="ui-g-12 no-padding text-align-center">
+                                      <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="searchResult.facilitiesList[i+j].compliance" [disabled]="true"></p-inputSwitch>
                                     </div>
                                   </div>
+                                 <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+                                  <div class="ui-g-12 no-padding text-align-center">
+                                    <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="searchResult.facilitiesList[i+j].paidService" [disabled]="true"></p-inputSwitch>
+                                  </div>
+                                </div>
+                                <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+                                <div class="ui-g-12 no-padding text-align-center">
+                                  <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="searchResult.facilitiesList[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                                </div>
+                              </div>
+                            </div>
                                 </p-card>
                               </div>
                               
@@ -710,11 +765,22 @@
                                 <div class="ui-g-8 no-padding">{{companyData.facilities[i+j].projectManagerPhone}}</div>
                               </div>
                               <div class="ui-g no-padding">
-                                <div class="ui-g-4 no-padding"> Compliance:</div>
-                                <div class="ui-g-8 no-padding">
+                                <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+                                <div class="ui-g-12 no-padding text-align-center">
                                   <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
                                 </div>
                               </div>
+                             <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+                              <div class="ui-g-12 no-padding text-align-center">
+                                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].paidService" [disabled]="true"></p-inputSwitch>
+                              </div>
+                            </div>
+                            <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+                            <div class="ui-g-12 no-padding text-align-center">
+                              <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].tankPaidService" [disabled]="true"></p-inputSwitch>
+                            </div>
+                          </div>
+                        </div>
                             </p-card>
                           </div>
                           
@@ -771,11 +837,22 @@
                   <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
                 </div>
                 <div class="ui-g no-padding">
-                  <div class="ui-g-4 no-padding"> Compliance:</div>
-                  <div class="ui-g-8 no-padding">
-                    <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+                  <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+                  <div class="ui-g-12 no-padding text-align-center">
+                    <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
                   </div>
                 </div>
+               <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+                <div class="ui-g-12 no-padding text-align-center">
+                  <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.paidService" [disabled]="true"></p-inputSwitch>
+                </div>
+              </div>
+              <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Golars Tank</div>
+              <div class="ui-g-12 no-padding text-align-center">
+                <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+              </div>
+            </div>
+          </div>
               </p-card>
             </div>
             <div class="ui-g-12 margin-top" id="individual-chart">
@@ -957,12 +1034,23 @@
           <div class="ui-g-8 no-padding">{{rightDetailsContent.projectManagerPhone}}</div>
         </div>
       
-        <div class="ui-g no-padding" >
-          <div class="ui-g-4 no-padding"> Compliance</div>
-          <div class="ui-g-8 no-padding">
+        <div class="ui-g no-padding">
+          <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
+          <div class="ui-g-12 no-padding text-align-center">
             <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.compliance" [disabled]="true"></p-inputSwitch>
           </div>
         </div>
+       <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Ussboa</div>
+        <div class="ui-g-12 no-padding text-align-center">
+          <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.paidService" [disabled]="true"></p-inputSwitch>
+        </div>
+      </div>
+      <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">GT</div>
+      <div class="ui-g-12 no-padding text-align-center">
+        <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="rightDetailsContent.tankPaidService" [disabled]="true"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
       </p-card>
     </div>
     <div class="ui-g-12 margin-top" id="individual-chart">

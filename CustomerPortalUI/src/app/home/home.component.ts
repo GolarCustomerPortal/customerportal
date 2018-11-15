@@ -299,7 +299,8 @@ export class HomeComponent implements OnInit {
             else if (faciData.compliance != null)
               faciData.compliance = faciData.compliance == "true";
             faciData.tankPaidService = faciData.tankPaidService == "true";
-            faciData.compliance = faciData.compliance && faciData.tankPaidService;
+            faciData.paidService = faciData.paidService == "true";
+            // faciData.compliance = faciData.compliance && faciData.tankPaidService;
             // var image = this.commonService.gasStationImage(faciData.brand)
             // faciData.image = "assets/images/gasstation/"+image;
             // this.getFacilityConsolidateReport(faciData.consolidateReport);
@@ -327,7 +328,8 @@ export class HomeComponent implements OnInit {
            if (faciData.compliance != null)
               faciData.compliance = faciData.compliance == "true";
             faciData.tankPaidService = faciData.tankPaidService == "true";
-            faciData.compliance = faciData.compliance && faciData.tankPaidService;
+            faciData.paidService = faciData.paidService == "true";
+            // faciData.compliance = faciData.compliance && faciData.tankPaidService;
             // var image = this.commonService.gasStationImage(faciData.brand)
             // faciData.image = "assets/images/gasstation/"+image;
             // this.getFacilityConsolidateReport(faciData.consolidateReport);
@@ -346,7 +348,9 @@ export class HomeComponent implements OnInit {
               var faciData = facilitiesList[i];
                 faciData.compliance = false;
               faciData.tankPaidService = faciData.tankPaidService == "true";
-              faciData.compliance = faciData.compliance && faciData.tankPaidService;
+              faciData.compliance = faciData.compliance == "true";
+              faciData.paidService = faciData.paidService == "true";
+              // faciData.compliance = faciData.compliance && faciData.tankPaidService;
               // var image = this.commonService.gasStationImage(faciData.brand)
               // faciData.image = "assets/images/gasstation/"+image;
               // this.getFacilityConsolidateReport(faciData.consolidateReport);
@@ -375,6 +379,7 @@ export class HomeComponent implements OnInit {
             // var image = this.commonService.gasStationImage(feciData.brand)
             faciData.compliance = faciData.compliance == "true";
             faciData.tankPaidService = faciData.tankPaidService == "true";
+            faciData.paidService = faciData.paidService == "true";
             faciData.image = environment.server + faciData.imageURL;
             this.facilitiesRightdata.push(faciData);
           }
@@ -392,6 +397,7 @@ export class HomeComponent implements OnInit {
               // var image = this.commonService.gasStationImage(feciData.brand)
               faciData.compliance = faciData.compliance == "true";
               faciData.tankPaidService = faciData.tankPaidService == "true";
+              faciData.paidService = faciData.paidService == "true";
               faciData.image = environment.server + faciData.imageURL;
               this.nonManagedfacilitiesRightdata.push(faciData);
             }
@@ -426,6 +432,7 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.certificationButtonEnable = fdata.certificationButtonEnable;
     this.rightDetailsContent.address = fdata.address;
     this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
+    this.rightDetailsContent.paidService = fdata.paidService;
     this.rightDetailsContent.storeManager = fdata.storeManager;
     this.rightDetailsContent.projectManager = fdata.projectManager;
     this.rightDetailsContent.projectManagerPhone = fdata.projectManagerPhone;
@@ -512,6 +519,8 @@ export class HomeComponent implements OnInit {
                 faciData.facilities[j].compliance = faciData.facilities[j].compliance == "true";
                 if (faciData.facilities[j].tankPaidService != null)
                 faciData.facilities[j].tankPaidService = faciData.facilities[j].tankPaidService == "true";
+                if (faciData.facilities[j].paidService != null)
+                faciData.facilities[j].paidService = faciData.facilities[j].paidService == "true";
               faciData.facilities[j].image = environment.server + faciData.facilities[j].imageURL;
             }
             this.companiesRightdata.push(faciData);
@@ -608,6 +617,7 @@ export class HomeComponent implements OnInit {
               // var image = this.commonService.gasStationImage(feciData.brand)
               faciData.compliance = faciData.compliance == "true";
               faciData.tankPaidService = faciData.tankPaidService == "true";
+              faciData.paidService = faciData.paidService == "true";
               faciData.image = environment.server + faciData.imageURL;
               this.complianceRightdata.push(faciData);
             }
