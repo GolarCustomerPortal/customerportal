@@ -149,6 +149,12 @@ public class CustomerPortalUtil {
 
 	}
 
+	public static Date atStartOfDay(Date date) {
+		LocalDateTime localDateTime = dateToLocalDateTime(date);
+		LocalDateTime endOfDay = localDateTime.with(LocalTime.MIN);
+		return localDateTimeToDate(endOfDay);
+	}
+	
 	public static Date atEndOfDay(Date date) {
 		LocalDateTime localDateTime = dateToLocalDateTime(date);
 		LocalDateTime endOfDay = localDateTime.with(LocalTime.MAX);

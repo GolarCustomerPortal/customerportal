@@ -57,7 +57,8 @@ public class UsersService {
 		}
 		if (userobj != null) {
 			userobj.setFullName(userobj.getFirstName() + " " + userobj.getLastName());
-			new MailUtil().sendEmail(userobj, user.isEdit());
+			if(!user.isEdit())// only for register we need to send email
+				new MailUtil().sendEmail(userobj, user.isEdit());
 		}
 		return Response.status(201).entity(userobj).build();
 	}

@@ -23,6 +23,7 @@ import com.customerportal.bean.JobScheduleHistory;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.TankAarmHistory;
+import com.customerportal.bean.TankAlarmHistoryData;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
@@ -305,11 +306,35 @@ public class DashBoardService {
 		return Response.status(200).entity(tankAlarmList).build();
 		
 	}
+	@Path("/tankalarmhistory_new")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getTankalarmHistoryNew (@QueryParam("userId") String userId) {
+		
+		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilities(userId);
+		if(facilitiesList == null || facilitiesList.size() ==0)
+			return Response.status(200).entity(null).build();
+		String facilitiesIdString = CustomerPortalUtil.getfacilitiesIdString(facilitiesList);
+		List<TankAlarmHistoryData> alarmHistoryList = DBUtil.getInstance().getTankalarmHistoryNew(facilitiesIdString);
+		return Response.status(200).entity(alarmHistoryList).build();
+		
+	}
 	
 	@Path("/tankalarmhistory")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response resetTankalarmHistory (String facilityString) {
+		
+		boolean result = false;
+		String[] facilityArray = facilityString.split(",");
+		result = DBUtil.getInstance().resetTankalarmHistory(facilityArray);
+		return Response.status(200).entity(result).build();
+		
+	}
+	@Path("/tankalarmhistory_new")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response resetTankalarmHistoryNew (String facilityString) {
 		
 		boolean result = false;
 		String[] facilityArray = facilityString.split(",");

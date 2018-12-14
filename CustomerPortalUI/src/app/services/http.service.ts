@@ -42,7 +42,7 @@ export class HttpService {
         var result = this.commonService.checkAndUpdateLoginTime();
         if (result == false)
             return;
-        return this.http.get(url, options)
+        return this.http.delete(url, options)
             .map(res => res)
             .retry(1)
             .catch(this.handleError);

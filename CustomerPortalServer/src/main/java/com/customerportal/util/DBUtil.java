@@ -1,13 +1,11 @@
 package com.customerportal.util;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -26,6 +24,7 @@ import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.TankAarmHistory;
+import com.customerportal.bean.TankAlarmHistoryData;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
@@ -1399,13 +1398,13 @@ public class DBUtil {
 		}
 		return name;
 	}
-
 	public List<TankAarmHistory> getTankalarmHistory(String facilitiesIdString) {
 		if(facilitiesIdString == null || facilitiesIdString.trim().length()==0)
 			return new ArrayList<TankAarmHistory>();
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
+			long millisec = System.currentTimeMillis();
 			Query query = session.createNativeQuery(
 					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (tnk.viewed is null or tnk.viewed ='false') "
 					+ "and tnk.AlarmType__C !='---' and facility__C in ("
@@ -1413,6 +1412,7 @@ public class DBUtil {
 
 			List<TankAarmHistory> lst = new ArrayList<TankAarmHistory>();
 			List<Object[]> rows = query.list();
+			System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds");
 			for (Object[] row : rows) {
 				TankAarmHistory alarmHistory = new TankAarmHistory();
 				if (row[0] != null)
@@ -1432,6 +1432,111 @@ public class DBUtil {
 			trx.commit();
 			session.close();
 			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		}
+
+	}
+	
+	public List<TankAlarmHistoryData> getTankalarmHistoryNew(String facilitiesIdString) {
+
+		List<TankAlarmHistoryData> alarmHistoryList  = new ArrayList<TankAlarmHistoryData>();
+		if(facilitiesIdString == null || facilitiesIdString.trim().length()==0)
+			return alarmHistoryList;
+		
+		Map<String,List<TankAarmHistory>> tankMap = new HashMap<String,List<TankAarmHistory>>();
+		Map<String,Integer> tankMapCountMap = new HashMap<String,Integer>();
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			long millisec = System.currentTimeMillis();
+			Query query = session.createNativeQuery(
+					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id,tnk.AlarmType__C,tnk.viewed FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (CAST(OccuredDate__c AS DATETIME) <= NOW() - INTERVAL 30 DAY)  "
+							+ "and tnk.AlarmType__C !='---' and facility__C in (" + facilitiesIdString
+							+ " ) order by tnk.OccuredDate__c desc");
+
+			List<TankAarmHistory> lst = new ArrayList<TankAarmHistory>();
+			List<Object[]> rows = query.list();
+			trx.commit();
+			session.close();
+			System.out.println("query execute in " + ((System.currentTimeMillis() - millisec) / 1000) + "  seconds and the total records are"+rows.size());
+			for (Object[] row : rows) {
+				TankAarmHistory alarmHistory = new TankAarmHistory();
+				if (row[0] != null)
+					alarmHistory.setFid(row[0].toString());
+				if (row[1] != null)
+					alarmHistory.setName(row[1].toString());
+
+				if (row[2] != null)
+					alarmHistory.setOccuredDate(row[2].toString());
+				if (row[3] != null)
+					alarmHistory.setAlarmType(row[3].toString());
+				if (row[4] != null)
+					alarmHistory.setId(row[4].toString());
+				if (row[5] != null)
+					alarmHistory.setAlarmType(row[5].toString());
+				if (row[6] != null) {
+					alarmHistory.setViewed(row[6].toString());
+
+				}
+				if (row[6] == null || row[6].toString().equalsIgnoreCase("false"))
+					if (tankMapCountMap.get(alarmHistory.getAlarmType()) != null) {
+						tankMapCountMap.put(alarmHistory.getAlarmType(),
+								tankMapCountMap.get(alarmHistory.getAlarmType()) + 1);
+
+					} else {
+
+						tankMapCountMap.put(alarmHistory.getAlarmType(), 1);
+					}
+			
+				// lst.add(alarmHistory);
+				if (tankMap.get(alarmHistory.getAlarmType()) != null) {
+					tankMap.get(alarmHistory.getAlarmType()).add(alarmHistory);
+
+				} else {
+					List<TankAarmHistory> tempList = new ArrayList<TankAarmHistory>();
+					tempList.add(alarmHistory);
+					tankMap.put(alarmHistory.getAlarmType(), tempList);
+				}
+
+			}
+
+			// if(lst.size()!=0){
+			// for (TankAarmHistory history: lst) {
+			//
+			// }
+			// data.setName(alarmType);
+			// data.setAlarmHistory(lst);
+			// alarmHistoryList.add(data);
+			// }
+			int totalCount = 0;
+			for (String alarmType : tankMapCountMap.keySet()) {
+				totalCount += tankMapCountMap.get(alarmType);
+			}
+
+			for (String alarmType : tankMap.keySet()) {
+				TankAlarmHistoryData data = new TankAlarmHistoryData();
+				if (tankMapCountMap.get(alarmType) != null){
+					data.setName(alarmType + " (" + tankMapCountMap.get(alarmType) + ")");
+					data.setViewCount(tankMapCountMap.get(alarmType));
+				}
+				else
+					data.setName(alarmType);
+				data.setAlarmHistory(tankMap.get(alarmType));
+				data.setTotalCount(totalCount);
+				alarmHistoryList.add(data);
+			}
+			return alarmHistoryList;
 		} catch (
 
 		Exception exception)
@@ -1579,13 +1684,13 @@ public class DBUtil {
 
 			session.save(history);
 			trx.commit();
+			session.close();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			System.out.println("Exception occred in saveJobScheduleData   method --" + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
-			if (session != null)
-				session.close();
+			
 		} finally {
 
 		}

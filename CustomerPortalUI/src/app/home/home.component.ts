@@ -1379,6 +1379,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['ussboa']);
   }
   retrieveTankAlarmHistory() {
+    this.commonService.removeTankAlert();
     this.dashboardService.getTankAlarmHistory(this.commonService.getUserName()) // retrieve all thd parent folders
       .subscribe(
         tankAlaramList => {

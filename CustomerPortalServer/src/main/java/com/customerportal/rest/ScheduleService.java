@@ -39,14 +39,22 @@ public class ScheduleService extends HttpServlet {
 	private void startThread(final JobSchedule jobSchedule, final int milliSeconds) {
 
 		int startMilli = CustomerPortalUtil.getMilliSeconds(jobSchedule.getStartTime());
-		Date date = CustomerPortalUtil.atEndOfDay(new Date());
+		Date date = CustomerPortalUtil.atStartOfDay(new Date());
 		int currMilli = (int) (date.getTime() - System.currentTimeMillis());
 		int acutlMilli = startMilli == 0 ? 1 : startMilli + currMilli;
-		System.out.println("The Job \""+jobSchedule.getJobName()+"\" stats at "+new Date(System.currentTimeMillis()+acutlMilli));
+		if (acutlMilli < 0) {
+			date = CustomerPortalUtil.atEndOfDay(new Date());
+			currMilli = (int) (date.getTime() - System.currentTimeMillis());
+			acutlMilli = startMilli == 0 ? 1 : startMilli + currMilli + 1;
+		}
+		System.out.println("The Job \"" + jobSchedule.getJobName() + "\" will start at "
+				+ new Date(System.currentTimeMillis() + acutlMilli) + "and the interval is (seconds)"
+				+ (milliSeconds / 1000));
 		Timer t = new Timer();
 		t.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
+				System.out.println("The Job \"" + jobSchedule.getJobName() + "\" started at " + new Date());
 				checkAndExecuteJob(jobSchedule);
 
 			}
@@ -55,7 +63,14 @@ public class ScheduleService extends HttpServlet {
 	}
 
 	private void checkAndExecuteJob(final JobSchedule jobSchedule) {
-		boolean prefilePresent = checkForSourceFilePresent(jobSchedule.getSourceFilePath());
+		boolean prefilePresent = false;
+		System.out.println(
+				"The Job \"" + jobSchedule.getJobName() + "\" the source path is  " + jobSchedule.getSourceFilePath());
+		if (jobSchedule.getSourceFilePath() == null || jobSchedule.getSourceFilePath().equalsIgnoreCase(""))
+			prefilePresent = true;
+		else
+			prefilePresent = checkForSourceFilePresent(jobSchedule.getSourceFilePath());
+		System.out.println("The Job \"" + jobSchedule.getJobName() + "\" source file exists " + prefilePresent);
 		boolean parentSuccess = false;
 		if (prefilePresent) {
 			parentSuccess = startTheExecution(jobSchedule);
@@ -81,8 +96,13 @@ public class ScheduleService extends HttpServlet {
 	protected boolean startTheExecution(JobSchedule jobSchedule) {
 		Process process;
 		try {
+			System.out.println("The job \" " + jobSchedule.getJobPath() + "\" " + " started at " + new Date());
 			process = Runtime.getRuntime().exec(jobSchedule.getJobPath());
+
 			final int exitVal = process.waitFor();
+			System.out.println(
+					"The job \" " + jobSchedule.getJobPath() + "\" " + " process id is ---" + process.exitValue());
+			System.out.println("The job \" " + jobSchedule.getJobPath() + "\" " + " ended at " + new Date());
 			if (exitVal == 0) {
 				writeOutputFile(jobSchedule.getEndFilePath());
 				JobScheduleHistory history = new JobScheduleHistory();

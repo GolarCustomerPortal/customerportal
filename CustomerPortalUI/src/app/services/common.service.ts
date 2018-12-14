@@ -9,6 +9,7 @@ export class CommonService {
   // gasStationImages={'bp':'bp.png','shell':'shell.png'}
   gasStationImages={1:'bp.png',2:'shell.png'}
   loginSuccessful = false;;
+  tankAlertList=null;
   checkValidLogin() {
     if (localStorage.getItem('loginSuccessful') == "true")
       return true;
@@ -329,16 +330,36 @@ export class CommonService {
 
   }
   setTankAlert(tankAlertList){
-    localStorage.setItem('tankAlertList', JSON.stringify(tankAlertList));
+    // localStorage.setItem('tankAlertList', JSON.stringify(tankAlertList));
+    this.tankAlertList = tankAlertList;
   }
   removeTankAlert(){
-    localStorage.removeItem('tankAlertList');
+    // localStorage.removeItem('tankAlertList');
+    this.tankAlertList=null;
   }
   getTankAlert(){
-    var alertList = localStorage.getItem('tankAlertList');
-    if(alertList != null ){
-      return JSON.parse(alertList)
+    // var alertList = localStorage.getItem('tankAlertList');
+    console.log(this.tankAlertList)
+    if(this.tankAlertList == null  || this.tankAlertList == undefined){
+      return null;
     }
+    return this.tankAlertList;
+  }
+  getTankAlertCount(){
+    // var alertList = localStorage.getItem('tankAlertList');
+    var alertCount = 0;
+    if(this.tankAlertList != null ){
+      // this.tankAlertList =  JSON.parse(alertList);
+     
+      // var alarm : any;
+      // for (let index = 0; index < this.tankAlertList.length; index++) {
+      //   alarm = this.tankAlertList[index];
+      //   alertCount += alarm.alarmHistory == null ?0:alarm.alarmHistory.length;
+        
+      // }
+      alertCount = this.tankAlertList[0].totalCount;
+    }
+    return  alertCount;
   }
   logout(complete) {
 

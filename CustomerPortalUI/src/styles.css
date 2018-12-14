@@ -21,14 +21,24 @@ body ,.ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-
 .nav-background-color{
     background-color: #74cb80 !important; 
 }
-#leftpanel .ui-accordion .ui-accordion-content{
+#leftpanel .ui-accordion .ui-accordion-content,
+#tankAlertLeftPanel .ui-accordion .ui-accordion-content{
     padding:0px !important;
+   
 }
 a{
     text-decoration: none !important;
 }
-#leftpanel .ui-accordion .ui-accordion-header.ui-state-active{
-background: #ebf7ec
+#leftpanel .ui-accordion .ui-accordion-header.ui-state-active
+{
+background: #ebf7ec !important;
+}
+.ui-accordion-header-text{
+    word-break: break-all !important;
+}
+#tankAlertLeftPanel .ui-accordion .ui-accordion-header.ui-state-active{
+    background: #74cb80 !important;
+    
 }
 .dashboard-boder{
     box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
@@ -54,6 +64,9 @@ background: #ebf7ec
 #leftpanel .pi {
     display: none !important;
   }
+#tankAlertLeftPanel .pi{
+    display: none !important;
+}  
   .height-center{
     height:100%;
     
@@ -149,7 +162,8 @@ background: #ebf7ec
     height: calc(100vh - 100px) !important;
     margin-top: 80px;
 }
-#leftpanel .fa {
+#leftpanel .fa,
+#tankAlertLeftPanel .fa {
     display: none !important;
   }
   .navbar-nav>li>a.profile-image {
@@ -493,3 +507,11 @@ td{
     height:60px;
     width:90%;
 }
+.modal-xl {
+    width: 90%;
+   max-width:1200px;
+  }
+  .font-bold *{
+      font-weight: bold;
+      color:#ef4136  !important;
+  }
