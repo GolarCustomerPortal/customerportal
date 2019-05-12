@@ -15,23 +15,31 @@ import com.customerportal.bean.Account;
 import com.customerportal.bean.ChangePassword;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Contact;
+import com.customerportal.bean.Csldtestresult;
+import com.customerportal.bean.CustomAttachments;
+import com.customerportal.bean.CustomerPortalAttachments;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.Gaslevel;
 import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
 import com.customerportal.bean.KeyValue;
+import com.customerportal.bean.Leaktestresults;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.TankAarmHistory;
 import com.customerportal.bean.TankAlarmHistoryData;
 import com.customerportal.bean.TankMonitorSignup;
+import com.customerportal.bean.Tankstatusreport;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
 import com.customerportal.bean.Userpreferences;
 
 public class DBUtil {
 	private static DBUtil dbObj;
+	private static String RED_COLOR="#ff0000";
+	private static String GRAY_COLOR="#808080";
+	private static String GREEN_COLOR="#00FF00";
 
 	public DBUtil() {
 	}
@@ -46,7 +54,6 @@ public class DBUtil {
 	public List<User> getAllUsers() {
 
 		Session session = HibernateUtil.getSession();
-		;
 		Transaction t = session.beginTransaction();
 		Query query = session.createNativeQuery("SELECT * FROM crmuser", User.class);
 		List lst = query.list();
@@ -465,7 +472,11 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "Select count(*) from Account WHERE Compliant__c='" + compliance + "'";
+			String queryString ="";
+			if(compliance.equalsIgnoreCase("true"))
+				queryString ="Select count(*) from Account WHERE  (Is_GT_Compliant__c='" + compliance + "' and Is_NF_Compliant__c ='" + compliance + "')";
+			else
+				queryString ="Select count(*) from Account WHERE  (Is_GT_Compliant__c='" + compliance + "' or Is_NF_Compliant__c ='" + compliance + "')";
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += " and id in (" + facilitiesIdString + " )";
 			}
@@ -499,9 +510,17 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "Select id from Account WHERE ((Facility_Operator_POA__c = 'Missing' OR Property_Owner_POA__c = 'Missing' OR "
-					+ "UST_Owner_POA__c = 'Missing' OR Facility_Site_Map__c = 'Missing' OR SOS_Status__c = 'Missing' OR Tax_ID_Information__c = 'Missing' or "
-					+ "Letter_of_Networth_Certificate_of_INsure__c = 'Missing' or Operator_Lease_Agreement__c = 'Missing')) ";
+			String queryString = "Select id from Account WHERE ((Is_Operator_Business_Registration__c = 'true' AND Operator_Business_Registration__c IS NULL) \r\n" + 
+					"OR (Is_Property_Owner_Business_Registration__c = 'true' AND Property_Owner_Business_Registration__c IS NULL)\r\n" + 
+					"OR (Is_UST_Owner_Business_Registration__c = 'true' AND UST_Owner_Business_Registration__c IS NULL) \r\n" + 
+					"OR (Is_Operator_Owner_Tax_ID__c = 'true' AND Operator_Owner_Tax_ID__c IS NULL) \r\n" + 
+					"OR (Is_Property_Owner_Tax_ID__c = 'true' AND Property_Owner_Tax_ID__c IS NULL)  \r\n" + 
+					"OR (Is_UST_Owner_Tax_ID__c = 'true' AND UST_Owner_Tax_ID__c IS NULL)\r\n" + 
+					"OR (Is_Operator_Lease_Agreement__c = 'true' AND Operator_Lease_Agreement_new__c IS NULL) \r\n" + 
+					"OR (Is_Financial_Responsibility__c = 'true' AND Financial_Responsibility__c IS NULL) \r\n" + 
+					"OR (Is_Deed_or_LC_Required__c = 'true' AND Deed_or_Land_Contract__c IS NULL)\r\n" + 
+					"OR (COFA_Link__c IS NULL)\r\n" +
+					"OR (Is_Facility_Site_Map__c IS NOT NULL AND Facility_Site_Map__c IS NULL) and  MGT_Paid_Service__c = 'true') ";
 
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
@@ -537,12 +556,25 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			String queryString = "Select id from Account WHERE ((Line_and_Leak_Detector_Test__c is null AND Is_LnL_Detr_Tst_requrd__c = 'true')"+  
-			"OR (Cathodic_Protection__c is null AND Is_CP_required__c = 'true')"  +
-			"OR (Tank_Testing_Report__c is null AND Is_Tank_Testing_Report_Required__c = 'true' )" +
-			"OR (Repair_Documents__c is null AND Are_Repair_Documents_Required__c = 'true')" +
-			"OR (Release_Detection_Report__c is null AND Is_Release_Detection_Report_Required__c = 'true') "+
-			"OR (Internal_Lining_Inspection__c is null AND Is_IL_Inspection_Required__c = 'true') )";
+			String queryString = "Select id from Account WHERE ((Is_Release_Detection_Report_Required__c = 'true' AND Release_Detection_Report__c IS NULL)\r\n" + 
+					"OR (Are_Repair_Documents_Required__c = 'true' AND Repair_Documents__c IS NULL) \r\n" + 
+					"OR (Is_LnL_Detr_Tst_requrd__c = 'true' AND Line_and_Leak_Detector_Test__c IS NULL) \r\n" + 
+					"OR (Is_Tank_Testing_Report_Required__c = 'true' AND Tank_Testing_Report__c IS NULL) \r\n" + 
+					"OR (Is_CP_required__c = 'true' AND Cathodic_Protection__c IS NULL) \r\n" + 
+					"OR (Is_IL_Inspection_Required__c = 'true' AND Internal_Lining_Inspection__c IS NULL) \r\n" + 
+					"OR (Is_Piping_CP_Required__c = 'true' AND Piping_Cathodic_Protection__c IS NULL) \r\n" + 
+					"OR (Is_Drop_Tube_Repair_Required__c = 'true' AND Drop_Tube_Repair_Document__c IS NULL) \r\n" + 
+					"OR (Is_Tank_Interstitial_Monitoring_Required__c = 'true' AND Tank_Interstitial_Monitoring__c IS NULL) \r\n" + 
+					"OR (Is_Pipe_Interstitial_Monitoring_Required__c = 'true' AND Piping_Interstitial_Monitoring__c IS NULL) \r\n" + 
+					"OR (Is_ATG_Test_Required__c = 'true' AND ATG_Test_Report__c IS NULL) \r\n" + 
+					"OR (Is_ATG_Repair_Required__c = 'true' AND ATG_Repair_Report__c IS NULL) \r\n" + 
+					"OR (Is_Spill_Bucket_Testing_Required__c = 'true' AND Spill_Bucket_Testing_Document__c IS NULL) \r\n" + 
+					"OR (Is_Spill_Bucket_Repair_Required__c = 'true' AND Spill_Bucket_Repair_Document__c IS NULL) \r\n" + 
+					"OR (Is_Sump_Maintenance_Required__c = 'true' AND Sump_Maintenance_Document__c IS NULL) \r\n" + 
+					"OR (Is_UDC_Maintenance_Required__c = 'true' AND UDC_Maintenance_Document__c IS NULL) \r\n" + 
+					"OR (Is_SIR_Required__c = 'true' AND SIR_Report__c IS NULL) \r\n" + 
+					"OR (Is_Monthly_Walk_Through_Inspection__c = 'true' AND Monthly_Walk_Through_Report__c IS NULL) \r\n" + 
+					"OR (Is_Tank_Monitor_Static_IP__c = 'true' AND Tank_Monitor_Static_IP__c IS NULL) )";
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
 			}
@@ -578,7 +610,7 @@ public class DBUtil {
 		try {
 			String queryString = "Select id from Account WHERE "
 					+ "(Operator_A_certificate__c is null  OR Operator_B_certificate__c is null  "
-					+ "OR Operator_C_certificate__c is null)";
+					+ "OR Operator_C_certificate__c is null) AND MGT_Paid_Service__c = 'true' ";
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
 			}
@@ -873,12 +905,23 @@ public class DBUtil {
 
 	public Account fetchFacilitiesNotificationData(String facilitiesId) {
 
+		String  operatorBusinessRegistration="NF - Operator Business Registration";
+		String propertyOwnerBusinessRegistration="NF - Property Owner Business Registration";
+		String ustOwnerBusinessRegistration ="NF - UST Owner Business Registration";
+		String operatorOwnerTaxId ="NF - Operator Owner Tax ID";
+		String propertyOwnerTaxId="NF - Property Owner Tax ID";
+		String ustOwnerTaxId="NF - UST Owner Tax ID";
+		String operatorLeaseAgreement="NF - Operator Lease Agreement";
+		String financialResponsibility="NF - Financial Responsibility (Insurance)";
+		String deedOrLandContract="NF - Deed or Land Contract";
+		String facilitySiteMap="NF - Facility Site Map";
+		String cofaLink="NF - COFA Link";
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery(
-					"SELECT * FROM Account where id =:facilitiesId",
+					"SELECT * FROM account where MGT_Paid_Service__c = 'true' AND id =:facilitiesId",
 					Account.class);
 
 			query.setString("facilitiesId", facilitiesId);
@@ -887,72 +930,187 @@ public class DBUtil {
 			session.close();
 			if (lst.size() > 0) {
 				Account account = lst.get(0);
-				if (account.getFacilityOperatorPOA() != null
-						&& account.getFacilityOperatorPOA().equalsIgnoreCase("Missing"))
-					account.setFacilityOperatorPOAEnable(true);
-				if (account.getPropertyOwnerPOA() != null && account.getPropertyOwnerPOA().equalsIgnoreCase("Missing"))
-					account.setPropertyOwnerPOAEnable(true);
-				if (account.getUstOwnerPOA() != null && account.getUstOwnerPOA().equalsIgnoreCase("Missing"))
-					account.setUstOwnerPOAEnable(true);
-				if (account.getPropertyDeedLandContract() != null
-						&& account.getPropertyDeedLandContract().equalsIgnoreCase("0"))
-					account.setPropertyDeedLandContractEnable(true);
-				if (account.getOperatorAffidevitOfLease() != null
-						&& account.getOperatorAffidevitOfLease().equalsIgnoreCase("Missing"))
-					account.setOperatorAffidevitOfLeaseEnable(true);
-				if (account.getOwnerAffidevitOfLease() != null
-						&& account.getOwnerAffidevitOfLease().equalsIgnoreCase("Missing"))
-					account.setOwnerAffidevitOfLeaseEnable(true);
-				if (account.getSosStatus() != null && account.getSosStatus().equalsIgnoreCase("Missing"))
-					account.setSosStatusEnable(true);
-				if (account.getTaxIDInformation() != null && account.getTaxIDInformation().equalsIgnoreCase("Missing"))
-					account.setTaxIDInformationEnable(true);
-				 if(account.getLetterOfNetworthCertification() != null &&
-				 account.getLetterOfNetworthCertification().equalsIgnoreCase("Missing"))
-				 account.setLetterOfNetworthCertificationEnable(true);
-				if (account.getOperatorLeaseAgreement() != null
-						&& account.getOperatorLeaseAgreement().equalsIgnoreCase("Missing"))
-					account.setOperatorLeaseAgreementEnable(true);
-				if (account.getNotificationDueDate() != null && account.getNotificationDueDate().equalsIgnoreCase("0"))
-					account.setNotificationDueDateEnable(true);
-				if (account.getFacilitySiteMap() != null && account.getFacilitySiteMap().equalsIgnoreCase("Missing"))
-					account.setFacilitySiteMapEnable(true);
-				// compliance start
-				if (account.getLnlDetrTstRequrd() != null && account.getLnlDetrTstRequrd().equalsIgnoreCase("true")
-						&& account.getLineAndLeakDetector() == null)
-					account.setLnlDetrTstRequrdEnable(true);
-				if (account.getCprequired() != null && account.getCprequired().equalsIgnoreCase("true")
-						&& account.getCathodicProtection() == null)
-					account.setCprequiredEnable(true);
-				if (account.getTankTestingReportRequired() != null
-						&& account.getTankTestingReportRequired().equalsIgnoreCase("true")
-						&& account.getTankTestingReport() == null)
-					account.setTankTestingReportRequiredEnable(true);
-				if (account.getRepairDocumentRequired() != null
-						&& account.getRepairDocumentRequired().equalsIgnoreCase("true")
-						&& account.getRepairDocuments() == null)
-					account.setRepairDocumentRequiredEnable(true);
-				if (account.getReleaseDetectionReportRequired() != null
-						&& account.getReleaseDetectionReportRequired().equalsIgnoreCase("true")
-						&& account.getReleaseDetectionReport() == null)
-					account.setReleaseDetectionReportRequiredEnable(true);
-				if (account.getInternalLiningInspectionRequired() != null
-						&& account.getInternalLiningInspectionRequired().equalsIgnoreCase("true")
-						&& account.getInternalLiningInspection() == null)
-					account.setInternalLiningInspectionRequiredEnable(true);
-				// compliance end
-				// certification start
-				if (account.getOperatorAcertificate() == null)
-					account.setOperatorAcertificateEnable(true);
-				if (account.getOperatorBcertificate() == null)
-					account.setOperatorBcertificateEnable(true);
-				if (account.getOperatorCcertificate() == null)
-					account.setOperatorCcertificateEnable(true);
-				// certification end
+				
+				
 
-				// if(account.getNotificationFormSubmitted() == null ||
-				// account.getNotificationFormSubmitted().equalsIgnoreCase(null))
-				// account.setNotificationFormSubmittedEnable(true);
+				if(account.getIsOperatorBusinessRegistration()!= null && account.getIsOperatorBusinessRegistration().equalsIgnoreCase("true") && account.getOperatorBusinessRegistration() == null)
+					account.setOperatorBusinessEnable(true);
+				if(account.getIsPropertyOwnerBusinessRegistration()!=null && account.getIsPropertyOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getPropertyOwnerBusinessRegistration() == null)
+					account.setPropertyOwnerBusinessEnable(true);
+				if(account.getIsOwnerBusinessRegistration()!=null && account.getIsOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getUstOwnerBusinessRegistration() == null)
+					account.setUstOwnerBusinessEnable(true);
+				if(account.getIsOperatorOwnerTaxId()!=null && account.getIsOperatorOwnerTaxId().equalsIgnoreCase("true") && account.getOperatorOwnerTaxId() == null)
+					account.setOperatorOwnerEnable(true);
+				if(account.getIsPropertyOwnerTaxId()!=null && account.getIsPropertyOwnerTaxId().equalsIgnoreCase("true") && account.getPropertyOwnerTaxId() == null)
+					account.setPropertyOwnerTaxIDEnable(true);
+				if(account.getIsUSTOwnerTaxId()!=null && account.getIsUSTOwnerTaxId().equalsIgnoreCase("true") && account.getUstOwnerTaxId() == null)
+					account.setUstOwnerBusinessEnable(true);
+				if(account.getIsOperatorLeaseAgreement()!=null && account.getIsOperatorLeaseAgreement().equalsIgnoreCase("true") && account.getOperatorLeaseAgreementNew() == null)
+					account.setOperatorLeaseAgreementEnable(true);
+				if(account.getIsFinancialResponsibility()!=null && account.getIsFinancialResponsibility().equalsIgnoreCase("true") && account.getFinancialResponsibility() == null)
+					account.setFinancialResponsibilityEnable(true);
+				if(account.getIsDeedOrLCRequired()!=null && account.getIsDeedOrLCRequired().equalsIgnoreCase("true") && account.getDeedOrLandContract() == null)
+					account.setPropertyDeedLandContractEnable(true);
+				if(account.getIsFacilitySiteMap()!=null && account.getIsFacilitySiteMap().equalsIgnoreCase("true") && account.getFacilitySiteMap() == null)
+					account.setFacilitySiteMapEnable(true);
+				if(account.getCofaLink() == null)
+					account.setCofaLinkEnable(true);
+			
+				
+				String custom_portal_whereclause = "";
+				
+				if(account.getIsOperatorBusinessRegistration().equalsIgnoreCase("true") && account.getOperatorBusinessRegistration()== null)
+					custom_portal_whereclause+= "'"+operatorBusinessRegistration+"'"+",";
+				if(account.getIsPropertyOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getPropertyOwnerBusinessRegistration()== null)
+					custom_portal_whereclause+= "'"+propertyOwnerBusinessRegistration+"'"+",";
+				if(account.getIsOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getUstOwnerBusinessRegistration()== null)
+					custom_portal_whereclause+= "'"+ustOwnerBusinessRegistration+"'"+",";
+				if(account.getIsOperatorOwnerTaxId().equalsIgnoreCase("true") && account.getOperatorOwnerTaxId()== null)
+					custom_portal_whereclause+= "'"+operatorOwnerTaxId+"'"+",";
+				if(account.getIsPropertyOwnerTaxId().equalsIgnoreCase("true") && account.getPropertyOwnerTaxId()== null)
+					custom_portal_whereclause+= "'"+propertyOwnerTaxId+"'"+",";
+				if(account.getIsUSTOwnerTaxId().equalsIgnoreCase("true") && account.getUstOwnerTaxId()== null)
+					custom_portal_whereclause+= "'"+ustOwnerTaxId+"'"+",";
+				if(account.getIsOperatorLeaseAgreement().equalsIgnoreCase("true") && account.getOperatorLeaseAgreementNew()== null)
+					custom_portal_whereclause+= "'"+operatorLeaseAgreement+"'"+",";
+				if(account.getIsFinancialResponsibility().equalsIgnoreCase("true") && account.getFinancialResponsibility()== null)
+					custom_portal_whereclause+= "'"+financialResponsibility+"'"+",";
+
+				if(account.getIsDeedOrLCRequired().equalsIgnoreCase("true") && account.getDeedOrLandContract()== null)
+					custom_portal_whereclause+= "'"+deedOrLandContract+"'"+",";
+				if(account.getFacilitySiteMap() == null && account.getIsFacilitySiteMap() == null)
+					custom_portal_whereclause+= "'"+facilitySiteMap+"'"+",";
+				if(account.getCofaLink() == null)
+					custom_portal_whereclause+= "'"+cofaLink+"'"+",";
+				if(custom_portal_whereclause.endsWith(","))
+					custom_portal_whereclause = custom_portal_whereclause.substring(0, custom_portal_whereclause.lastIndexOf(","));
+				if(custom_portal_whereclause.trim().length()>0){
+				session = HibernateUtil.getSession();
+				trx = session.beginTransaction();
+				try {
+					// Transaction t = session.beginTransaction();
+					query = session.createNativeQuery(
+							"SELECT * FROM customer_portal_attachments__c  where facility__c =:facilitiesId and type__c in ("+custom_portal_whereclause+")",CustomerPortalAttachments.class);
+					query.setString("facilitiesId", facilitiesId);
+					List<CustomerPortalAttachments> customPortalList = query.list();
+					trx.commit();
+					session.close();
+					if(customPortalList.size()>0){
+						for (CustomerPortalAttachments attachments : customPortalList) {
+							
+						
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorBusinessRegistration) && attachments.getApprovalStatus() != null)
+							account.setOperatorBusinessSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerBusinessRegistration) && attachments.getApprovalStatus() != null)
+							account.setPropertyOwnerBusinessSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerBusinessRegistration) && attachments.getApprovalStatus() != null)
+							account.setUstOwnerBusinessSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorOwnerTaxId) && attachments.getApprovalStatus() != null)
+							account.setOperatorOwnerSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerTaxId) && attachments.getApprovalStatus() != null)
+							account.setPropertyOwnerTaxIDSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerTaxId) && attachments.getApprovalStatus() != null)
+							account.setUstOwnerSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorLeaseAgreement) && attachments.getApprovalStatus() != null)
+							account.setOperatorLeaseAgreementSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(financialResponsibility) && attachments.getApprovalStatus() != null)
+							account.setFinancialResponsibilitySubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(deedOrLandContract) && attachments.getApprovalStatus() != null)
+							account.setPropertyDeedLandContractSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(facilitySiteMap) && attachments.getApprovalStatus() != null)
+							account.setFacilitySiteMapSubmitted(true);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cofaLink) && attachments.getApprovalStatus() != null)
+							account.setCofaLinkSubmitted(true);
+					}
+					}
+					
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					System.out.println(
+							"Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+					if (trx != null)
+						trx.rollback();
+					if (session != null)
+						session.close();
+				} finally{}
+				}
+				
+				//custom attachments
+				String custom_attachments_whereclause = "";
+				
+				if(account.getOperatorBusinessRegistration()!= null)
+					custom_attachments_whereclause+= "'"+operatorBusinessRegistration+"'"+",";
+				if(account.getPropertyOwnerBusinessRegistration()!= null)
+					custom_attachments_whereclause+= "'"+propertyOwnerBusinessRegistration+"'"+",";
+				if(account.getUstOwnerBusinessRegistration()!= null)
+					custom_attachments_whereclause+= "'"+ustOwnerBusinessRegistration+"'"+",";
+				if(account.getOperatorOwnerTaxId()!= null)
+					custom_attachments_whereclause+= "'"+operatorOwnerTaxId+"'"+",";
+				if(account.getPropertyOwnerTaxId()!= null)
+					custom_attachments_whereclause+= "'"+propertyOwnerTaxId+"'"+",";
+				if(account.getUstOwnerTaxId()!= null)
+					custom_attachments_whereclause+= "'"+ustOwnerTaxId+"'"+",";
+				if(account.getOperatorLeaseAgreement()!= null)
+					custom_attachments_whereclause+= "'"+operatorLeaseAgreement+"'"+",";
+				if(account.getFinancialResponsibility()!= null)
+					custom_attachments_whereclause+= "'"+financialResponsibility+"'"+",";
+
+				if(account.getDeedOrLandContract()!= null)
+					custom_attachments_whereclause+= "'"+deedOrLandContract+"'"+",";
+				if(account.getIsFacilitySiteMap() != null)
+					custom_attachments_whereclause+= "'"+facilitySiteMap+"'"+",";
+				
+				if(account.getCofaLink() != null)
+					custom_attachments_whereclause+= "'"+cofaLink+"'"+",";
+				
+				if(custom_attachments_whereclause.endsWith(","))
+					custom_attachments_whereclause = custom_attachments_whereclause.substring(0, custom_attachments_whereclause.lastIndexOf(","));
+				session = HibernateUtil.getSession();
+				trx = session.beginTransaction();
+				try {
+					// Transaction t = session.beginTransaction();
+					query = session.createNativeQuery(
+							"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and type__c in ("+custom_attachments_whereclause+")",CustomAttachments.class);
+					query.setString("facilitiesId", facilitiesId);
+					List<CustomAttachments> customPortalList = query.list();
+					trx.commit();
+					session.close();
+					if(customPortalList.size()>0){
+						CustomAttachments attachments = customPortalList.get(0);
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorBusinessRegistration))
+							account.setOperatorBusinessURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerBusinessRegistration))
+							account.setPropertyOwnerBusinessURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerBusinessRegistration))
+							account.setUstOwnerBusinessURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorOwnerTaxId))
+							account.setOperatorOwnerURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerTaxId))
+							account.setPropertyOwnerTaxIDURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerTaxId))
+							account.setUstOwnerURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorLeaseAgreement))
+							account.setOperatorLeaseAgreementURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(financialResponsibility))
+							account.setFinancialResponsibilityURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(deedOrLandContract))
+							account.setPropertyDeedLandContractURL(attachments.getG360URL());
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(facilitySiteMap))
+							account.setFacilitySiteMapURL(attachments.getG360URL());;
+						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cofaLink))
+							account.setCofaLinkURL(attachments.getG360URL());
+					}
+					
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					System.out.println(
+							"Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+					if (trx != null)
+						trx.rollback();
+					if (session != null)
+						session.close();
+				} finally{}
+				
 
 				return account;
 			}
@@ -979,21 +1137,20 @@ public class DBUtil {
 
 	}
 
-	public void updateFileLabelMissing(String fileuploadlabel, String facilityId) {
+	public void insertCustomPortalAttachment(String fileuploadlabel, String facilityId, int id, String type) {
+		CustomerPortalAttachments attachment = new CustomerPortalAttachments();
+		attachment.setApprovalStatus("Pending");
+		attachment.setId(id+"");
+		attachment.setFacility(facilityId);
+		attachment.setType(type);
 
 		Session session = null;
 
 		Transaction trx = null;
 		try {
-			// stub
 			session = HibernateUtil.getSession();
-
-			trx = session.beginTransaction();// TODO Auto-generated method
-			Query query = null;
-			query = session.createNativeQuery(
-					"UPDATE Account a SET a." + fileuploadlabel + "='Received' WHERE a.Id =:facilityId");
-			query.setString("facilityId", facilityId);
-			int result = query.executeUpdate();
+			trx = session.beginTransaction();
+			session.save(attachment);
 			trx.commit();
 			session.close();
 		} catch (Exception exception) {
@@ -1175,11 +1332,11 @@ public class DBUtil {
 			Transaction t = session.beginTransaction();
 
 			Query query = session.createNativeQuery(
-					"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
+					"SELECT MAX(Date__c) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
 							+ facilities.getFacilityId()
-							+ "' and CAST(Date__c AS DATETIME) = (SELECT MAX(CAST(Date__c AS DATETIME)) FROM inventoryreport__c where Facility__c='"
+							+ "' and Date__c  = (SELECT MAX(Date__c) FROM inventoryreport__c where Facility__c='"
 							+ facilities.getFacilityId()
-							+ "' )  group by Tank__C order by CAST(Date__C AS DATETIME) DESC   ;",
+							+ "' )  group by Tank__C order by Date__C DESC   ;",
 					InventoryReport.class);
 			List<InventoryReport> lst = query.list();
 			System.out.println(lst.size());
@@ -1226,11 +1383,11 @@ public class DBUtil {
 
 		Query query = session
 				.createNativeQuery(
-						"SELECT MAX(CAST(Date__c AS DATETIME)) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
+						"SELECT MAX(Date__c) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
 								+ facilities.getFacilityId()
-								+ "' and CAST(Date__c AS DATETIME) = (SELECT MAX(CAST(Date__c AS DATETIME)) FROM inventoryreport__c where Facility__c='"
+								+ "' and Date__c  = (SELECT MAX(Date__c ) FROM inventoryreport__c where Facility__c='"
 								+ facilities.getFacilityId()
-								+ "' )  group by Tank__C order by CAST(Date__C AS DATETIME) DESC   ;",
+								+ "' )  group by Tank__C order by Date__C  DESC   ;",
 						InventoryReport.class);
 		List<InventoryReport> lst = query.list();
 		System.out.println(lst.size());
@@ -1281,6 +1438,7 @@ public class DBUtil {
 			}
 
 			trx.commit();
+			session.close();
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -1307,8 +1465,9 @@ public class DBUtil {
 			if (tankDB != null) {
 				session.delete(tankDB);
 			}
+			
 			trx.commit();
-
+			session.close();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			System.out.println("Exception occred in deleteTankMonitorSignup   method --" + exception.getMessage());
@@ -1337,6 +1496,7 @@ public class DBUtil {
 				session.save(pref);
 			}
 			trx.commit();
+			session.close();
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -1382,6 +1542,8 @@ public class DBUtil {
 		try {
 
 			Userpreferences userPref = (Userpreferences) session.get(Userpreferences.class, name);
+			trx.commit();
+			session.close();
 			if (userPref != null)
 				return userPref.getValue();
 		} catch (Exception exception) {
@@ -1412,6 +1574,8 @@ public class DBUtil {
 
 			List<TankAarmHistory> lst = new ArrayList<TankAarmHistory>();
 			List<Object[]> rows = query.list();
+			trx.commit();
+			session.close();
 			System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds");
 			for (Object[] row : rows) {
 				TankAarmHistory alarmHistory = new TankAarmHistory();
@@ -1429,8 +1593,7 @@ public class DBUtil {
 				lst.add(alarmHistory);
 			}
 
-			trx.commit();
-			session.close();
+
 			return lst;
 		} catch (
 
@@ -1461,7 +1624,7 @@ public class DBUtil {
 		try {
 			long millisec = System.currentTimeMillis();
 			Query query = session.createNativeQuery(
-					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id,tnk.AlarmType__C,tnk.viewed FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and (CAST(OccuredDate__c AS DATETIME) <= NOW() - INTERVAL 30 DAY)  "
+					"SELECT tnk.FID__c, acc.Name, tnk.OccuredDate__c, tnk.AlarmType__c, tnk.Id,tnk.AlarmType__C,tnk.viewed FROM tankalarmhistory__c tnk, account acc where tnk.Facility__c = acc.Id  and SUBSTRING(tnk.OccuredDate__c,1,10) >=  DATE_SUB(CURDATE(), INTERVAL 1 MONTH)  "
 							+ "and tnk.AlarmType__C !='---' and facility__C in (" + facilitiesIdString
 							+ " ) order by tnk.OccuredDate__c desc");
 
@@ -1568,7 +1731,7 @@ public class DBUtil {
 				}
 			}
 			trx.commit();
-
+			session.close();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			System.out.println("Exception occred in resetTankalarmHistory   method --" + exception.getMessage());
@@ -1614,6 +1777,7 @@ public class DBUtil {
 				session.save(schedule);
 			}
 			trx.commit();
+			session.close();
 			return schedule;
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -1638,6 +1802,7 @@ public class DBUtil {
 				session.remove(scheduleDB);
 			}
 			trx.commit();
+			session.close();
 			return true;
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -1740,6 +1905,7 @@ public class DBUtil {
 				session.save(gasLevel);
 			}
 			trx.commit();
+			session.close();
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -1759,4 +1925,994 @@ public class DBUtil {
 public static void main(String[] args) {
 	
 }
+
+public String getLeakTankTestButtonStatus(Facilities facility) {
+
+	if(facility == null)
+		return GRAY_COLOR;// gray
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select T.facility__C,T.type__C,T.tank__C,T.testtype__c,T.RESULT__c,T.Date__c,T.ID,T.viewed,T.rn\r\n" + 
+				"from (\r\n" + 
+				"     select T.facility__C,T.name,T.tank__C,T.testtype__c,\r\n" + 
+				"            T.type__C,T.RESULT__c,T.Date__c,T.ID,T.viewed,\r\n" + 
+				"            row_number() over(partition by T.testtype__C order by T.Date__c desc) as rn\r\n" + 
+				"     from leaktestresults__c as T\r\n" + 
+				"     ) as T\r\n" + 
+				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"' and (viewed is null or viewed ='false') ");
+
+		List lst = new ArrayList();
+		List<Object[]> rows = query.list();
+		trx.commit();
+		session.close();
+		System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds. The size is "+rows.size());
+		if(rows == null || rows.size() == 0)
+			return GRAY_COLOR;// gray
+		String result = checkLeakTankResult(rows);
+		return result;
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return RED_COLOR;// red
+	}
+
+
+	
+}
+
+private String checkLeakTankResult(List<Object[]> rows) {
+	String result =GREEN_COLOR;//green
+	for (Object[] row : rows) {
+			if(row[4] == null || !row[4].toString().equalsIgnoreCase("Pass")){
+				result= RED_COLOR;// red
+			return result;
+			}		
+	}
+	return result;
+	
+}
+
+public Map<String, HashMap<String, ArrayList<Tankstatusreport>>> getTankStatusTestDetails(String facilityId) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	Map<String, HashMap<String, ArrayList<Tankstatusreport>>> resultMap = new HashMap<String,HashMap<String,ArrayList<Tankstatusreport>>>();
+	HashMap<String,ArrayList<Tankstatusreport>> annualMap = new HashMap<String,ArrayList<Tankstatusreport>>();
+	HashMap<String,ArrayList<Tankstatusreport>> grossMap = new HashMap<String,ArrayList<Tankstatusreport>>();
+	HashMap<String,ArrayList<Tankstatusreport>> periodicMap = new HashMap<String,ArrayList<Tankstatusreport>>();
+	
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select T.facility__C,T.tank__C,T.product__C,T.status__C,T.runDate__c,T.ID,T.viewed,T.rn\r\n" + 
+				"from (\r\n" + 
+				"     select T.facility__C,T.name,T.tank__C,T.product__C,T.status__C,T.runDate__c,T.ID,T.viewed,\r\n" + 
+				"            row_number() over(partition by T.product__C order by T.runDate__c desc) as rn\r\n" + 
+				"     from tankstatusreport__c as T\r\n" + 
+				"     ) as T\r\n" + 
+				"where T.rn <= 10 and facility__C = '"+facilityId+"' and (viewed is null or viewed ='false') ");
+
+		
+		List<Object[]> rows = query.list();
+		trx.commit();
+		session.close();
+		System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds. The size is "+rows.size());
+		for (Object[] row : rows) {
+			ArrayList<Tankstatusreport> annualList = new ArrayList<Tankstatusreport>();
+			ArrayList<Tankstatusreport> grossList = new ArrayList<Tankstatusreport>();
+			ArrayList<Tankstatusreport> periodicList = new ArrayList<Tankstatusreport>();
+			Tankstatusreport tankstatusreport = new Tankstatusreport();
+			if (row[0] != null)
+				tankstatusreport.setFacility__c(row[0].toString());
+			if (row[1] != null )
+				tankstatusreport.setTank__c(row[1].toString().toLowerCase().indexOf("tank")>=0?row[1].toString():"TANK"+(row[1].toString()));
+			if (row[2] != null)
+				tankstatusreport.setProduct__c(row[2].toString());
+			if (row[3] != null && row[3].toString().equalsIgnoreCase("normal"))
+				tankstatusreport.setResult__c("PASS");
+			else
+				tankstatusreport.setResult__c("FAIL");;
+			if (row[4] != null)
+				tankstatusreport.setDate__c(row[4].toString());;
+			if (row[5] != null)
+				tankstatusreport.setId(row[5].toString());
+			if(tankstatusreport.getProduct__c() != null && tankstatusreport.getProduct__c().equalsIgnoreCase("UNLEADED")){
+				if(annualMap.get(tankstatusreport.getTank__c())!=null){
+					annualMap.get(tankstatusreport.getTank__c()).add(tankstatusreport);
+				}else{
+					annualList.add(tankstatusreport);
+					annualMap.put(tankstatusreport.getTank__c(),annualList);
+				}
+			}
+			else if(tankstatusreport.getProduct__c() != null && tankstatusreport.getProduct__c().equalsIgnoreCase("PREMIUM"))
+				{
+
+				if(grossMap.get(tankstatusreport.getTank__c())!=null){
+					grossMap.get(tankstatusreport.getTank__c()).add(tankstatusreport);
+				}else{
+					grossList.add(tankstatusreport);
+					grossMap.put(tankstatusreport.getTank__c(),grossList);
+				}
+			
+				}
+			else if(tankstatusreport.getProduct__c() != null && tankstatusreport.getProduct__c().equalsIgnoreCase("DIESEL"))
+			{
+
+				if(periodicMap.get(tankstatusreport.getTank__c())!=null){
+					periodicMap.get(tankstatusreport.getTank__c()).add(tankstatusreport);
+				}else{
+					periodicList.add(tankstatusreport);
+					periodicMap.put(tankstatusreport.getTank__c(),periodicList);
+				}
+			
+				}
+		}
+		
+		resultMap.put("UNLEADED", annualMap);
+		resultMap.put("PREMIUM", grossMap);
+		resultMap.put("DIESEL", periodicMap);
+		return resultMap;
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return resultMap;
+	}
+}
+public Map<String, HashMap<String, ArrayList<Csldtestresult>>> getCSLDTestDetails(String facilityId) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	Map<String, HashMap<String, ArrayList<Csldtestresult>>> resultMap = new HashMap<String,HashMap<String,ArrayList<Csldtestresult>>>();
+	HashMap<String,ArrayList<Csldtestresult>> annualMap = new HashMap<String,ArrayList<Csldtestresult>>();
+	HashMap<String,ArrayList<Csldtestresult>> grossMap = new HashMap<String,ArrayList<Csldtestresult>>();
+	HashMap<String,ArrayList<Csldtestresult>> periodicMap = new HashMap<String,ArrayList<Csldtestresult>>();
+	
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select T.facility__C,T.tank__C,T.RESULT__c,T.RunDate__c,T.TankType__c,T.ID,T.viewed,T.rn\r\n" + 
+				"from (\r\n" + 
+				"     select T.facility__C,T.name,T.tank__C,\r\n" + 
+				"            T.RESULT__c,T.RunDate__c,T.TankType__c,T.ID,T.viewed,\r\n" + 
+				"            row_number() over(order by T.RunDate__c desc) as rn\r\n" + 
+				"     from csldtestresult__c as T\r\n" + 
+				"     ) as T\r\n" + 
+				"where T.rn <= 10 and facility__C = '"+facilityId+"' and (viewed is null or viewed ='false') ");
+
+		
+		List<Object[]> rows = query.list();
+		trx.commit();
+		session.close();
+		System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds. The size is "+rows.size());
+		for (Object[] row : rows) {
+			ArrayList<Csldtestresult> annualList = new ArrayList<Csldtestresult>();
+			ArrayList<Csldtestresult> grossList = new ArrayList<Csldtestresult>();
+			ArrayList<Csldtestresult> periodicList = new ArrayList<Csldtestresult>();
+			Csldtestresult csldtestresult = new Csldtestresult();
+			if (row[0] != null)
+				csldtestresult.setFacility__c(row[0].toString());
+			if (row[1] != null )
+				csldtestresult.setTank__c(row[1].toString().toLowerCase().indexOf("tank")>=0?row[1].toString():"TANK"+(row[1].toString()));
+			if (row[2] != null)
+				csldtestresult.setResult__c(row[2].toString());
+			if (row[3] != null )
+				csldtestresult.setDate__c(row[3].toString());
+			if (row[4] != null)
+				csldtestresult.setTankType__c(row[4].toString());;
+				
+			if (row[6] != null)
+				csldtestresult.setId(row[6].toString());
+			if(csldtestresult.getTankType__c() != null && csldtestresult.getTankType__c().equalsIgnoreCase("UNLEADED")){
+				if(annualMap.get(csldtestresult.getTank__c())!=null){
+					annualMap.get(csldtestresult.getTank__c()).add(csldtestresult);
+				}else{
+					annualList.add(csldtestresult);
+					annualMap.put(csldtestresult.getTank__c(),annualList);
+				}
+			}
+			else if(csldtestresult.getTankType__c() != null && csldtestresult.getTankType__c().equalsIgnoreCase("PREMIUM"))
+				{
+
+				if(grossMap.get(csldtestresult.getTank__c())!=null){
+					grossMap.get(csldtestresult.getTank__c()).add(csldtestresult);
+				}else{
+					grossList.add(csldtestresult);
+					grossMap.put(csldtestresult.getTank__c(),grossList);
+				}
+			
+				}
+			else if(csldtestresult.getTankType__c() != null && csldtestresult.getTankType__c().equalsIgnoreCase("DIESEL"))
+			{
+
+				if(periodicMap.get(csldtestresult.getTank__c())!=null){
+					periodicMap.get(csldtestresult.getTank__c()).add(csldtestresult);
+				}else{
+					periodicList.add(csldtestresult);
+					periodicMap.put(csldtestresult.getTank__c(),periodicList);
+				}
+			
+				}
+		}
+		
+		resultMap.put("UNLEADED", annualMap);
+		resultMap.put("PREMIUM", grossMap);
+		resultMap.put("DIESEL", periodicMap);
+		return resultMap;
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return resultMap;
+	}
+}
+
+
+public Map<String, HashMap<String, ArrayList<Leaktestresults>>> getLeakTankTestDetails(String facilityId) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	Map<String, HashMap<String, ArrayList<Leaktestresults>>> resultMap = new HashMap<String,HashMap<String,ArrayList<Leaktestresults>>>();
+	HashMap<String,ArrayList<Leaktestresults>> annualMap = new HashMap<String,ArrayList<Leaktestresults>>();
+	HashMap<String,ArrayList<Leaktestresults>> grossMap = new HashMap<String,ArrayList<Leaktestresults>>();
+	HashMap<String,ArrayList<Leaktestresults>> periodicMap = new HashMap<String,ArrayList<Leaktestresults>>();
+	
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select T.facility__C,T.type__C,T.tank__C,T.testtype__c,T.RESULT__c,T.Date__c,T.ID,T.viewed,T.rn\r\n" + 
+				"from (\r\n" + 
+				"     select T.facility__C,T.name,T.tank__C,T.testtype__c,\r\n" + 
+				"            T.type__C,T.RESULT__c,T.Date__c,T.ID,T.viewed,\r\n" + 
+				"            row_number() over(partition by T.testtype__C order by T.Date__c desc) as rn\r\n" + 
+				"     from leaktestresults__c as T\r\n" + 
+				"     ) as T\r\n" + 
+				"where T.rn <= 10 and  T.facility__C = '"+facilityId+"' and (viewed is null or viewed ='false') ");
+
+		
+		List<Object[]> rows = query.list();
+		trx.commit();
+		session.close();
+		System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds. The size is "+rows.size());
+		for (Object[] row : rows) {
+			ArrayList<Leaktestresults> annualList = new ArrayList<Leaktestresults>();
+			ArrayList<Leaktestresults> grossList = new ArrayList<Leaktestresults>();
+			ArrayList<Leaktestresults> periodicList = new ArrayList<Leaktestresults>();
+			Leaktestresults leaktestresults = new Leaktestresults();
+			if (row[0] != null)
+				leaktestresults.setFacility__c(row[0].toString());
+			if (row[1] != null)
+				leaktestresults.setType__c(row[1].toString());
+			if (row[2] != null)
+				leaktestresults.setTank__c(row[2].toString());
+			if (row[3] != null)
+				leaktestresults.setTesttype__c(row[3].toString());;
+			if (row[4] != null)
+				leaktestresults.setResult__c(row[4].toString());
+				else
+					leaktestresults.setResult__c("FAIL");;
+			if (row[5] != null)
+				leaktestresults.setDate__c(row[5].toString());
+			if (row[6] != null)
+				leaktestresults.setId(row[6].toString());
+			if(leaktestresults.getTesttype__c() != null && leaktestresults.getTesttype__c().equalsIgnoreCase("ANNUAL")){
+				if(annualMap.get(leaktestresults.getTank__c())!=null){
+					annualMap.get(leaktestresults.getTank__c()).add(leaktestresults);
+				}else{
+					annualList.add(leaktestresults);
+					annualMap.put(leaktestresults.getTank__c(),annualList);
+				}
+			}
+			else if(leaktestresults.getTesttype__c() != null && leaktestresults.getTesttype__c().equalsIgnoreCase("GROSS"))
+				{
+
+				if(grossMap.get(leaktestresults.getTank__c())!=null){
+					grossMap.get(leaktestresults.getTank__c()).add(leaktestresults);
+				}else{
+					grossList.add(leaktestresults);
+					grossMap.put(leaktestresults.getTank__c(),grossList);
+				}
+			
+				}
+			else if(leaktestresults.getTesttype__c() != null && leaktestresults.getTesttype__c().equalsIgnoreCase("PERIODIC"))
+			{
+
+				if(periodicMap.get(leaktestresults.getTank__c())!=null){
+					periodicMap.get(leaktestresults.getTank__c()).add(leaktestresults);
+				}else{
+					periodicList.add(leaktestresults);
+					periodicMap.put(leaktestresults.getTank__c(),periodicList);
+				}
+			
+				}
+		}
+		
+		resultMap.put("ANNUAL", annualMap);
+		resultMap.put("GROSS", grossMap);
+		resultMap.put("PERIODIC", periodicMap);
+		return resultMap;
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return resultMap;
+	}
+
+
+	
+}
+
+
+
+public String getTankStatusButtonStatus(Facilities facility) {
+
+
+	if(facility == null)
+		return GRAY_COLOR;// gray
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select T.facility__C,T.tank__C,T.product__C,T.status__C,T.runDate__c,T.ID,T.viewed,T.rn\r\n" + 
+				"from (\r\n" + 
+				"     select T.facility__C,T.name,T.tank__C,T.product__C,T.status__C,T.runDate__c,T.ID,T.viewed,\r\n" + 
+				"            row_number() over(partition by T.product__C order by T.runDate__c desc) as rn\r\n" + 
+				"     from tankstatusreport__c as T\r\n" + 
+				"     ) as T\r\n" + 
+				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"' and (viewed is null or viewed ='false') ");
+
+		List lst = new ArrayList();
+		List<Object[]> rows = query.list();
+		trx.commit();
+		session.close();
+		System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +" seconds. The size is "+rows.size());
+		if(rows == null || rows.size() == 0)
+			return GRAY_COLOR;// gray
+		String result = checkTankStatusResult(rows);
+		return result;
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return RED_COLOR;// red
+	}
+
+
+	
+
+}
+private String checkTankStatusResult(List<Object[]> rows) {
+	String result =GREEN_COLOR;//green
+	for (Object[] row : rows) {
+			if(!row[3].toString().equalsIgnoreCase("normal")){
+				result= RED_COLOR;// red
+			return result;
+			}
+	}
+	return result;
+	
+}
+
+public String getCsldButtonStatus(Facilities facility) {
+
+
+	if(facility == null)
+		return GRAY_COLOR;// gray
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select T.facility__C,T.tank__C,T.RESULT__c,T.RunDate__c,T.ID,T.viewed,T.rn\r\n" + 
+				"from (\r\n" + 
+				"     select T.facility__C,T.name,T.tank__C,\r\n" + 
+				"            T.RESULT__c,T.RunDate__c,T.ID,T.viewed,\r\n" + 
+				"            row_number() over(order by T.RunDate__c desc) as rn\r\n" + 
+				"     from csldtestresult__c as T\r\n" + 
+				"     ) as T\r\n" + 
+				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"' and (viewed is null or viewed ='false') ");
+
+		List lst = new ArrayList();
+		List<Object[]> rows = query.list();
+		trx.commit();
+		session.close();
+		System.out.println("query execute in "+((System.currentTimeMillis()-millisec)/1000) +"  seconds. The size is "+rows.size());
+		if(rows == null || rows.size() == 0)
+			return GRAY_COLOR;// gray
+		String result = checkCSLDStatusResult(rows);
+		return result;
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return RED_COLOR;// red
+	}
+
+
+	
+
+}
+private String checkCSLDStatusResult(List<Object[]> rows) {
+	String result =GREEN_COLOR;//green
+	for (Object[] row : rows) {
+			if(row[2]!=null && !row[2].toString().equalsIgnoreCase("pass")){
+				result= RED_COLOR;// red
+			return result;
+			}
+	}
+	return result;
+}
+
+	public Account fetchUSTComplianceDataData(String facilitiesId) {
+
+		String releaseDetectionReport = "GT - Release Detection Report";
+		String repairDocuments = "GT - Repair Documents (Optional)";
+		String lineAndLeakDetector = "GT - Line and Leak Detector Test";
+		String tankTestingReport = "GT - Tank Tightness Report";
+		String cathodicProtection = "GT - Tank Cathodic Protection";
+		String internalLiningInspection = "GT - Internal Lining Inspection";
+		String pipingCathodicProtection = "GT - Piping Cathodic Protection";
+		String dropTubeRepairDocument = "GT - Drop Tube Repair Document";
+		String tankInterstitialMonitoring = "GT - Tank Interstitial Monitoring";
+		String pipinginterstitialMonitoring = "GT - Piping Interstitial Monitoring";
+		String atgTestReport = "GT - ATG Test Report";
+		String atgRepairReport = "GT - ATG Repair Report";
+		String spillBucketTestingDocument = "GT - Spill Bucket Testing Document";
+		String spillBucketRepairDocument = "GT - Spill Bucket Repair Document";
+		String sumpMaintenanceDocument = "GT - Sump Maintenance Document";
+		String udcMaintenanceDocument = "GT - UDC Maintenance Document";
+		String sirReport = "GT - SIR Report";
+		String monthlyWalkThroughReport = "GT - Line and Leak Detector Test";
+		String tankMonitorStaticIP = "GT - Release Detection Report";
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			Query query = session.createNativeQuery(
+					"SELECT * FROM account where MGT_Paid_Service__c = 'true' AND id =:facilitiesId",
+					Account.class);
+
+			query.setString("facilitiesId", facilitiesId);
+			List<Account> lst = query.list();
+			trx.commit();
+			session.close();
+			if (lst.size() > 0) {
+				Account account = lst.get(0);
+
+				if (account.getIsReleaseDetectionReportRequired()!=null && account.getIsReleaseDetectionReportRequired().equalsIgnoreCase("true")
+						&& account.getReleaseDetectionReport() == null)
+					account.setReleaseDetectionReportEnable(true);
+				if (account.getIsRepairDocumentRequired()!=null && account.getIsRepairDocumentRequired().equalsIgnoreCase("true")
+						&& account.getRepairDocuments() == null)
+					account.setRepairDocumentsEnable(true);
+				if (account.getIsLnlDetrTstRequrd()!=null && account.getIsLnlDetrTstRequrd().equalsIgnoreCase("true")
+						&& account.getLineAndLeakDetector() == null)
+					account.setLineAndLeakDetectorEnable(true);
+				if (account.getIsTankTestingReportRequired()!=null && account.getIsTankTestingReportRequired().equalsIgnoreCase("true")
+						&& account.getTankTestingReport() == null)
+					account.setTankTestingReportEnable(true);
+				if (account.getIsCprequired()!=null && account.getIsCprequired().equalsIgnoreCase("true") && account.getCathodicProtection() == null)
+					account.setCathodicProtectionEnable(true);
+				if (account.getIsInternalLiningInspectionRequired()!=null && account.getIsInternalLiningInspectionRequired().equalsIgnoreCase("true")
+						&& account.getInternalLiningInspection() == null)
+					account.setInternalLiningInspectionEnable(true);
+				if (account.getIsPipingCPRequired()!=null && account.getIsPipingCPRequired().equalsIgnoreCase("true")
+						&& account.getPipingCathodicProtection() == null)
+					account.setPipingCathodicProtectionEnable(true);
+				if (account.getIsDropTubeRepairRequired()!=null && account.getIsDropTubeRepairRequired().equalsIgnoreCase("true")
+						&& account.getDropTubeRepairDocument() == null)
+					account.setDropTubeRepairDocumentEnable(true);
+				if (account.getIsTankInterstitialMonitoringRequired()!=null && account.getIsTankInterstitialMonitoringRequired().equalsIgnoreCase("true")
+						&& account.getTankInterstitialMonitoring() == null)
+					account.setTankInterstitialMonitoringEnable(true);
+				if (account.getIsPipeInterstitialMontoringRequired()!=null && account.getIsPipeInterstitialMontoringRequired().equalsIgnoreCase("true")
+						&& account.getPipinginterstitialMonitoring() == null)
+					account.setPipinginterstitialMonitoringEnable(true);
+				if (account.getIsATGTestRequired()!=null && account.getIsATGTestRequired().equalsIgnoreCase("true") && account.getAtgTestReport() == null)
+					account.setAtgTestReportEnable(true);
+				if (account.getIsATGRepairRequired()!=null && account.getIsATGRepairRequired().equalsIgnoreCase("true") && account.getAtgRepairReport() == null)
+					account.setAtgRepairReportEnable(true);
+				if (account.getIsSpillBucketTestingDocument()!=null && account.getIsSpillBucketTestingDocument().equalsIgnoreCase("true")
+						&& account.getSpillBucketTestingDocument() == null)
+					account.setSpillBucketTestingDocumentEnable(true);
+				if (account.getIsSpillBucketRepairRequired()!=null && account.getIsSpillBucketRepairRequired().equalsIgnoreCase("true")
+						&& account.getSpillBucketRepairDocument() == null)
+					account.setSpillBucketRepairDocumentEnable(true);
+				if (account.getIsSumpMaintenanceRequired()!=null && account.getIsSumpMaintenanceRequired().equalsIgnoreCase("true")
+						&& account.getSumpMaintenanceDocument() == null)
+					account.setSumpMaintenanceDocumentEnable(true);
+				if (account.getIsUDCMaintenanceRequired()!=null && account.getIsUDCMaintenanceRequired().equalsIgnoreCase("true")
+						&& account.getUdcMaintenanceDocument() == null)
+					account.setUdcMaintenanceDocumentEnable(true);
+				if (account.getIsSirRequired()!=null && account.getIsSirRequired().equalsIgnoreCase("true") && account.getSirReport() == null)
+					account.setSirReportEnable(true);
+				if (account.getIsMonthlyWalkThroughInspection()!=null && account.getIsMonthlyWalkThroughInspection().equalsIgnoreCase("true")
+						&& account.getMonthlyWalkThroughReport() == null)
+					account.setMonthlyWalkThroughReportEnable(true);
+				if (account.getIsTankMonitorStaticIP()!=null && account.getIsTankMonitorStaticIP().equalsIgnoreCase("true")
+						&& account.getTankMonitorStaticIP() == null)
+					account.setTankMonitorStaticIPEnable(true);
+
+				String custom_portal_whereclause = "";
+
+				if (account.getIsReleaseDetectionReportRequired().equalsIgnoreCase("true")
+						&& account.getReleaseDetectionReport() == null)
+					custom_portal_whereclause += "'" + releaseDetectionReport + "'" + ",";
+				if (account.getIsRepairDocumentRequired().equalsIgnoreCase("true")
+						&& account.getRepairDocuments() == null)
+					custom_portal_whereclause += "'" + repairDocuments + "'" + ",";
+				if (account.getIsLnlDetrTstRequrd().equalsIgnoreCase("true")
+						&& account.getLineAndLeakDetector() == null)
+					custom_portal_whereclause += "'" + lineAndLeakDetector + "'" + ",";
+				if (account.getIsTankTestingReportRequired().equalsIgnoreCase("true")
+						&& account.getTankTestingReport() == null)
+					custom_portal_whereclause += "'" + tankTestingReport + "'" + ",";
+				if (account.getIsCprequired().equalsIgnoreCase("true") && account.getCathodicProtection() == null)
+					custom_portal_whereclause += "'" + cathodicProtection + "'" + ",";
+				if (account.getIsInternalLiningInspectionRequired().equalsIgnoreCase("true")
+						&& account.getInternalLiningInspection() == null)
+					custom_portal_whereclause += "'" + internalLiningInspection + "'" + ",";
+				if (account.getIsPipingCPRequired().equalsIgnoreCase("true")
+						&& account.getPipingCathodicProtection() == null)
+					custom_portal_whereclause += "'" + pipingCathodicProtection + "'" + ",";
+				if (account.getIsDropTubeRepairRequired().equalsIgnoreCase("true")
+						&& account.getDropTubeRepairDocument() == null)
+					custom_portal_whereclause += "'" + dropTubeRepairDocument + "'" + ",";
+
+				if (account.getIsTankInterstitialMonitoringRequired().equalsIgnoreCase("true")
+						&& account.getTankInterstitialMonitoring() == null)
+					custom_portal_whereclause += "'" + tankInterstitialMonitoring + "'" + ",";
+				if (account.getIsPipeInterstitialMontoringRequired().equalsIgnoreCase("true")
+						&& account.getPipinginterstitialMonitoring() == null)
+					custom_portal_whereclause += "'" + pipinginterstitialMonitoring + "'" + ",";
+				if (account.getIsATGTestRequired().equalsIgnoreCase("true") && account.getAtgTestReport() == null)
+					custom_portal_whereclause += "'" + atgTestReport + "'" + ",";
+				if (account.getIsATGRepairRequired().equalsIgnoreCase("true") && account.getAtgRepairReport() == null)
+					custom_portal_whereclause += "'" + atgRepairReport + "'" + ",";
+				if (account.getIsSpillBucketTestingDocument().equalsIgnoreCase("true")
+						&& account.getSpillBucketTestingDocument() == null)
+					custom_portal_whereclause += "'" + spillBucketTestingDocument + "'" + ",";
+				if (account.getIsSpillBucketRepairRequired().equalsIgnoreCase("true")
+						&& account.getSpillBucketRepairDocument() == null)
+					custom_portal_whereclause += "'" + spillBucketRepairDocument + "'" + ",";
+				if (account.getIsSumpMaintenanceRequired().equalsIgnoreCase("true")
+						&& account.getSumpMaintenanceDocument() == null)
+					custom_portal_whereclause += "'" + sumpMaintenanceDocument + "'" + ",";
+				if (account.getIsUDCMaintenanceRequired().equalsIgnoreCase("true")
+						&& account.getUdcMaintenanceDocument() == null)
+					custom_portal_whereclause += "'" + udcMaintenanceDocument + "'" + ",";
+				if (account.getIsSirRequired().equalsIgnoreCase("true") && account.getSirReport() == null)
+					custom_portal_whereclause += "'" + sirReport + "'" + ",";
+				if (account.getIsMonthlyWalkThroughInspection().equalsIgnoreCase("true")
+						&& account.getMonthlyWalkThroughReport() == null)
+					custom_portal_whereclause += "'" + monthlyWalkThroughReport + "'" + ",";
+				if (account.getIsTankMonitorStaticIP().equalsIgnoreCase("true")
+						&& account.getTankMonitorStaticIP() == null)
+					custom_portal_whereclause += "'" + tankMonitorStaticIP + "'" + ",";
+
+				if (custom_portal_whereclause.endsWith(","))
+					custom_portal_whereclause = custom_portal_whereclause.substring(0,
+							custom_portal_whereclause.lastIndexOf(","));
+				if (custom_portal_whereclause.trim().length() > 0) {
+					session = HibernateUtil.getSession();
+					trx = session.beginTransaction();
+					try {
+						// Transaction t = session.beginTransaction();
+						query = session.createNativeQuery(
+								"SELECT * FROM customer_portal_attachments__c  where facility__c =:facilitiesId and type__c in ("
+										+ custom_portal_whereclause + ")",
+								CustomerPortalAttachments.class);
+						query.setString("facilitiesId", facilitiesId);
+						List<CustomerPortalAttachments> customPortalList = query.list();
+						trx.commit();
+						session.close();
+						if (customPortalList.size() > 0) {
+							for (CustomerPortalAttachments attachments : customPortalList) {
+
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(releaseDetectionReport)
+										&& attachments.getApprovalStatus() != null)
+									account.setReleaseDetectionReportSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(repairDocuments)
+										&& attachments.getApprovalStatus() != null)
+									account.setRepairDocumentsSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(lineAndLeakDetector)
+										&& attachments.getApprovalStatus() != null)
+									account.setLineAndLeakDetectorSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankTestingReport)
+										&& attachments.getApprovalStatus() != null)
+									account.setTankTestingReportSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtection)
+										&& attachments.getApprovalStatus() != null)
+									account.setCathodicProtectionSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(internalLiningInspection)
+										&& attachments.getApprovalStatus() != null)
+									account.setInternalLiningInspectionSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipingCathodicProtection)
+										&& attachments.getApprovalStatus() != null)
+									account.setPipingCathodicProtectionSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(dropTubeRepairDocument)
+										&& attachments.getApprovalStatus() != null)
+									account.setDropTubeRepairDocumentSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankInterstitialMonitoring)
+										&& attachments.getApprovalStatus() != null)
+									account.setTankInterstitialMonitoringSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipinginterstitialMonitoring)
+										&& attachments.getApprovalStatus() != null)
+									account.setPipinginterstitialMonitoringSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(atgTestReport)
+										&& attachments.getApprovalStatus() != null)
+									account.setAtgTestReportSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(repairDocuments)
+										&& attachments.getApprovalStatus() != null)
+									account.setAtgRepairReportSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(lineAndLeakDetector)
+										&& attachments.getApprovalStatus() != null)
+									account.setSpillBucketTestingDocumentSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankTestingReport)
+										&& attachments.getApprovalStatus() != null)
+									account.setSpillBucketRepairDocumentSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtection)
+										&& attachments.getApprovalStatus() != null)
+									account.setSumpMaintenanceDocumentSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(internalLiningInspection)
+										&& attachments.getApprovalStatus() != null)
+									account.setUdcMaintenanceDocumentSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipingCathodicProtection)
+										&& attachments.getApprovalStatus() != null)
+									account.setSirReportSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(dropTubeRepairDocument)
+										&& attachments.getApprovalStatus() != null)
+									account.setMonthlyWalkThroughReportSubmitted(true);
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankInterstitialMonitoring)
+										&& attachments.getApprovalStatus() != null)
+									account.setTankMonitorStaticIPSubmitted(true);
+							}
+						}
+
+					} catch (Exception exception) {
+						exception.printStackTrace();
+						System.out.println("Exception occred in fetchFacilitiesNotificationData method -- "
+								+ exception.getMessage());
+						if (trx != null)
+							trx.rollback();
+						if (session != null)
+							session.close();
+					} finally {
+					}
+				}
+
+				// custom attachments
+				String custom_attachments_whereclause = "";
+
+				if (account.getReleaseDetectionReport() != null)
+					custom_attachments_whereclause += "'" + releaseDetectionReport + "'" + ",";
+				if (account.getRepairDocuments() != null)
+					custom_attachments_whereclause += "'" + repairDocuments + "'" + ",";
+				if (account.getLineAndLeakDetector() != null)
+					custom_attachments_whereclause += "'" + lineAndLeakDetector + "'" + ",";
+				if (account.getTankTestingReport() != null)
+					custom_attachments_whereclause += "'" + tankTestingReport + "'" + ",";
+				if (account.getCathodicProtection() != null)
+					custom_attachments_whereclause += "'" + cathodicProtection + "'" + ",";
+				if (account.getInternalLiningInspection() != null)
+					custom_attachments_whereclause += "'" + internalLiningInspection + "'" + ",";
+				if (account.getPipingCathodicProtection() != null)
+					custom_attachments_whereclause += "'" + pipingCathodicProtection + "'" + ",";
+				if (account.getDropTubeRepairDocument() != null)
+					custom_attachments_whereclause += "'" + dropTubeRepairDocument + "'" + ",";
+
+				if (account.getTankInterstitialMonitoring() != null)
+					custom_attachments_whereclause += "'" + tankInterstitialMonitoring + "'" + ",";
+				if (account.getPipinginterstitialMonitoring() != null)
+					custom_attachments_whereclause += "'" + pipinginterstitialMonitoring + "'" + ",";
+				if (account.getAtgTestReport() != null)
+					custom_attachments_whereclause += "'" + atgTestReport + "'" + ",";
+				if (account.getAtgRepairReport() != null)
+					custom_attachments_whereclause += "'" + atgRepairReport + "'" + ",";
+				if (account.getSpillBucketTestingDocument() != null)
+					custom_attachments_whereclause += "'" + spillBucketTestingDocument + "'" + ",";
+				if (account.getSpillBucketRepairDocument() != null)
+					custom_attachments_whereclause += "'" + spillBucketRepairDocument + "'" + ",";
+
+				if (account.getSumpMaintenanceDocument() != null)
+					custom_attachments_whereclause += "'" + sumpMaintenanceDocument + "'" + ",";
+				if (account.getUdcMaintenanceDocument() != null)
+					custom_attachments_whereclause += "'" + udcMaintenanceDocument + "'" + ",";
+				if (account.getSirReport() != null)
+					custom_attachments_whereclause += "'" + sirReport + "'" + ",";
+				if (account.getMonthlyWalkThroughReport() != null)
+					custom_attachments_whereclause += "'" + monthlyWalkThroughReport + "'" + ",";
+				if (account.getTankMonitorStaticIP() != null)
+					custom_attachments_whereclause += "'" + tankMonitorStaticIP + "'" + ",";
+
+				if (custom_attachments_whereclause.endsWith(","))
+					custom_attachments_whereclause = custom_attachments_whereclause.substring(0,
+							custom_attachments_whereclause.lastIndexOf(","));
+				if (custom_attachments_whereclause.trim().length() > 0) {
+				session = HibernateUtil.getSession();
+				trx = session.beginTransaction();
+				try {
+					// Transaction t = session.beginTransaction();
+					query = session.createNativeQuery(
+							"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and type__c in ("
+									+ custom_attachments_whereclause + ")",
+							CustomAttachments.class);
+					query.setString("facilitiesId", facilitiesId);
+					List<CustomAttachments> customPortalList = query.list();
+					trx.commit();
+					session.close();
+					if (customPortalList.size() > 0) {
+						CustomAttachments attachments = customPortalList.get(0);
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(releaseDetectionReport))
+							account.setReleaseDetectionReportURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(repairDocuments))
+							account.setRepairDocumentsURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(lineAndLeakDetector))
+							account.setLineAndLeakDetectorURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankTestingReport))
+							account.setTankTestingReportURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtection))
+							account.setCathodicProtectionURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(internalLiningInspection))
+							account.setInternalLiningInspectionURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipingCathodicProtection))
+							account.setPipingCathodicProtectionURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(dropTubeRepairDocument))
+							account.setDropTubeRepairDocumentURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankInterstitialMonitoring))
+							account.setTankInterstitialMonitoringURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipinginterstitialMonitoring))
+							account.setPipinginterstitialMonitoringURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(atgTestReport))
+							account.setAtgTestReportURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(atgRepairReport))
+							account.setAtgRepairReportURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(spillBucketTestingDocument))
+							account.setSpillBucketTestingDocumentURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(spillBucketRepairDocument))
+							account.setSpillBucketRepairDocumentURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(sumpMaintenanceDocument))
+							account.setSumpMaintenanceDocumentURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(udcMaintenanceDocument))
+							account.setUdcMaintenanceDocumentURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(sirReport))
+							account.setSirReportURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(monthlyWalkThroughReport))
+							account.setMonthlyWalkThroughReportURL(attachments.getG360URL());
+						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankMonitorStaticIP))
+							account.setTankMonitorStaticIPURL(attachments.getG360URL());
+					}
+
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					System.out.println(
+							"Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+					if (trx != null)
+						trx.rollback();
+					if (session != null)
+						session.close();
+				} finally {
+				}
+				}
+				return account;
+			}
+			return null;
+		} catch (Exception exception){
+
+			exception.printStackTrace();
+			System.out
+					.println("Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally{}
+
+	}
+
+public Account fetchOperatorCertificatesData(String facilitiesId) {
+	String  operatorAcertificate="GT - Operator A certificate";
+	String  operatorBcertificate="GT - Operator B certificate";
+	String  operatorCcertificate="GT - Operator C certificate";
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		// Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery(
+				"SELECT * FROM account where MGT_Paid_Service__c = 'true' AND id =:facilitiesId",
+				Account.class);
+
+		query.setString("facilitiesId", facilitiesId);
+		List<Account> lst = query.list();
+		trx.commit();
+		session.close();
+		if (lst.size() > 0) {
+			Account account = lst.get(0);
+			if(account.getOperatorAcertificate() == null)
+				account.setOperatorAcertificateEnable(true);
+			if(account.getOperatorBcertificate() == null)
+				account.setOperatorBcertificateEnable(true);
+			if(account.getOperatorCcertificate() == null)
+				account.setOperatorCcertificateEnable(true);
+			
+			String custom_portal_whereclause = "";
+			if(account.getOperatorAcertificate() == null)
+				custom_portal_whereclause+= "'"+operatorAcertificate+"'"+",";
+			if(account.getOperatorBcertificate() == null)
+				custom_portal_whereclause+= "'"+operatorBcertificate+"'"+",";
+			if(account.getOperatorCcertificate() == null)
+				custom_portal_whereclause+= "'"+operatorCcertificate+"'"+",";
+						if(custom_portal_whereclause.endsWith(","))
+				custom_portal_whereclause = custom_portal_whereclause.substring(0, custom_portal_whereclause.lastIndexOf(","));
+			if(custom_portal_whereclause.trim().length()>0){
+			session = HibernateUtil.getSession();
+			trx = session.beginTransaction();
+			try {
+				// Transaction t = session.beginTransaction();
+				query = session.createNativeQuery(
+						"SELECT * FROM customer_portal_attachments__c  where facility__c =:facilitiesId and type__c in ("+custom_portal_whereclause+")",CustomerPortalAttachments.class);
+				query.setString("facilitiesId", facilitiesId);
+				List<CustomerPortalAttachments> customPortalList = query.list();
+				trx.commit();
+				session.close();
+				if(customPortalList.size()>0){
+					for (CustomerPortalAttachments attachments  : customPortalList) {
+						
+					
+					if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorAcertificate) && attachments.getApprovalStatus() != null)
+						account.setOperatorAcertificateSubmitted(true);
+					if(attachments.getType().equalsIgnoreCase(operatorBcertificate) && attachments.getApprovalStatus() != null)
+						account.setOperatorBcertificateSubmitted(true);
+					if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorCcertificate) && attachments.getApprovalStatus() != null)
+						account.setOperatorCcertificateSubmitted(true);
+					}
+				}
+				
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				System.out.println(
+						"Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+				if (trx != null)
+					trx.rollback();
+				if (session != null)
+					session.close();
+			} finally{}
+			}
+			
+			//custom attachments
+			String custom_attachments_whereclause = "";
+			if(account.getOperatorAcertificate()!= null)
+				custom_attachments_whereclause+= "'"+operatorAcertificate+"'"+",";
+			if(account.getOperatorBcertificate()!= null)
+				custom_attachments_whereclause+= "'"+operatorBcertificate+"'"+",";
+			if(account.getOperatorCcertificate()!= null)
+				custom_attachments_whereclause+= "'"+operatorCcertificate+"'"+",";
+			if(custom_attachments_whereclause.endsWith(","))
+				custom_attachments_whereclause = custom_attachments_whereclause.substring(0, custom_attachments_whereclause.lastIndexOf(","));
+			session = HibernateUtil.getSession();
+			trx = session.beginTransaction();
+			try {
+				// Transaction t = session.beginTransaction();
+				query = session.createNativeQuery(
+						"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and type__c in ("+custom_attachments_whereclause+")",CustomAttachments.class);
+				query.setString("facilitiesId", facilitiesId);
+				List<CustomAttachments> customPortalList = query.list();
+				trx.commit();
+				session.close();
+				if(customPortalList.size()>0){
+					CustomAttachments attachments = customPortalList.get(0);
+					if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorAcertificate))
+						account.setOperatorAcertificateURL(attachments.getG360URL());;
+					if(attachments.getType().equalsIgnoreCase(operatorBcertificate))
+						account.setOperatorBcertificate(attachments.getG360URL());
+					if(attachments.getType().equalsIgnoreCase(operatorCcertificate))
+						account.setOperatorCcertificateURL(attachments.getG360URL());;
+				}
+				
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				System.out.println(
+						"Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+				if (trx != null)
+					trx.rollback();
+				if (session != null)
+					session.close();
+			} finally{}
+			
+			return account;
+		}
+		return null;
+	} catch (
+	Exception exception){
+		exception.printStackTrace();
+		System.out
+				.println("Exception occred in fetchFacilitiesNotificationData method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return null;
+	} finally
+
+	{
+
+	}
+}
+public boolean resetTankreportDeatils(String type, String facilitiesId) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	Query query = null;
+	try {
+		if(type.equalsIgnoreCase("CSLD"))
+		query = session.createNativeQuery(
+				"update csldtestresult__c set viewed ='true'where facility__C =:facilitiesId");
+		if(type.equalsIgnoreCase("tankstatus"))
+		query = session.createNativeQuery(
+				"update tankstatusreport__c set viewed ='true'where facility__C =:facilitiesId");
+		if(type.equalsIgnoreCase("leaktest"))
+			query = session.createNativeQuery(
+					"update leaktestresults__c set viewed ='true' where facility__C =:facilitiesId");
+		query.setString("facilitiesId", facilitiesId);
+		int count = query.executeUpdate();
+		trx.commit();
+		session.close();
+	} catch (Exception exception) {
+		exception.printStackTrace();
+		System.out.println("Exception occred in resetTankalarmHistory   method --" + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return false;
+	} finally {
+
+	}
+	return true;
+
+}
+
 }

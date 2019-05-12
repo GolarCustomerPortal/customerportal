@@ -348,7 +348,7 @@ export class CommonService {
   getTankAlertCount(){
     // var alertList = localStorage.getItem('tankAlertList');
     var alertCount = 0;
-    if(this.tankAlertList != null ){
+    if(this.tankAlertList != null &&  this.tankAlertList[0] != null ){
       // this.tankAlertList =  JSON.parse(alertList);
      
       // var alarm : any;

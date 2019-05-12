@@ -16,15 +16,18 @@ import javax.ws.rs.core.Response;
 
 import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
+import com.customerportal.bean.Csldtestresult;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.Gaslevel;
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
 import com.customerportal.bean.KeyValue;
+import com.customerportal.bean.Leaktestresults;
 import com.customerportal.bean.SearchResults;
 import com.customerportal.bean.TankAarmHistory;
 import com.customerportal.bean.TankAlarmHistoryData;
 import com.customerportal.bean.TankMonitorSignup;
+import com.customerportal.bean.Tankstatusreport;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
 import com.customerportal.bean.Userpreferences;
@@ -206,6 +209,22 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response complianceData(@QueryParam("facilitiesId") String facilitiesId) {
 		Account account = DBUtil.getInstance().fetchFacilitiesNotificationData(facilitiesId);
+		return Response.status(200).entity(account).build();
+
+	}
+	@Path("/ustcompliance")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getUSTComplianceData(@QueryParam("facilitiesId") String facilitiesId) {
+		Account account = DBUtil.getInstance().fetchUSTComplianceDataData(facilitiesId);
+		return Response.status(200).entity(account).build();
+
+	}
+	@Path("/operatorcertificates")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getOperatorCertificatesData(@QueryParam("facilitiesId") String facilitiesId) {
+		Account account = DBUtil.getInstance().fetchOperatorCertificatesData(facilitiesId);
 		return Response.status(200).entity(account).build();
 
 	}
@@ -394,6 +413,64 @@ public class DashBoardService {
 	public Response saveGasLevel (Gaslevel gasLevel) {
 		
 		Gaslevel result = DBUtil.getInstance().saveGasLevels(gasLevel);
+		return Response.status(200).entity(result).build();
+		
+	}
+	
+	@Path("/leaktestDetails")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getLeaskTestDeatils (@QueryParam("userId") String userId, @QueryParam("facilitiesId") String facilityId) {
+		
+		Map<String, HashMap<String, ArrayList<Leaktestresults>>> resultMap = DBUtil.getInstance().getLeakTankTestDetails(facilityId);
+		return Response.status(200).entity(resultMap).build();
+		
+	}
+	@Path("/leaktestDetails")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response resetLeaskTestDeatils (String facilityId) {
+		
+		boolean result = false;
+		result = DBUtil.getInstance().resetTankreportDeatils("leaktest",facilityId);
+		return Response.status(200).entity(result).build();
+		
+	}
+	@Path("/csldtestDetails")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getCSLDTestDeatils (@QueryParam("userId") String userId, @QueryParam("facilitiesId") String facilityId) {
+		
+		Map<String, HashMap<String, ArrayList<Csldtestresult>>> resultMap = DBUtil.getInstance().getCSLDTestDetails(facilityId);
+		return Response.status(200).entity(resultMap).build();
+		
+	}
+	@Path("/csldtestDetails")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response resetCSLDTestDeatils (String facilityId) {
+		
+		boolean result = false;
+		result = DBUtil.getInstance().resetTankreportDeatils("CSLD",facilityId);
+		return Response.status(200).entity(result).build();
+		
+	}
+	@Path("/tankstatusDetails")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getTankStatusDeatils (@QueryParam("userId") String userId, @QueryParam("facilitiesId") String facilityId) {
+		
+		Map<String, HashMap<String, ArrayList<Tankstatusreport>>> resultMap = DBUtil.getInstance().getTankStatusTestDetails(facilityId);
+		return Response.status(200).entity(resultMap).build();
+		
+	}
+	@Path("/tankstatusDetails")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response resetTankStatusDeatils (String facilityId) {
+		
+		boolean result = false;
+		result = DBUtil.getInstance().resetTankreportDeatils("tankstatus",facilityId);
 		return Response.status(200).entity(result).build();
 		
 	}

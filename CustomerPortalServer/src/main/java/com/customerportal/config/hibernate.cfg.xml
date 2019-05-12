@@ -26,5 +26,10 @@
 		<mapping resource="com/customerportal/config/jobschedule.hbm.xml" />
 		<mapping resource="com/customerportal/config/jobschedulehistory.hbm.xml" />
 		<mapping resource="com/customerportal/config/gaslevel.hbm.xml" />
+		<mapping resource="com/customerportal/config/tankstatusreport.hbm.xml" />
+		<mapping resource="com/customerportal/config/csldtestresult.hbm.xml" />
+		<mapping resource="com/customerportal/config/leaktestresults.hbm.xml" />
+		<mapping resource="com/customerportal/config/customAttachments.hbm.xml" />
+		<mapping resource="com/customerportal/config/customerPortalAttachments.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 

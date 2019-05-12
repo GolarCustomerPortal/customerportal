@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+ <class name="com.customerportal.bean.Csldtestresult" table="csldtestresult__c">
+  <id name="id">
+   <column name="id"  />
+  </id>
+  
+  <property name="name" column="Name"/>
+   <property name="facility__c" column="Facility__c"/>
+  <property name="fid__c" column="FID__c"/>	
+  <property name="occuredAt__c" column="OccuredAt__c"/>
+  <property name="result__c" column="Result__c"/>
+  <property name="date__c" column="RunDate__c"/>
+  <property name="tank__c" column="Tank__c"/>
+  <property name="tankType__c" column="TankType__c"/>
+   <property name="product__c" column="Product__C"/>
+ 
+
+ </class>
+</hibernate-mapping>

@@ -29,6 +29,8 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 
 public class CustomerPortalFileUpload {
 	Properties urlProperties = new Properties();
+	Properties notificationProperties = new Properties();
+	Properties complianceandcertification = new Properties();
 	private static String USERNAME;
 	private static String PASSWORD;
 	static EnterpriseConnection connection;
@@ -37,6 +39,8 @@ public class CustomerPortalFileUpload {
 
 		try {
 			urlProperties.load(CustomerPortalFileUpload.class.getResourceAsStream("/customerportal.properties"));
+			complianceandcertification.load(CustomerPortalFileUpload.class.getResourceAsStream("/certificationandcompliance.properties"));
+			notificationProperties.load(CustomerPortalFileUpload.class.getResourceAsStream("/notificationForm.properties"));
 		} catch (Exception e1) {
 			System.out.println("url.properties file not found" + e1.getMessage());
 		}
@@ -92,9 +96,12 @@ public class CustomerPortalFileUpload {
 					config.setPassword(PASSWORD);
 					connection = Connector.newConnection(config);
 					Customer_Portal_Attachments__c[] contact = new Customer_Portal_Attachments__c[1];
+					
 					contact[0] = new Customer_Portal_Attachments__c();
+					contact[0].setName(keyValue[0].getValue());
 					contact[0].setFacility__c(facilities.getFacilityId());
 					contact[0].setType__c(salesForceLabel);
+					contact[0].setApproval_Status__c("Pending");
 					contact[0].setG360_URL__c(url + "/" + responseEntity.getValue());
 					SaveResult[] saveResults = connection.create(contact);
 					System.out.println(saveResults.length);
@@ -104,7 +111,7 @@ public class CustomerPortalFileUpload {
 						continue;
 					}
 					
-					DBUtil.getInstance().updateFileLabelMissing(fieldlabel, facilityId);
+					DBUtil.getInstance().insertCustomPortalAttachment(fieldlabel, facilityId,gen(),getFieldLabelFromPropertiesFile(label));
 					result.setValue("true");
 					
 
@@ -144,6 +151,16 @@ public class CustomerPortalFileUpload {
 		}
 
 		return resultList;
+	}
+
+	private String getFieldLabelFromPropertiesFile(String label) {
+		String fieldlabel = complianceandcertification.getProperty(label);
+		if(fieldlabel != null)
+			return fieldlabel;
+		fieldlabel = notificationProperties.getProperty(label);
+		if(fieldlabel != null)
+			return fieldlabel;
+		return label;
 	}
 
 	private String getFieldLabel(KeyValue[] keyValueArray, String fileName) {

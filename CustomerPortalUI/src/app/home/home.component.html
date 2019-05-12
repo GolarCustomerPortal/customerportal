@@ -282,18 +282,56 @@
       </div>
           </p-card>
         </div>
-        <div class="ui-g-12 margin-top" id="individual-chart">
-            <p-card styleClass="ui-card-shadow">
-                <div style="width: 100%">
-                    <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
-                      </div>
-                      <i class="fa fa-eye" title="Set Gas Levels" style="font-size:24px;float: right;cursor: pointer;z-index: 1000;position: relative"
-                       (click)="showGasLevelWindow(rightDetailsContent)"></i>
-                     </div>
-              <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
+        <div class="ui-g-12 margin-top" id="tank-report">
+          <p-card styleClass="ui-card-shadow">
+              <div style="width: 100%">
+                  <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Tank Reports</div>
+                    </div>
+                   </div>
+                   <div class="ui-g-12">
+                    <div class="ui-g-4">
+                      <button type="button" class="btn btn-default btn-tank-circle btn-lg"  ngClass="{{ getTankLeakTestButtonClass(rightDetailsContent)}}"
+                       data-toggle="modal" data-target="#tankReportsModal"
+                      (click)="getTankLeakModalData(rightDetailsContent.facilityId)">
+                      </button>
+                    </div>
+                    <div class="ui-g-4">
+                      <button type="button" class="btn btn-default btn-tank-circle btn-lg"  ngClass="{{ getTankStatusButtonClass(rightDetailsContent)}}"
+                       data-toggle="modal" (click)="getTankStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal">
+                        </button>
+                    </div>
+                    <div class="ui-g-4">
+                      <button type="button" class="btn btn-default btn-tank-circle btn-lg" ngClass="{{ getCSCLTestButtonClass(rightDetailsContent)}}" 
+                      data-toggle="modal" (click)="getCSCLStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal"></button>
+                    </div>
+                  </div>
+                  <div class="ui-g-12  margin-top">
+                    <div class="ui-g-4">
+                      Leak Test
+                    </div>
+                    <div class="ui-g-4">
+                      Tank Status
+                    </div>
+                    <div class="ui-g-4">
+                      CSLD Test
+                    </div>
+                  </div>
 
-          </p-card>
+        </p-card>
+      </div>
+         <div class="ui-g-12 margin-top">
+          <p-card styleClass="ui-card-shadow">
+            <div style="width: 100%">
+                <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
+                  </div>
+                  <i class="fa fa-eye" title="Set Gas Levels" style="font-size:24px;float: right;cursor: pointer;z-index: 1000;position: relative"
+                   (click)="showGasLevelWindow(rightDetailsContent)"></i>
+                 </div>
+          <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
+
+      </p-card>
         </div>
+        
         <div class="ui-g-12 margin-top">
           <div class="ui-g-4">
             <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
@@ -304,12 +342,12 @@
           </div>
           <div class="ui-g-4">
             <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
-             data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">UST <br> Compliance
+             data-toggle="modal" (click)="getUSTComplianceData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">UST <br> Compliance
               </button>
           </div>
           <div class="ui-g-4">
             <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
-            data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Operator <br> Certificates </button>
+            data-toggle="modal" (click)="getCertificationData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Operator <br> Certificates </button>
           </div>
         </div>
 
@@ -332,97 +370,221 @@
       <div class="modal-body file-upload-model">
         <form name="form" #notificationForm novalidate>
           <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Facility Operator POA</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="fOperatorFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #fOperatorfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;fOperatorfile = $event.files[0]; fOperatorFileName=$event.files[0].name"
-                [disabled]="!modalData?.facilityOperatorPOAEnable"></p-fileUpload>
-              <span *ngIf='fOperatorfileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{fOperatorFileName}}  </span>
+            <div class="ui-g-8">Operator Business Registration</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorBusinessSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorBusinessURL !== null && modalData?.operatorBusinessSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorBusinessURL)"><i class="fa fa-file-text-o"></i></a>
+            </div>
+            <div class="ui-g-4" *ngIf="modalData?.operatorBusinessEnable == true && modalData?.operatorBusinessURL === null && modalData?.operatorBusinessSubmitted == false">
+              <p-fileUpload name="operatorBusinessFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatorBusinessFile = $event.files[0]; operatorBusinessFileName=$event.files[0].name"
+                ></p-fileUpload>
+              <span *ngIf='operatorBusinessFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorBusinessFileName}}  </span>
+            </div>
+          </div>
+          
+          <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-8">Property Owner Business Registration</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyOwnerBusinessSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyOwnerBusinessURL!=null && modalData?.propertyOwnerBusinessSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.propertyOwnerBusinessURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+            <div class="ui-g-4" *ngIf=" modalData?.propertyOwnerBusinessEnable == true && modalData?.propertyOwnerBusinessURL === null && modalData?.propertyOwnerBusinessSubmitted == false">
+              <p-fileUpload name="propertyFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
+                customUpload="true" (onSelect)="enableNotificationuploadButton = true;propertyFile = $event.files[0];  propertyFileName=$event.files[0].name"
+                ></p-fileUpload>
+                <span *ngIf='propertyFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{propertyFileName}}</span>
+            </div>
+          </div>
+          
+          <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-8">UST Owner Business Registration</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.ustOwnerBusinessSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.ustOwnerBusinessURL!=null && modalData?.ustOwnerBusinessSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.ustOwnerBusinessURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+            <div class="ui-g-4" *ngIf="modalData?.ustOwnerBusinessEnable == true && modalData?.ustOwnerBusinessURL === null && modalData?.ustOwnerBusinessSubmitted == false">
+              <p-fileUpload name="ustOwnerBusinessFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;ustOwnerBusinessFile = $event.files[0]; ustOwnerBusinessFileName=$event.files[0].name"
+                ></p-fileUpload>
+                <span *ngIf='ustOwnerBusinessFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ustOwnerBusinessFileName}}</span>
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-second">
-            <div class="ui-g-8">Property Owner POA</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="pOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #pOwnerfileUpload
-                customUpload="true" (onSelect)="enableNotificationuploadButton = true;ownerFile = $event.files[0];  ownerFileName=$event.files[0].name"
-                [disabled]="!modalData?.propertyOwnerPOAEnable"></p-fileUpload>
-                <span *ngIf='ownerFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerFileName}}</span>
+            <div class="ui-g-8">Operator Owner Tax ID</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorOwnerSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <!-- <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorOwnerURL!=null && modalData?.operatorOwnerSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorOwnerURL)"><i class="fa fa-file-text-o"></i></a>
+              </div> -->
+ 
+            <div class="ui-g-4"  *ngIf=" modalData?.operatorOwnerEnable == true && modalData?.operatorOwnerURL == null && modalData?.operatorOwnerSubmitted == false">
+              <p-fileUpload name="operatorOwner[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatorOwnerFile = $event.files[0]; operatorOwnerFileName=$event.files[0].name"
+                ></p-fileUpload>
+                <span *ngIf='operatorOwnerSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorOwnerName}}</span>
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">UST Owner POA</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="usetOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #usetOwnerfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;ustOwnerFile = $event.files[0]; ustOwnerFileName=$event.files[0].name"
-                [disabled]="!modalData?.ustOwnerPOAEnable"></p-fileUpload>
+            <div class="ui-g-8">Property Owner Tax ID</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyOwnerTaxIDSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <!-- <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyOwnerTaxIDURL!=null && modalData?.propertyOwnerTaxIDSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.propertyOwnerTaxIDURL)"><i class="fa fa-file-text-o"></i></a>
+              </div> -->
+ 
+            <div class="ui-g-4" *ngIf="modalData?.propertyOwnerFileEnable  == true && modalData?.propertyOwnerTaxIDURL == null && modalData?.propertyOwnerTaxIDSubmitted == false">
+              <p-fileUpload name="propertyOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;propertyOwnerFile = $event.files[0]; propertyOwnerFileName=$event.files[0].name"
+                ></p-fileUpload>
+                <span *ngIf='propertyOwnerSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{propertyOwnerFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-8">UST Owner Tax ID</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.ustOwnerSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <!-- <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.ustOwnerURL!=null && modalData?.ustOwnerSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.ustOwnerURL)"><i class="fa fa-file-text-o"></i></a>
+              </div> -->
+ 
+            <div class="ui-g-4" *ngIf="modalData?.ustOwnerEnable == true && modalData?.ustOwnerURL == null && modalData?.ustOwnerSubmitted == false">
+              <p-fileUpload name="ustOwnerFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;ustOwnerFile = $event.files[0]; ustOwnerFileName=$event.files[0].name"
+                ></p-fileUpload>
                 <span *ngIf='ustOwnerFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ustOwnerFileName}}</span>
-            </div>
-          </div>
-          <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Operator Lease Agreement</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="operatorLeaseFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #operatorLeasefileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatorLeaseFile = $event.files[0]; operatorLeaseFileName=$event.files[0].name"
-                [disabled]="!modalData?.operatorLeaseAgreementEnable"></p-fileUpload>
-                <span *ngIf='operatorLeaseFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorLeaseFileName}}</span>
-            </div>
-          </div>
-          <div class="ui-g-12 form-upload-padding file-upload-second">
-            <div class="ui-g-8">Facility Site Map</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="facilitySiteMapDateFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #facilitySiteMapfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;facilitySiteMapFile = $event.files[0]; facilitySiteMapFileName=$event.files[0].name"
-                [disabled]="!modalData?.facilitySiteMapEnable"></p-fileUpload>
-                <span *ngIf='facilitySiteMapSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{facilitySiteMapFileName}}</span>
-            </div>
-          </div>
-          <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Business Registration Status</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="sosStatusFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #operatoraffidavitUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;sosStatusFile = $event.files[0]; sosStatusFileName=$event.files[0].name"
-                [disabled]="!modalData?.sosStatusEnable"></p-fileUpload>
-                <span *ngIf='sosStatusFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{sosStatusFileName}}</span>
             </div>
           </div>
           <!-- <div class="ui-g-12 form-upload-padding file-upload-second">
             <div class="ui-g-8">Owner Affidavit Of Lease</div>
             <div class="ui-g-4">
               <p-fileUpload name="ownerAffidavitFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #ownerAffidavitfileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;ownerAffidavitFile = $event.files[0]; ownerAffidavitFileName=$event.files[0].name"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;ownerAffidavitFile = $event.files[0]; ownerAffidavitFileName=$event.files[0].name"
                 [disabled]="!modalData?.ownerAffidevitOfLeaseEnable"></p-fileUpload>
                 <span *ngIf='ownerAffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
             </div>
           </div> -->
           <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Deed or Land Contract</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="deedLandFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #deedLandfileUpload
-                customUpload="true" (onSelect)="enableNotificationuploadButton = true;deedLandFile = $event.files[0]; deedLandFileName=$event.files[0].name"
-                [disabled]="!modalData?.propertyDeedLandContractEnable"></p-fileUpload>
-                <span *ngIf='deedLandFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{deedLandFileName}}</span>
+            <div class="ui-g-8">Operator Lease Agreement</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorLeaseAgreementSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorLeaseAgreementURL!=null && modalData?.operatorLeaseAgreementSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorLeaseAgreementURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.operatorLeaseAgreementEnable == true &&  modalData?.operatorLeaseAgreementURL == null && modalData?.operatorLeaseAgreementSubmitted == false">
+              <p-fileUpload name="operatorLeaseAgreementFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
+                customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatorLeaseAgreementFile = $event.files[0]; operatorLeaseAgreementFileName=$event.files[0].name"
+                ></p-fileUpload>
+                <span *ngIf='operatorLeaseAgreementFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorLeaseAgreementFileName}}</span>
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-second">
-            <div class="ui-g-8">Tax ID Information</div>
-            <div class="ui-g-4">
-              <p-fileUpload name="taxIdFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #taxIdfileUpload
-                customUpload="true" (onSelect)="enableNotificationuploadButton = true;taxIdFile = $event.files[0]; taxIdFileName=$event.files[0].name"
-                [disabled]="!modalData?.taxIDInformationEnable"></p-fileUpload>
-                <span *ngIf='taxIdFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{taxIdFileName}}</span>
+            <div class="ui-g-8">Financial Responsibility (Insurance)</div>
+            <div class="ui-g-4 "  *ngIf="modalData?.financialResponsibilitySubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.financialResponsibilityURL!=null && modalData?.financialResponsibilitySubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.financialResponsibilityURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.financialResponsibilityEnable == true &&  modalData?.financialResponsibilityURL == null && modalData?.financialResponsibilitySubmitted == false">
+              <p-fileUpload name="financialResponsibilityFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
+                customUpload="true" (onSelect)="enableNotificationuploadButton = true;financialResponsibilityFile = $event.files[0]; financialResponsibilityFileName=$event.files[0].name"
+                ></p-fileUpload>
+                <span *ngIf='financialResponsibilitySuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{financialResponsibilityFileName}}</span>
             </div>
           </div>
           <div class="ui-g-12 form-upload-padding file-upload-first">
-            <div class="ui-g-8">Certificate of Insurance</div>
-            <div class="ui-g-4">
+            <div class="ui-g-8">Deed or Land Contract</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyDeedLandContractSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyDeedLandContractURL!=null && modalData?.propertyDeedLandContractSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.propertyDeedLandContractURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.propertyDeedLandContractEnable == true &&  modalData?.propertyDeedLandContractURL == null && modalData?.propertyDeedLandContractEnable == false">
+              <p-fileUpload name="deedOrLandContractFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
+                customUpload="true" (onSelect)="enableNotificationuploadButton = true;deedOrLandContractFile = $event.files[0]; deedOrLandContractFileName=$event.files[0].name"
+               ></p-fileUpload>
+                <span *ngIf='deedOrLandContractFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{deedLandFileName}}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-8">Facility Site Map</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.facilitySiteMapSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.facilitySiteMapURL!=null && modalData?.facilitySiteMapSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.facilitySiteMapURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.facilitySiteMapEnable == true &&  modalData?.facilitySiteMapURL == null && modalData?.facilitySiteMapSubmitted == false">
+              <p-fileUpload name="facilitySiteMapFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;facilitySiteMapFile = $event.files[0]; facilitySiteMapFileName=$event.files[0].name"
+                >
+                </p-fileUpload>
+                <span *ngIf='facilitySiteMapFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{facilitySiteMapFileFileName}}</span>
+            </div>
+          </div>
+          <!-- <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-8">Notification Form Due Date</div> -->
+            <!-- <div class="ui-g-4">
               <p-fileUpload name="letterOfNetworthCertificationFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                #letterOfNetworthCertificationFileUpload customUpload="true" (onSelect)="enableNotificationuploadButton = true;letterOfNetworthCertificationFile = $event.files[0]; letterOfNetworthCertificationFileName=$event.files[0].name"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;letterOfNetworthCertificationFile = $event.files[0]; letterOfNetworthCertificationFileName=$event.files[0].name"
                 [disabled]="!modalData?.letterOfNetworthCertificationEnable">
                 </p-fileUpload>
                 <span *ngIf='letterOfNetworthCertificationFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{letterOfNetworthCertificationFileName}}</span>
             </div>
           </div>
+          <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-8">Notification Form Submitted</div>
+            <div class="ui-g-4">
+              <p-fileUpload name="letterOfNetworthCertificationFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;letterOfNetworthCertificationFile = $event.files[0]; letterOfNetworthCertificationFileName=$event.files[0].name"
+                [disabled]="!modalData?.letterOfNetworthCertificationEnable">
+                </p-fileUpload>
+                <span *ngIf='letterOfNetworthCertificationFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{letterOfNetworthCertificationFileName}}</span>
+            </div> -->
+          <!-- </div> -->
+          <!-- <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-8">Notification Form Approved</div> -->
+            <!-- <div class="ui-g-4">
+              <p-fileUpload name="letterOfNetworthCertificationFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;letterOfNetworthCertificationFile = $event.files[0]; letterOfNetworthCertificationFileName=$event.files[0].name"
+                [disabled]="!modalData?.letterOfNetworthCertificationEnable">
+                </p-fileUpload>
+                <span *ngIf='letterOfNetworthCertificationFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{letterOfNetworthCertificationFileName}}</span>
+            </div> -->
+          <!-- </div> -->
+          <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-8">COFA Link</div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.cofaLinkSubmitted == true">
+              <div class="pending-text">Pending</div>
+            </div>
+          <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.cofaLinkURL!=null && modalData?.cofaLinkSubmitted == false">
+              <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.cofaLinkURL)"><i class="fa fa-file-text-o"></i></a>
+            </div>
 
+          <div class="ui-g-4" *ngIf="modalData?.cofaLinkEnable == true &&  modalData?.cofaLinkURL == null && modalData?.cofaLinkSubmitted == false">
+            <p-fileUpload name="cofaLinkFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+               customUpload="true" (onSelect)="enableNotificationuploadButton = true;cofaLinkFile = $event.files[0]; cofaLinkFileName=$event.files[0].name"
+              >
+              </p-fileUpload>
+              <span *ngIf='cofaLinkFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{cofaLinkFileName}}</span>
+          </div>
+          </div>
 
         </form>
       </div>
@@ -448,59 +610,323 @@
         <div class="modal-body file-upload-model">
           <form name="form" #complianceForm novalidate>
             <div class="ui-g-12 form-upload-padding file-upload-first">
-              <div class="ui-g-8">Line and Leak Detector Test</div>
-              <div class="ui-g-4">
-                <p-fileUpload name="fLineLeakFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #fLineLeakfileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;lineLeakFile = $event.files[0]; lineLeakFileName=$event.files[0].name"
-                  [disabled]="!modalData?.lnlDetrTstRequrdEnable"></p-fileUpload>
-                  <span *ngIf='lineLeakFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{lineLeakFileName}}</span>
+              <div class="ui-g-8">Release Detection Report</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.releaseDetectionReportSubmitted == true">
+                <div class="pending-text">Pending</div>
               </div>
-            </div>
-            <div class="ui-g-12 form-upload-padding file-upload-second">
-              <div class="ui-g-8">Cathodic Protection</div>
-              <div class="ui-g-4">
-                <p-fileUpload name="cathodicProtectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #athodicProtectionUpload
-                  customUpload="true" (onSelect)="enableComplianceuploadButton = true;cathodicProtectionFile = $event.files[0]; cathodicProtectionFileName=$event.files[0].name"
-                  [disabled]="!modalData?.cprequiredEnable"></p-fileUpload>
-                  <span *ngIf='cathodicProtectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{cathodicProtectionFileName}}</span>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.releaseDetectionReportURL!=null && modalData?.releaseDetectionReportSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.releaseDetectionReportURL)"><i class="fa fa-file-text-o"></i></a>
               </div>
-            </div>
-            <div class="ui-g-12 form-upload-padding file-upload-first">
-              <div class="ui-g-8">Tank Testing Report</div>
-              <div class="ui-g-4">
-                <p-fileUpload name="tankTestingReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #tankTestingReportFileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;tankTestingReportFile = $event.files[0]; tankTestingReportFileName=$event.files[0].name"
-                  [disabled]="!modalData?.tankTestingReportRequiredEnable"></p-fileUpload>
-                  <span *ngIf='tankTestingReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankTestingReportFileName}}</span>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.releaseDetectionReportEnable == true && modalData?.releaseDetectionReportURL == null && modalData?.releaseDetectionReportSubmitted == false">
+                <p-fileUpload name="releaseDetectionReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;releaseDetectionReportFile = $event.files[0]; releaseDetectionReportFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='releaseDetectionReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{releaseDetectionReportFileName}}</span>
               </div>
             </div>
             <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Repair Documents (Optional)</div>
-              <div class="ui-g-4">
-                <p-fileUpload name="repairDocumentsFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #repairDocumentsFileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;repairDocumentsFile = $event.files[0]; repairDocumentsFileName=$event.files[0].name"
-                  [disabled]="!modalData?.repairDocumentRequiredEnable"></p-fileUpload>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.repairDocumentsSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.repairDocumentsURL!=null && modalData?.repairDocumentsSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.repairDocumentsURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.repairDocumentsEnable == true && modalData?.repairDocumentsURL == null && modalData?.repairDocumentsSubmitted == false">
+                <p-fileUpload name="repairDocumentsFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
+                  customUpload="true" (onSelect)="enableComplianceuploadButton = true;repairDocumentsFile = $event.files[0]; repairDocumentsFileName=$event.files[0].name"
+                  ></p-fileUpload>
                   <span *ngIf='repairDocumentsFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{repairDocumentsFileName}}</span>
               </div>
             </div>
             <div class="ui-g-12 form-upload-padding file-upload-first">
-              <div class="ui-g-8">Release Detection Report</div>
-              <div class="ui-g-4">
-                <p-fileUpload name="releaseDetectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #releaseDetectionfileUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;releaseDetectionFile = $event.files[0]; releaseDetectionFileName=$event.files[0].name"
-                  [disabled]="!modalData?.releaseDetectionReportRequiredEnable"></p-fileUpload>
-                  <span *ngIf='releaseDetectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{releaseDetectionFileName}}</span>
+              <div class="ui-g-8">Line and Leak Detector Test</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.lineAndLeakDetectorSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.lineAndLeakDetectorURL!=null && modalData?.lineAndLeakDetectorSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.lineAndLeakDetectorURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.lineAndLeakDetectorEnable == true && modalData?.lineAndLeakDetectorURL == null && modalData?.lineAndLeakDetectorSubmitted == false">
+                <p-fileUpload name="lineAndLeakDetectorFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;lineAndLeakDetectorFile = $event.files[0]; lineAndLeakDetectorFileName=$event.files[0].name"
+                 ></p-fileUpload>
+                  <span *ngIf='lineAndLeakDetectorFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{lineAndLeakDetectorFileName}}</span>
+              </div>
+            </div>
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Tank Tightness Report</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankTestingReportSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankTestingReportURL!=null && modalData?.tankTestingReportSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.tankTestingReportURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf=" modalData?.tankTestingReportEnable == true && modalData?.tankTestingReportURL == null && modalData?.tankTestingReportSubmitted == false">
+                <p-fileUpload name="tankTestingReportFile]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;tankTestingReportFile = $event.files[0]; tankTestingReportFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='tankTestingReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankTestingReportFileName}}</span>
+              </div>
+            </div>
+            <div class="ui-g-12 form-upload-padding file-upload-first">
+              <div class="ui-g-8">Tank Cathodic Protection</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.cathodicProtectionSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.cathodicProtectionURL!=null && modalData?.cathodicProtectionSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.cathodicProtectionURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.cathodicProtectionFileEnable == true && modalData?.cathodicProtectionURL == null && modalData?.cathodicProtectionSubmitted == false">
+                <p-fileUpload name="cathodicProtectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;cathodicProtectionFile = $event.files[0]; cathodicProtectionFileName=$event.files[0].name"
+                 ></p-fileUpload>
+                  <span *ngIf='cathodicProtectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{cathodicProtectionFileName}}</span>
               </div>
             </div>
             <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Internal Lining Inspection</div>
-              <div class="ui-g-4">
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.internalLiningInspectionSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.internalLiningInspectionURL!=null && modalData?.internalLiningInspectionSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.internalLiningInspectionURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.internalLiningInspectionEnable == true && modalData?.internalLiningInspectionURL == null && modalData?.internalLiningInspectionSubmitted == false">
                 <p-fileUpload name="internalLiningFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #internalLiningUpload customUpload="true" (onSelect)="enableComplianceuploadButton = true;internalLiningFile = $event.files[0]; internalLiningFileName=$event.files[0].name"
-                  [disabled]="!modalData?.internalLiningInspectionRequiredEnable"></p-fileUpload>
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;internalLiningFile = $event.files[0]; internalLiningFileName=$event.files[0].name"
+                  ></p-fileUpload>
                   <span *ngIf='internalLiningFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{internalLiningFileName}}</span>
               </div>
             </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Piping Cathodic Protection</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.pipingCathodicProtectionSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.pipingCathodicProtectionURL!=null && modalData?.pipingCathodicProtectionSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.pipingCathodicProtectionURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.pipingCathodicProtectionFileSEnable == true && modalData?.pipingCathodicProtectionURL == null && modalData?.pipingCathodicProtectionSubmitted == false">
+                <p-fileUpload name="pipingCathodicProtectionFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;pipingCathodicProtectionFile = $event.files[0]; pipingCathodicProtectionFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='pipingCathodicProtectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{pipingCathodicProtectionFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Drop Tube Repair Document</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.dropTubeRepairDocumentSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.dropTubeRepairDocumentURL!=null && modalData?.dropTubeRepairDocumentSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.dropTubeRepairDocumentURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.dropTubeRepairDocumentEnable ==true && modalData?.dropTubeRepairDocumentURL == null && modalData?.dropTubeRepairDocumentSubmitted == false">
+                <p-fileUpload name="dropTubeRepairDocumentFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;dropTubeRepairDocumentFile = $event.files[0]; dropTubeRepairDocumentFileName=$event.files[0].name"
+                 ></p-fileUpload>
+                  <span *ngIf='dropTubeRepairDocumentFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{dropTubeRepairDocumentFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Tank Interstitial Monitoring</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankInterstitialMonitoringSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankInterstitialMonitoringURL!=null && modalData?.tankInterstitialMonitoringSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.tankInterstitialMonitoringURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.tankInterstitialMonitoringEnable == true && modalData?.tankInterstitialMonitoringURL == null && modalData?.tankInterstitialMonitoringSubmitted == false">
+                <p-fileUpload name="tankInterstitialMonitoringFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;tankInterstitialMonitoringFile = $event.files[0]; tankInterstitialMonitoringFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='tankInterstitialMonitoringFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankInterstitialMonitoringFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Piping Interstitial Monitoring</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.pipinginterstitialMonitoringSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.pipinginterstitialMonitoringURL!=null && modalData?.pipinginterstitialMonitoringSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.pipinginterstitialMonitoringURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.pipinginterstitialMonitoringEnable == true && modalData?.pipinginterstitialMonitoringURL == null && modalData?.pipinginterstitialMonitoringSubmitted == false">
+                <p-fileUpload name="pipinginterstitialMonitoringFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;pipinginterstitialMonitoringFile = $event.files[0]; pipinginterstitialMonitoringFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='pipinginterstitialMonitoringFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{pipinginterstitialMonitoringFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">ATG Test Report</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.atgTestReportSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.atgTestReportURL!=null && modalData?.atgTestReportSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.atgTestReportURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.atgTestReportEnable == true && modalData?.atgTestReportURL == null && modalData?.atgTestReportSubmitted == false">
+                <p-fileUpload name="atgTestReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;atgTestReportFile = $event.files[0]; atgTestReportFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='atgTestReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{atgTestReportFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">ATG Repair Report</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.atgRepairReportSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.atgRepairReportURL!=null && modalData?.atgRepairReportSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.atgRepairReportURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.atgRepairReportEnable == true && modalData?.atgRepairReportURL == null && modalData?.atgRepairReportSubmitted == false">
+                <p-fileUpload name="atgRepairReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;atgRepairReportFile = $event.files[0]; atgRepairReportFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='atgRepairReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{atgRepairReportFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Spill Bucket Testing Document</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.spillBucketTestingDocumentSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.spillBucketTestingDocumentURL!=null && modalData?.spillBucketTestingDocumentSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.spillBucketTestingDocumentURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.spillBucketTestingDocumentEnable == true && modalData?.spillBucketTestingDocumentURL == null && modalData?.spillBucketTestingDocumentSubmitted == false">
+                <p-fileUpload name="spillBucketTestingDocumentFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;spillBucketTestingDocumentFile = $event.files[0]; spillBucketTestingDocumentFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='spillBucketTestingDocumentFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{spillBucketTestingDocumentFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Spill Bucket Repair Document</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.spillBucketRepairDocumentSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.spillBucketRepairDocumentURL!=null && modalData?.spillBucketRepairDocumentSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.spillBucketRepairDocumentURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.spillBucketRepairDocumentEnable == true && modalData?.spillBucketRepairDocumentURL == null && modalData?.spillBucketRepairDocumentSubmitted == false">
+                <p-fileUpload name="spillBucketRepairDocumentFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;spillBucketRepairDocumentFile = $event.files[0]; spillBucketRepairDocumentFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='spillBucketRepairDocumentFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{spillBucketRepairDocumentFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Sump Maintenance Document</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.sumpMaintenanceDocumentSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.sumpMaintenanceDocumentURL!=null && modalData?.sumpMaintenanceDocumentSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.sumpMaintenanceDocumentURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.sumpMaintenanceDocumentEnable == true && modalData?.sumpMaintenanceDocumentURL == null && modalData?.sumpMaintenanceDocumentSubmitted == false">
+                <p-fileUpload name="sumpMaintenanceDocumentFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;sumpMaintenanceDocumentFile = $event.files[0]; sumpMaintenanceDocumentFileName=$event.files[0].name"
+                 ></p-fileUpload>
+                  <span *ngIf='sumpMaintenanceDocumentFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{sumpMaintenanceDocumentFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">UDC Maintenance Document</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.udcMaintenanceDocumentSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.udcMaintenanceDocumentURL!=null && modalData?.udcMaintenanceDocumentSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.udcMaintenanceDocumentURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.udcMaintenanceDocumentEnable == true && modalData?.udcMaintenanceDocumentURL == null && modalData?.udcMaintenanceDocumentSubmitted == false">
+                <p-fileUpload name="udcMaintenanceDocumentFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;udcMaintenanceDocumentFile = $event.files[0]; udcMaintenanceDocumentFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='udcMaintenanceDocumentFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{udcMaintenanceDocumentFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">SIR Report</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.sirReportSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.sirReportURL!=null && modalData?.sirReportSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.sirReportURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.sirReportEnable == true && modalData?.sirReportURL == null && modalData?.sirReportSubmitted == false">
+                <p-fileUpload name="sirReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;sirReportFile = $event.files[0]; sirReportFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='sirReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{sirReportFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Monthly Walk Through Report</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.monthlyWalkThroughReportSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.monthlyWalkThroughReportURL!=null && modalData?.monthlyWalkThroughReportSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.monthlyWalkThroughReportURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.monthlyWalkThroughReportEnable == true && modalData?.monthlyWalkThroughReportURL == null && modalData?.monthlyWalkThroughReportSubmitted == false">
+                <p-fileUpload name="monthlyWalkThroughReportFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;monthlyWalkThroughReportFile = $event.files[0]; monthlyWalkThroughReportFileName=$event.files[0].name"
+                 ></p-fileUpload>
+                  <span *ngIf='monthlyWalkThroughReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{monthlyWalkThroughReportFileName}}</span>
+              </div>
+            </div>
+
+            <div class="ui-g-12 form-upload-padding file-upload-second">
+              <div class="ui-g-8">Tank Monitor Static IP</div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankMonitorStaticIPSubmitted == true">
+                <div class="pending-text">Pending</div>
+              </div>
+            <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankMonitorStaticIPURL!=null && modalData?.tankMonitorStaticIPSubmitted == false">
+                <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.tankMonitorStaticIPURL)"><i class="fa fa-file-text-o"></i></a>
+              </div>
+ 
+            <div class="ui-g-4" *ngIf="modalData?.tankMonitorStaticIPEnable == true && modalData?.tankMonitorStaticIPURL == null && modalData?.tankMonitorStaticIPSubmitted == false">
+                <p-fileUpload name="tankMonitorStaticIPFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
+                   customUpload="true" (onSelect)="enableComplianceuploadButton = true;tankMonitorStaticIPFile = $event.files[0]; tankMonitorStaticIPFileName=$event.files[0].name"
+                  ></p-fileUpload>
+                  <span *ngIf='tankMonitorStaticIPFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankMonitorStaticIPFileName}}</span>
+              </div>
+            </div>
+            
           </form>
         </div>
         <div class="modal-footer">
@@ -527,28 +953,51 @@
           <form name="form" #certificationForm novalidate>
             <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Operator A certificate</div>
-              <div class="ui-g-4">
+
+              <div class="ui-g-4 "  *ngIf="modalData?.operatorAcertificateSubmitted == true">
+                  <div class="pending-text">Pending</div>
+                </div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorAcertificateURL!=null && modalData?.operatorAcertificateSubmitted == false">
+                  <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorAcertificateURL)"><i class="fa fa-file-text-o"></i></a>
+                </div>
+   
+              <div class="ui-g-4" *ngIf="modalData?.operatorAcertificateEnable == true && modalData?.operatorAcertificateURL == null && modalData?.operatorAcertificateSubmitted == false">
+                
                 <p-fileUpload name="certificateAFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #certificateAFileUpload customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorAcertificateFile = $event.files[0]; operatorAcertificateFileName=$event.files[0].name"
-                  [disabled]="!modalData?.operatorAcertificateEnable"></p-fileUpload>
+                   customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorAcertificateFile = $event.files[0]; operatorAcertificateFileName=$event.files[0].name"
+                  ></p-fileUpload>
                   <span *ngIf='operatorAcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorAcertificateFileName}}</span>
               </div>
             </div>
             <div class="ui-g-12 form-upload-padding file-upload-second">
               <div class="ui-g-8">Operator B certificate</div>
-              <div class="ui-g-4">
-                <p-fileUpload name="certificateBFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" #certificateBFileUpload
+              <div class="ui-g-4 "  *ngIf="modalData?.operatorBcertificateSubmitted == true">
+                  <div class="pending-text">Pending</div>
+                </div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorBcertificateURL!=null && modalData?.operatorBcertificateSubmitted == false">
+                  <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorBcertificateURL)"><i class="fa fa-file-text-o"></i></a>
+                </div>
+   
+              <div class="ui-g-4" *ngIf="modalData?.operatorBcertificateEnable == true && modalData?.operatorBcertificateURL == null && modalData?.operatorBcertificateSubmitted == false">
+                <p-fileUpload name="certificateBFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
                   customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorBcertificateFile = $event.files[0]; operatorBcertificateFileName=$event.files[0].name"
-                  [disabled]="!modalData?.operatorBcertificateEnable"></p-fileUpload>
+                  ></p-fileUpload>
                   <span *ngIf='operatorBcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorBcertificateFileName}}</span>
               </div>
             </div>
             <div class="ui-g-12 form-upload-padding file-upload-first">
               <div class="ui-g-8">Operator C certificate</div>
-              <div class="ui-g-4">
+              <div class="ui-g-4 "  *ngIf="modalData?.operatorCcertificateSubmitted == true">
+                  <div class="pending-text">Pending</div>
+                </div>
+              <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorCcertificateURL!=null && modalData?.operatorCcertificateSubmitted == false">
+                  <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorCcertificateURL)"><i class="fa fa-file-text-o"></i></a>
+                </div>
+   
+              <div class="ui-g-4" *ngIf="modalData?.operatorCcertificateEnable == true && modalData?.operatorCcertificateURL == null && modalData?.operatorCcertificateSubmitted == false">
                 <p-fileUpload name="certificateCFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
-                  #certificateCFiletFileUpload customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorCcertificateFile = $event.files[0]; operatorCcertificateFileName=$event.files[0].name"
-                  [disabled]="!modalData?.operatorCcertificateEnable"></p-fileUpload>
+                   customUpload="true" (onSelect)="enableCertificationuploadButton = true;operatorCcertificateFile = $event.files[0]; operatorCcertificateFileName=$event.files[0].name"
+                  ></p-fileUpload>
                   <span *ngIf='operatorCcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorCcertificateFileName}}</span>
               </div>
             </div>
@@ -1091,3 +1540,86 @@
   </div>
 
   <!-- search end -->
+
+  <!-- notification form start -->
+<div class="modal fade" id="tankReportsModal" tabindex="-1" role="dialog" aria-labelledby="tankReportsModal" aria-hidden="true">
+  <div class="modal-dialog  modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title modal-header-round" id="exampleModalCenterTitle">{{tankReportsModalTitle}}</div>
+        <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
+            &times;
+        </button>
+      </div>
+      <div class="modal-body file-upload-model">
+        <p-tabView>
+          <p-tabPanel header="{{tankReportTab1Title1}}">
+            <div class="simple-border"  [ngClass]="{'hidden-clsss':tankDetailsFirstTabKeys?.length ==0 }">
+
+                <div *ngFor="let key of tankDetailsFirstTabKeys; let i = index;" >
+                    <div class="ui-g"><span>{{key}}</span></div>
+                    <div class="ui-g">
+                        <div class="ui-g-4 bold-class">Result</div>
+                        <div class="ui-g-8 bold-class">Date</div>
+                      </div>
+                    <div *ngFor="let data of tankDetailsFirstTabData[key]; let i = index;" class="ui-g">
+                        <div class="ui-g-4">{{data.result__c}}</div>
+                        <div class="ui-g-8">{{data.date__c}}</div>
+                      </div>
+                </div>
+          
+          </div>
+          </p-tabPanel>
+          <p-tabPanel header="{{tankReportTab1Title2}}">
+              <div class="simple-border" [ngClass]="{'hidden-clsss':tankDetailsSecondTabKeys?.length ==0 }">
+
+                  <div *ngFor="let key of tankDetailsSecondTabKeys; let i = index;" >
+                      <div class="ui-g"><span>{{key}}</span></div>
+                      <div class="ui-g">
+                          <div class="ui-g-4 bold-class">Result</div>
+                          <div class="ui-g-8 bold-class">Date</div>
+                        </div>
+                      <div *ngFor="let data of tankDetailsSecondTabData[key]; let i = index;" class="ui-g">
+                          <div class="ui-g-4">{{data.result__c}}</div>
+                          <div class="ui-g-8">{{data.date__c}}</div>
+                        </div>
+                  </div>
+            
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="{{tankReportTab1Title3}}" >
+              <div class="simple-border" [ngClass]="{'hidden-clsss':tankDetailsThirdTabKeys?.length ==0 }">
+
+                  <div *ngFor="let key of tankDetailsThirdTabKeys; let i = index;" >
+                      <div class="ui-g"><span>{{key}}</span></div>
+                      <div class="ui-g">
+                          <div class="ui-g-4 bold-class">Result</div>
+                          <div class="ui-g-8 bold-class">Date</div>
+                        </div>
+                      <div *ngFor="let data of tankDetailsThirdTabData[key]; let i = index;" class="ui-g">
+                          <div class="ui-g-4">{{data.result__c}}</div>
+                          <div class="ui-g-8">{{data.date__c}}</div>
+                        </div>
+                  </div>
+                  </div>
+          </p-tabPanel>
+        </p-tabView>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+       </div>
+    </div>
+  </div>
+</div>
+<!-- notification form end -->
+
+<div  *ngIf="documentURL !== null" class="modal fade" id="notificationcontentModal" role="dialog" >
+    <div class="modal-dialog modal-lg" style="height:90%">
+      <div class="modal-content" style="height:100%">
+        <div class="modal-body" style="height:100%">
+            <iframe [src]="documentURL | safe"  width="100%"  style="border: none;height: calc(100% - 5px)"></iframe>
+        </div>
+       
+      </div>
+    </div>
+  </div>

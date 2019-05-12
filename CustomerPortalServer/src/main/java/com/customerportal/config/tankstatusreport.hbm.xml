@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.customerportal.bean.Tankstatusreport" table="tankstatusreport__c">
+		<id name="id">
+			<column name="id" />
+		</id>
+		<property name="name" column="Name" />
+		<property name="facility__c" column="Facility__c" />
+		<property name="fid__c" column="FID__c" />
+		<property name="product__c" column="Product__c" />
+		<property name="date__c" column="RunDate__c" />
+		<property name="status__c" column="Status__c" />
+		<property name="tank__c" column="Tank__c" />
+		<property name="hours__c" column="HOURS__c" />
+		<property name="rate__c" column="RATE__c" />
+		<property name="result__c" column="RESULT__c" />
+		<property name="startTime__c" column="STARTTIME__c" />
+		
+
+	</class>
+</hibernate-mapping>

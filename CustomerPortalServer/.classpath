@@ -24,9 +24,9 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gson-2.8.5.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/genson-1.4.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/force-wsc-43.0.0.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/salesforcemapping.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/ST-4.0.8.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/javax.mail.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/salesforcemapping.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

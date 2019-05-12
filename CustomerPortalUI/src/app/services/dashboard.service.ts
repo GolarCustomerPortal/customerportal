@@ -20,7 +20,7 @@ export class DashboardService {
   }
   
   getFacilitiesList(userId,type) {
-    return this.http.get(URLConstants.FaCILITIES_URL,this.getFacilitiesOptions(userId,type))
+    return this.http.get(URLConstants.FACILITIES_URL,this.getFacilitiesOptions(userId,type))
         .map(FacilitiesData => {
             
             return FacilitiesData;
@@ -47,6 +47,20 @@ getNotifictionUploadData(FacilitiesId){
           return FacilitiesData;
       });
 }
+getUSTComplianceData(FacilitiesId){
+    return this.http.get(URLConstants.FACILITIES_UST_COMPLIANCE_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
+        .map(FacilitiesData => {
+            
+            return FacilitiesData;
+        });
+  }
+  getOperatorCertificatesData(FacilitiesId){
+    return this.http.get(URLConstants.FACILITIES_OPERATOR_CERTIFICATES_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
+        .map(FacilitiesData => {
+            
+            return FacilitiesData;
+        });
+  }
 searchResults(searchType:string,searchString: string,username: string,isadmin:boolean) {
     return this.http.get(URLConstants.SEARCH_URL,this.getSearchOptions(searchType,searchString,username,isadmin))
         .map(folder => {
@@ -185,5 +199,53 @@ private getSearchOptions(searchType,searchString,username,isadmin) {
     return {
       params: new HttpParams().set(CRMConstants.USER_ID,userId).set(CRMConstants.FACILITIES_TYPE,type)
     };
-  }  
+  } 
+  private getLeakTankOptions(userId,facilitiesId) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,userId).set(CRMConstants.FACILITIES_ID,facilitiesId)
+    };
+  }   
+
+  getLeakTankDetails(userId,facilitiesId) {
+    return this.http.get(URLConstants.LEAKTANK_DETAILS,this.getLeakTankOptions(userId,facilitiesId))
+        .map(result => {
+            
+            return result;
+        });
+}
+getTankStatusDetails(userId,facilitiesId) {
+    return this.http.get(URLConstants.TANK_STATUS_DETAILS,this.getLeakTankOptions(userId,facilitiesId))
+        .map(result => {
+            
+            return result;
+        });
+}
+getCSLDTestDetails(userId,facilitiesId) {
+    return this.http.get(URLConstants.CSLD_TEST_DETAILS,this.getLeakTankOptions(userId,facilitiesId))
+        .map(result => {
+            
+            return result;
+        });
+}
+resetLeakTankDetails(facilitiesId){
+    return this.http.post(URLConstants.LEAKTANK_DETAILS, facilitiesId)
+     .map(result => {
+         // Registration response 
+         return result;
+     });
+}
+resetTankStatusDetails(facilitiesId){
+    return this.http.post(URLConstants.TANK_STATUS_DETAILS, facilitiesId)
+     .map(result => {
+         // Registration response 
+         return result;
+     });
+}
+resetCSLDTestDetails(facilitiesId){
+    return this.http.post(URLConstants.CSLD_TEST_DETAILS, facilitiesId)
+     .map(result => {
+         // Registration response 
+         return result;
+     });
+}
 }

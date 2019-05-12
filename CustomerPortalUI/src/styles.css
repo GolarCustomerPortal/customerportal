@@ -155,8 +155,25 @@ background: #ebf7ec !important;
     background-color: #afe1b6 !important;
     color: #2c347e !important; 
 }
+.btn-tank-circle {
+    width: 70px;
+    height: 70px;
+    padding: 6px 0px;
+    border-radius: 50px !important;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.42857;
+    background-color: transparent !important;
+    color: #2c347e !important;
+}
 .facility-button-background-red{
-    background-color: #ef4136  !important;
+    border: 13px solid #ef4136  !important;
+}
+.facility-button-background-gray{
+    border: 13px solid #A5A5A5  !important;
+}
+.facility-button-background-green{
+    border: 13px solid #38b54a  !important;
 }
 .p-sidebar{
     height: calc(100vh - 100px) !important;
@@ -237,9 +254,10 @@ background: #ebf7ec !important;
 }
 .file-upload-font{
     font-size: 12px;
+    display: block;
 }
 .file-upload-model{
-    max-height: calc(100vh - 170px);
+    max-height: calc(100vh - 210px);
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -515,3 +533,34 @@ td{
       font-weight: bold;
       color:#ef4136  !important;
   }
+  .font-awsome-file{
+      font-size: 25px;
+      text-align: center;
+      cursor: pointer;
+  }
+  .pending-text{
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;  
+  }
+  .fa-plus:before{
+    content: "\f093";
+  }
+  p-fileupload .ui-button-text-icon-left .ui-button-text{
+      padding:14px
+  }
+  p-fileupload .ui-fileupload-choose {
+    border: 1px solid transparent !important;
+    color: #2c347e !important;
+    background: transparent !important;
+    border-radius: 10px !important;
+    font-size: 22px;
+    width: 40px;
+}
+#notificationFormModal .ui-g-4 , #certificationFormModal .ui-g-4, #complianceFormModal .ui-g-4 {
+    text-align: center !important;
+}
+#tank-report .ui-g-12 ,#tank-report .ui-g-4{
+    padding:0px;
+    text-align: center;
+}

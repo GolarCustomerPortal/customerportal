@@ -22,6 +22,13 @@ export class HomeComponent implements OnInit {
       $(this).find('form')[0].reset();
       self.resetNotificationForm(null,true);
     })
+
+    $('#notificationcontentModal').on('hidden.bs.modal', function (e) {
+      self.documentURL= null;
+    })
+    $('#tankReportsModal').on('hidden.bs.modal', function (e) {
+      self.resetTankReports();
+    })
     $('#complianceFormModal').on('hidden.bs.modal', function (e) {
       $(this).find('form')[0].reset();
       self.resetComplianceForm(null,true);
@@ -63,7 +70,7 @@ export class HomeComponent implements OnInit {
   newsFeedVisible = true;
   notificationForm;
   dashboardConst = CRMConstants;
-  uploadLabel = "Browse"
+  uploadLabel = ""
 
   GUTTER_COLOR = "#d3e8c8";
   showSearchResults = false;
@@ -84,36 +91,57 @@ export class HomeComponent implements OnInit {
   //search end
 
   // notification fileupload start
-  fOperatorFileName;
-  fOperatorfile;
-  fOperatorfileSuccess = "false";
-  ownerFileName;
-  ownerFile;
-  ownerFileSuccess = "false";
+  operatorBusinessFileName;
+  operatorBusinessFile;
+  operatorBusinessFileSuccess = "false";
+
+  propertyFileName;
+  propertyFile;
+  propertyFileSuccess = "false";
+
+
+  ustOwnerBusinessFileName;
+  ustOwnerBusinessFile;
+  ustOwnerBusinessFileSuccess = "false";
+  
+  operatorOwnerFileName;
+  operatorOwnerFile;
+  operatorOwnerFileSuccess = "false";
+
+  propertyOwnerFileName;
+  propertyOwnerFile;
+  propertyOwnerSuccess = "false";
+
   ustOwnerFileName;
   ustOwnerFile;
   ustOwnerFileSuccess = "false";
-  operatorLeaseFileName;
-  operatorLeaseFile;
-  operatorLeaseFileSuccess = "false";
 
-  facilitySiteMapFileName;
-  facilitySiteMapFile;
-  facilitySiteMapSuccess = "false";
-
-  sosStatusFileName;
-  sosStatusFile;
-  sosStatusFileSuccess = "false";
+  operatorLeaseAgreementFileName;
+  operatorLeaseAgreementFile;
+  operatorLeaseAgreementFileSuccess = "false";
   
   ownerAffidavitFileName;
   ownerAffidavitFile;
   ownerAffidavitFileSuccess = "false";
-  deedLandFileName;
-  deedLandFile;
-  deedLandFileSuccess = "false";
-  taxIdFileName;
-  taxIdFile;
-  taxIdFileSuccess = "false";
+ 
+  financialResponsibilityFileName;
+  financialResponsibilityFile;
+  financialResponsibilityFileSuccess = "false";
+
+  deedOrLandContractFileName;
+  deedOrLandContractFile;
+  deedOrLandContractFileSuccess = "false";
+
+  facilitySiteMapFileName;
+  facilitySiteMapFile;
+  facilitySiteMapFileSuccess = "false";
+
+  cofaLinkFileName;
+  cofaLinkFile;
+  cofaLinkFileSuccess = "false";
+
+  
+
   notificationFormSubmittedFileName;
   notificationFormSubmittedFile;
   notificationFormSubmittedFileSuccess = "false";
@@ -128,35 +156,100 @@ export class HomeComponent implements OnInit {
   operatorAcertificateFileName;
   operatorAcertificateFile;
   operatorAcertificateFileSuccess = "false";
+
   operatorBcertificateFileName;
   operatorBcertificateFile;
   operatorBcertificateFileSuccess = "false";
+  
   operatorCcertificateFileName;
   operatorCcertificateFile;
   operatorCcertificateFileSuccess = "false";
+  
   enableCertificationuploadButton = false;
   certificationResultList = [];
   //certification file upload end
 
   // compliance fileupload start
-  lineLeakFileName;
-  lineLeakFile;
-  lineLeakFileSuccess = "false";
-  cathodicProtectionFileName;
-  cathodicProtectionFile;
-  cathodicProtectionFileSuccess = "false";
-  tankTestingReportFileName;
-  tankTestingReportFile;
-  tankTestingReportFileSuccess = "false";
+  releaseDetectionReportFileName;
+  releaseDetectionReportFile;
+  releaseDetectionReportFileSuccess = "false";
+
   repairDocumentsFileName;
   repairDocumentsFile;
   repairDocumentsFileSuccess = "false";
-  releaseDetectionFileName;
-  releaseDetectionFile;
-  releaseDetectionFileSuccess = "false";
+
+  tankTestingReportFileName;
+  tankTestingReportFile;
+  tankTestingReportFileSuccess = "false";
+
+  lineAndLeakDetectorFileName;
+  lineAndLeakDetectorFile;
+  lineAndLeakDetectorFileSuccess = "false";
+
+  cathodicProtectionFileName;
+  cathodicProtectionFile;
+  cathodicProtectionFileSuccess = "false";
+
   internalLiningFileName;
   internalLiningFile;
   internalLiningFileSuccess = "false";
+
+  
+  pipingCathodicProtectionFileName;
+  pipingCathodicProtectionFile;
+  pipingCathodicProtectionFileSuccess = "false";
+
+  dropTubeRepairDocumentFileName;
+  dropTubeRepairDocumentFile;
+  dropTubeRepairDocumentFileSuccess = "false";
+  
+  tankInterstitialMonitoringFileName;
+  tankInterstitialMonitoringFile;
+  tankInterstitialMonitoringFileSuccess = "false";
+
+  pipinginterstitialMonitoringFileName;
+  pipinginterstitialMonitoringFile;
+  pipinginterstitialMonitoringFileSuccess = "false";
+  
+  atgTestReportFileName;
+  atgTestReportFile;
+  atgTestReportFileSuccess = "false";
+
+  atgRepairReportFileName;
+  atgRepairReportFile;
+  atgRepairReportFileSuccess = "false";
+
+  spillBucketTestingDocumentFileName;
+  spillBucketTestingDocumentFile;
+  spillBucketTestingDocumentFileSuccess = "false";
+
+  spillBucketRepairDocumentFileName;
+  spillBucketRepairDocumentFile;
+  spillBucketRepairDocumentFileSuccess = "false";
+
+  sumpMaintenanceDocumentFileName;
+  sumpMaintenanceDocumentFile;
+  sumpMaintenanceDocumentFileSuccess = "false";
+
+  udcMaintenanceDocumentFileName;
+  udcMaintenanceDocumentFile;
+  udcMaintenanceDocumentFileSuccess = "false";
+
+  sirReportFileName;
+  sirReportFile;
+  sirReportFileSuccess = "false";
+
+  monthlyWalkThroughReportFileName;
+  monthlyWalkThroughReportFile;
+  monthlyWalkThroughReportFileSuccess = "false";
+
+  tankMonitorStaticIPFileName;
+  tankMonitorStaticIPFile;
+  tankMonitorStaticIPFileSuccess = "false";
+
+  
+  
+  
   enableComplianceuploadButton = false;
   complianceResultList = [];
 
@@ -172,7 +265,23 @@ export class HomeComponent implements OnInit {
   visibleSidebar = false;
   showUploadLoading=false;
   //right side panel variables end
-
+//tank reports panel variables start
+tankReportsModalTitle
+tankReportTab1Title1;
+tankReportTab1Title2;
+tankReportTab1Title3;
+tankDetailsData;
+tankDetailsFirstTabData;
+tankDetailsSecondTabData;
+tankDetailsThirdTabData;
+tankDetailsFirstTabKeys;
+tankDetailsSecondTabKeys;
+tankDetailsThirdTabKeys;
+tankDetailsKeys;
+tankDetailsDataKeys;
+documentURL=null;
+selectedTankReportTTab;
+// tank reports panel variables end
 
   //app component code start
   area = {
@@ -430,6 +539,11 @@ export class HomeComponent implements OnInit {
     this.rightDetailsContent.notificationFormButtonEnable = fdata.notificationFormButtonEnable;
     this.rightDetailsContent.complianceButtonEnable = fdata.complianceButtonEnable;
     this.rightDetailsContent.certificationButtonEnable = fdata.certificationButtonEnable;
+    
+    this.rightDetailsContent.leakTankTestButtonStatus = fdata.leakTankTestButtonStatus;
+    this.rightDetailsContent.tankStatusButtonStatus = fdata.tankStatusButtonStatus;
+    this.rightDetailsContent.csldButtonStatus = fdata.csldButtonStatus;
+
     this.rightDetailsContent.address = fdata.address;
     this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
     this.rightDetailsContent.paidService = fdata.paidService;
@@ -450,6 +564,7 @@ export class HomeComponent implements OnInit {
     this.actualServerData.fid = fdata.fid;
     this.actualServerData.street = fdata.street;
     this.actualServerData.city = fdata.city;
+    this.actualServerData.requestFrom = "golarsTank";
 
 
   }
@@ -884,6 +999,54 @@ export class HomeComponent implements OnInit {
           console.log(error);
         });
   }
+  getUSTComplianceData(facilitiesId) {
+    this.dashboardService.getUSTComplianceData(facilitiesId) // retrieve all thd parent folders
+      .subscribe(
+        modalData => {
+          this.modalData = modalData;
+        },
+        error => {
+          console.log(error);
+        });
+  }
+  getCertificationData(facilitiesId) {
+    this.dashboardService.getOperatorCertificatesData(facilitiesId) // retrieve all thd parent folders
+      .subscribe(
+        modalData => {
+          this.modalData = modalData;
+        },
+        error => {
+          console.log(error);
+        });
+  }
+
+  getTankLeakTestButtonClass(rightDetailsContent) {
+    if ((rightDetailsContent.leakTankTestButtonStatus != null && rightDetailsContent.leakTankTestButtonStatus == "#ff0000"))
+      return 'facility-button-background-red'
+      else if ((rightDetailsContent.leakTankTestButtonStatus != null && rightDetailsContent.leakTankTestButtonStatus == "#00FF00"))
+      return 'facility-button-background-green'
+      else if ((rightDetailsContent.leakTankTestButtonStatus != null && rightDetailsContent.leakTankTestButtonStatus == "#808080"))
+      return 'facility-button-background-gray'
+    return ""
+  }
+  getTankStatusButtonClass(rightDetailsContent) {
+    if ((rightDetailsContent.tankStatusButtonStatus != null && rightDetailsContent.tankStatusButtonStatus == "#ff0000"))
+      return 'facility-button-background-red'
+      else if ((rightDetailsContent.tankStatusButtonStatus != null && rightDetailsContent.tankStatusButtonStatus == "#00FF00"))
+      return 'facility-button-background-green'
+      else if ((rightDetailsContent.tankStatusButtonStatus != null && rightDetailsContent.tankStatusButtonStatus == "#808080"))
+      return 'facility-button-background-gray'
+    return ""
+  }
+  getCSCLTestButtonClass(rightDetailsContent) {
+    if ((rightDetailsContent.csldButtonStatus != null && rightDetailsContent.csldButtonStatus == "#ff0000"))
+      return 'facility-button-background-red'
+      else if ((rightDetailsContent.csldButtonStatus != null && rightDetailsContent.csldButtonStatus == "#00FF00"))
+      return 'facility-button-background-green'
+      else if ((rightDetailsContent.csldButtonStatus != null && rightDetailsContent.csldButtonStatus == "#808080"))
+      return 'facility-button-background-gray'
+    return ""
+  }
 
   getNotificationFormButtonClass(rightDetailsContent) {
     if ((rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == "true"))
@@ -924,33 +1087,43 @@ export class HomeComponent implements OnInit {
     frmData.append("docProperties", this.getDocumentProperties());
 
     frmData.append("facilityId", this.rightDetailsContent.facilityId);
-    if (this.fOperatorfile != null) {
-      this.generateFileUploadObj(this.fOperatorfile, frmData, 'facilityOperatorPOA', fileuploadlabelArray)
+    if (this.operatorBusinessFile != null) {
+      this.generateFileUploadObj(this.operatorBusinessFile, frmData, 'operatorBusinessFile', fileuploadlabelArray)
     }
-    if (this.ownerFile != null) {
-      this.generateFileUploadObj(this.ownerFile, frmData, 'propertyOwnerPOA', fileuploadlabelArray)
+    if (this.propertyFile != null) {
+      this.generateFileUploadObj(this.propertyFile, frmData, 'propertyOwnerBusiness', fileuploadlabelArray)
     }
-    if (this.ustOwnerFile != null) {
-      this.generateFileUploadObj(this.ustOwnerFile, frmData, 'ustOwnerPOA', fileuploadlabelArray)
+    if (this.ustOwnerBusinessFile != null) {
+      this.generateFileUploadObj(this.ustOwnerBusinessFile, frmData, 'ustOwnerBusiness', fileuploadlabelArray)
     }
-    if (this.operatorLeaseFile != null) {
-      this.generateFileUploadObj(this.operatorLeaseFile, frmData, 'operatorLeaseAgreement', fileuploadlabelArray)
+    if (this.operatorOwnerFile != null) {
+      this.generateFileUploadObj(this.operatorOwnerFile, frmData, 'operatorOwnerTaxID', fileuploadlabelArray)
+    }
+    if (this.propertyOwnerFile != null) {
+      this.generateFileUploadObj(this.propertyOwnerFile, frmData, 'propertyOwnerTaxID', fileuploadlabelArray)
+    }
+    if (this.deedOrLandContractFile != null) {
+      this.generateFileUploadObj(this.deedOrLandContractFile, frmData, 'deedOrLandContract', fileuploadlabelArray)
     }
     if (this.facilitySiteMapFile != null) {
       this.generateFileUploadObj(this.facilitySiteMapFile, frmData, 'facilitySiteMap', fileuploadlabelArray)
     }
-    if (this.sosStatusFile != null) {
-      this.generateFileUploadObj(this.sosStatusFile, frmData, 'sosStatus', fileuploadlabelArray)
+    if (this.cofaLinkFile != null) {
+      this.generateFileUploadObj(this.cofaLinkFile, frmData, 'cofaLink', fileuploadlabelArray)
+    }
+    
+    if (this.ustOwnerFile != null) {
+      this.generateFileUploadObj(this.ustOwnerFile, frmData, 'ustOwnerTaxId', fileuploadlabelArray)
     }
     if (this.ownerAffidavitFile != null) {
       this.generateFileUploadObj(this.ownerAffidavitFile, frmData, 'ownerAffidevitOfLease', fileuploadlabelArray)
     }
-    if (this.deedLandFile != null) {
-      this.generateFileUploadObj(this.deedLandFile, frmData, 'propertyDeedLandContract', fileuploadlabelArray)
+    if (this.operatorLeaseAgreementFile != null) {
+      this.generateFileUploadObj(this.operatorLeaseAgreementFile, frmData, 'operatorLeaseAgreement', fileuploadlabelArray)
     }
 
-    if (this.taxIdFile != null) {
-      this.generateFileUploadObj(this.taxIdFile, frmData, 'taxIDInformation', fileuploadlabelArray)
+    if (this.financialResponsibilityFile != null) {
+      this.generateFileUploadObj(this.financialResponsibilityFile, frmData, 'financialResponsibility', fileuploadlabelArray)
     }
     if (this.notificationFormSubmittedFile != null) {
       this.generateFileUploadObj(this.notificationFormSubmittedFile, frmData, 'notificationFormSubmitted', fileuploadlabelArray)
@@ -974,42 +1147,58 @@ export class HomeComponent implements OnInit {
             // this.successMessage = "File(s) Uploaded Successfully !!";
             this.notificationResultList = result;
             for (var i = 0; i < result.length; i++) {
-              if (result[i].key == 'facilityOperatorPOA'){
-                this.fOperatorfileSuccess = result[i].value;
-                this.modalData.facilityOperatorPOAEnable = false;
+              if (result[i].key == 'operatorBusinessFile'){
+                this.operatorBusinessFileSuccess = result[i].value;
+                this.modalData.operatorBusinessSubmitted = true;
               }
-              if (result[i].key == 'propertyOwnerPOA'){
-                this.ownerFileSuccess = result[i].value;
-                this.modalData.propertyOwnerPOAEnable = false;
+              if (result[i].key == 'propertyOwnerBusiness'){
+                this.propertyFileSuccess = result[i].value;
+                this.modalData.propertyOwnerBusinessSubmitted = true;
               }
-              if (result[i].key == 'ustOwnerPOA'){
+              if (result[i].key == 'ustOwnerBusiness'){
+                this.ustOwnerBusinessFileSuccess = result[i].value;
+                this.modalData.ustOwnerBusinessSubmitted = true;
+              }
+              if (result[i].key == 'operatorOwnerTaxID'){
+                this.operatorOwnerFileSuccess = result[i].value;
+                this.modalData.operatorOwnerSubmitted = true;
+              }
+                if (result[i].key == 'propertyOwnerTaxID'){
+                this.propertyOwnerSuccess = result[i].value;
+                this.modalData.propertyOwnerTaxIDSubmitted = true;
+              }
+              if (result[i].key == 'ustOwnerTaxId'){
                 this.ustOwnerFileSuccess = result[i].value;
-                this.modalData.ustOwnerPOAEnable = false;
+                this.modalData.ustOwnerSubmitted = true;
               }
               if (result[i].key == 'operatorLeaseAgreement'){
-                this.operatorLeaseFileSuccess = result[i].value;
-                this.modalData.operatorLeaseAgreementEnable = false;
+                this.operatorLeaseAgreementFileSuccess = result[i].value;
+                this.modalData.operatorLeaseAgreementSubmitted = true;
               }
-                if (result[i].key == 'facilitySiteMap'){
-                this.facilitySiteMapSuccess = result[i].value;
-                this.modalData.facilitySiteMapEnable = false;
+              if (result[i].key == 'financialResponsibility'){
+                this.financialResponsibilityFileSuccess = result[i].value;
+                this.modalData.financialResponsibilitySubmitted = true;
               }
-              if (result[i].key == 'sosStatus'){
-                this.sosStatusFileSuccess = result[i].value;
-                this.modalData.sosStatusEnable = false;
+              if (result[i].key == 'deedOrLandContract'){
+                this.deedOrLandContractFileSuccess = result[i].value;
+                this.modalData.propertyDeedLandContractEnable = true;
               }
+              if (result[i].key == 'facilitySiteMap'){
+                this.facilitySiteMapFileSuccess = result[i].value;
+                this.modalData.facilitySiteMapSubmitted = true;
+              }
+              if (result[i].key == 'cofaLink'){
+                this.cofaLinkFileSuccess = result[i].value;
+                this.modalData.cofaLinkSubmitted = true;
+              }
+              
+              
               if (result[i].key == 'ownerAffidevitOfLease'){
                 this.ownerAffidavitFileSuccess = result[i].value;
                 this.modalData.ownerAffidevitOfLeaseEnable= false; 
               }
-              if (result[i].key == 'propertyDeedLandContract'){
-                this.deedLandFileSuccess = result[i].value;
-                this.modalData.propertyDeedLandContractEnable = false;
-              }
-              if (result[i].key == 'taxIDInformation'){
-                this.taxIdFileSuccess = result[i].value;
-                this.modalData.taxIDInformationEnable = false;
-              }
+              
+             
               // if (result[i].key == 'notificationFormSubmitted'){
               //   this.notificationFormSubmittedFileSuccess = result[i].value;
               //   this.modalData.ustOwnerPOAEnable = false;
@@ -1035,39 +1224,45 @@ export class HomeComponent implements OnInit {
   }
   resetNotificationForm(frmData,clearTick) {
     this.showUploadLoading = false;
-    this.fOperatorFileName = "";
-    this.ownerFileName = "";
+    this.operatorBusinessFileName = "";
+    this.propertyFileName = "";
+    this.ustOwnerBusinessFileName = "";
+    this.operatorOwnerFileName = "";
+    this.propertyOwnerFileName = "";
     this.ustOwnerFileName = "";
-    this.operatorLeaseFileName = "";
-    this.facilitySiteMapFileName = "";
-    this.sosStatusFileName = "";
     this.ownerAffidavitFileName = "";
-    this.deedLandFileName = "";
-    this.taxIdFileName = "";
+    this.operatorLeaseAgreementFileName = "";
+    this.financialResponsibilityFileName = "";
+    this.deedOrLandContractFileName=""
+    this.facilitySiteMapFileName="";
+    this.cofaLinkFileName="";
     this.notificationFormSubmittedFileName = "";
     this.letterOfNetworthCertificationFileName = "";
     // clearing form names start
-    this.fOperatorfile = null;
-    this.ownerFile = null;
+    this.operatorBusinessFile = null;
+    this.propertyFile = null;
+    this.ustOwnerBusinessFile = null;
+    this.operatorOwnerFile = null;
+    this.propertyOwnerFile  = null;
     this.ustOwnerFile = null;
-    this.operatorLeaseFile = null;
-    this.facilitySiteMapFile  = null;
-    this.sosStatusFile = null;
     this.ownerAffidavitFile = null;
-    this.deedLandFile = null;
-    this.taxIdFile  = null;
+    this.operatorLeaseAgreementFile = null;
+    this.financialResponsibilityFile  = null;
     this.letterOfNetworthCertificationFile = null;
     //clearing form names end
     if (clearTick) {
-      this.fOperatorfileSuccess = "false";
-      this.ownerFileSuccess = "false";
+      this.operatorBusinessFileSuccess = "false";
+      this.propertyFileSuccess = "false";
+      this.ustOwnerBusinessFileSuccess = "false";
+      this.operatorOwnerFileSuccess = "false";
+      this.propertyOwnerSuccess = "false";
+      this.deedOrLandContractFileSuccess="false"
+      this.facilitySiteMapFileSuccess="false";
+      this.cofaLinkFileSuccess="false";
       this.ustOwnerFileSuccess = "false";
-      this.operatorLeaseFileSuccess = "false";
-      this.facilitySiteMapSuccess = "false";
-      this.sosStatusFileSuccess = "false";
       this.ownerAffidavitFileSuccess = "false";
-      this.deedLandFileSuccess = "false";
-      this.taxIdFileSuccess = "false";
+      this.operatorLeaseAgreementFileSuccess = "false";
+      this.financialResponsibilityFileSuccess = "false";
       this.letterOfNetworthCertificationFileSuccess = "false"
     }
     this.enableNotificationuploadButton = false;
@@ -1087,23 +1282,63 @@ export class HomeComponent implements OnInit {
     frmData.append("docProperties", this.getDocumentProperties());
 
     frmData.append("facilityId", this.rightDetailsContent.facilityId);
-    if (this.lineLeakFile != null) {
-      this.generateFileUploadObj(this.lineLeakFile, frmData, 'lineAndLeakDetector', complianceUploadArray)
-    }
-    if (this.cathodicProtectionFile != null) {
-      this.generateFileUploadObj(this.cathodicProtectionFile, frmData, 'cathodicProtection', complianceUploadArray)
-    }
-    if (this.tankTestingReportFile != null) {
-      this.generateFileUploadObj(this.tankTestingReportFile, frmData, 'tankTestingReport', complianceUploadArray)
+    if (this.releaseDetectionReportFile != null) {
+      this.generateFileUploadObj(this.releaseDetectionReportFile, frmData, 'releaseDetectionReport', complianceUploadArray)
     }
     if (this.repairDocumentsFile != null) {
       this.generateFileUploadObj(this.repairDocumentsFile, frmData, 'repairDocuments', complianceUploadArray)
     }
-    if (this.releaseDetectionFile != null) {
-      this.generateFileUploadObj(this.releaseDetectionFile, frmData, 'releaseDetectionReport', complianceUploadArray)
+    if (this.lineAndLeakDetectorFile != null) {
+      this.generateFileUploadObj(this.lineAndLeakDetectorFile, frmData, 'lineAndLeakDetector', complianceUploadArray)
+    }
+ 
+    if (this.tankTestingReportFile != null) {
+      this.generateFileUploadObj(this.tankTestingReportFile, frmData, 'tankTestingReport', complianceUploadArray)
+    }
+    if (this.cathodicProtectionFile != null) {
+      this.generateFileUploadObj(this.cathodicProtectionFile, frmData, 'cathodicProtection', complianceUploadArray)
     }
     if (this.internalLiningFile != null) {
-      this.generateFileUploadObj(this.internalLiningFile, frmData, 'internalLiningInspection', complianceUploadArray)
+      this.generateFileUploadObj(this.internalLiningFile, frmData, 'internalLining', complianceUploadArray)
+    }
+    if (this. pipingCathodicProtectionFile != null) {
+      this.generateFileUploadObj(this. pipingCathodicProtectionFile, frmData, 'pipingCathodicProtection', complianceUploadArray)
+    }
+    if (this. dropTubeRepairDocumentFile != null) {
+      this.generateFileUploadObj(this. dropTubeRepairDocumentFile, frmData, 'dropTubeRepairDocument', complianceUploadArray)
+    }
+    if (this. tankInterstitialMonitoringFile != null) {
+      this.generateFileUploadObj(this. tankInterstitialMonitoringFile, frmData, 'tankInterstitialMonitoring', complianceUploadArray)
+    }
+    if (this. pipinginterstitialMonitoringFile != null) {
+      this.generateFileUploadObj(this. pipinginterstitialMonitoringFile, frmData, 'pipinginterstitialMonitoring', complianceUploadArray)
+    }
+    if (this. atgTestReportFile != null) {
+      this.generateFileUploadObj(this. atgTestReportFile, frmData, 'atgTestReport', complianceUploadArray)
+    }
+    if (this. atgRepairReportFile != null) {
+      this.generateFileUploadObj(this. atgRepairReportFile, frmData, 'atgRepairReport', complianceUploadArray)
+    }
+    if (this. spillBucketTestingDocumentFile != null) {
+      this.generateFileUploadObj(this. spillBucketTestingDocumentFile, frmData, 'spillBucketTestingDocument', complianceUploadArray)
+    }
+    if (this. spillBucketRepairDocumentFile != null) {
+      this.generateFileUploadObj(this. spillBucketRepairDocumentFile, frmData, 'spillBucketRepairDocument', complianceUploadArray)
+    }
+    if (this. sumpMaintenanceDocumentFile != null) {
+      this.generateFileUploadObj(this. sumpMaintenanceDocumentFile, frmData, 'sumpMaintenanceDocument', complianceUploadArray)
+    }
+    if (this. udcMaintenanceDocumentFile != null) {
+      this.generateFileUploadObj(this. udcMaintenanceDocumentFile, frmData, 'udcMaintenanceDocument', complianceUploadArray)
+    }
+    if (this. sirReportFile != null) {
+      this.generateFileUploadObj(this. sirReportFile, frmData, 'sirReport', complianceUploadArray)
+    }
+    if (this. monthlyWalkThroughReportFile != null) {
+      this.generateFileUploadObj(this. monthlyWalkThroughReportFile, frmData, 'monthlyWalkThroughReport', complianceUploadArray)
+    }
+    if (this. tankMonitorStaticIPFile != null) {
+      this.generateFileUploadObj(this. tankMonitorStaticIPFile, frmData, 'tankMonitorStaticIP', complianceUploadArray)
     }
     frmData.append("fileuploadlabel", JSON.stringify(complianceUploadArray));
     this.importComplianceDocument(frmData);
@@ -1118,30 +1353,86 @@ export class HomeComponent implements OnInit {
             // this.successMessage = "File(s) Uploaded Successfully !!";
             this.complianceResultList = result;
             for (var i = 0; i < result.length; i++) {
-              if (result[i].key == 'lineAndLeakDetector'){
-                this.lineLeakFileSuccess = result[i].value;
-                this.modalData.lnlDetrTstRequrdEnable = false;
-              }
-              if (result[i].key == 'cathodicProtection'){
-                this.cathodicProtectionFileSuccess = result[i].value;
-                this.modalData.cprequiredEnable=false;
-              }
-              if (result[i].key == 'tankTestingReport'){
-                this.tankTestingReportFileSuccess = result[i].value;
-                this.modalData.tankTestingReportRequiredEnable=false;
+              if (result[i].key == 'releaseDetectionReport'){
+                this.releaseDetectionReportFileSuccess = result[i].value;
+                this.modalData.releaseDetectionReportSubmitted = true;
               }
               if (result[i].key == 'repairDocuments'){
                 this.repairDocumentsFileSuccess = result[i].value;
-                this.modalData.repairDocumentRequiredEnable=false
+                this.modalData.repairDocumentsSubmitted=true;
               }
-              if (result[i].key == 'releaseDetectionReport'){
-                this.releaseDetectionFileSuccess = result[i].value;
-                this.modalData.releaseDetectionReportRequiredEnable=false;
+              if (result[i].key == 'lineAndLeakDetector'){
+                this.lineAndLeakDetectorFileSuccess = result[i].value;
+                this.modalData.lineAndLeakDetectorSubmitted=true;
+              }
+              
+              if (result[i].key == 'tankTestingReport'){
+                this.tankTestingReportFileSuccess = result[i].value;
+                this.modalData.tankTestingReportSubmitted=true;
+              }
+
+              if (result[i].key == 'cathodicProtection'){
+                this.cathodicProtectionFileSuccess = result[i].value;
+                this.modalData.cathodicProtectionSubmitted=true;
               }
               if (result[i].key == 'internalLiningInspection'){
                 this.internalLiningFileSuccess = result[i].value;
-                this.modalData.internalLiningInspectionRequiredEnable=false;
+                this.modalData.internalLiningInspectionSubmitted=true;
               }
+              if (result[i].key == 'pipingCathodicProtection'){
+                this.pipingCathodicProtectionFileSuccess = result[i].value;
+                this.modalData.pipingCathodicProtectionSubmitted=true;
+              }
+
+              if (result[i].key == 'dropTubeRepairDocument'){
+                this.dropTubeRepairDocumentFileSuccess = result[i].value;
+                this.modalData.dropTubeRepairDocumentSubmitted=true;
+              }
+              if (result[i].key == 'tankInterstitialMonitoring'){
+                this.tankInterstitialMonitoringFileSuccess = result[i].value;
+                this.modalData.tankInterstitialMonitoringSubmitted=true;
+              }
+              if (result[i].key == 'pipinginterstitialMonitoring'){
+                this.pipinginterstitialMonitoringFileSuccess = result[i].value;
+                this.modalData.pipinginterstitialMonitoringSubmitted=true;
+              }
+              if (result[i].key == 'atgTestReport'){
+                this.atgTestReportFileSuccess = result[i].value;
+                this.modalData.atgTestReportSubmitted=true;
+              }
+              if (result[i].key == 'atgRepairReport'){
+                this.atgRepairReportFileSuccess = result[i].value;
+                this.modalData.atgRepairReportSubmitted=true;
+              }
+              if (result[i].key == 'spillBucketTestingDocument'){
+                this.spillBucketTestingDocumentFileSuccess = result[i].value;
+                this.modalData.spillBucketTestingDocumentSubmitted=true;
+              }
+              if (result[i].key == 'spillBucketRepairDocument'){
+                this.spillBucketRepairDocumentFileSuccess = result[i].value;
+                this.modalData.spillBucketRepairDocumentSubmitted=true;
+              }
+              if (result[i].key == 'sumpMaintenanceDocument'){
+                this.sumpMaintenanceDocumentFileSuccess = result[i].value;
+                this.modalData.sumpMaintenanceDocumentSubmitted=true;
+              }
+              if (result[i].key == 'udcMaintenanceDocument'){
+                this.udcMaintenanceDocumentFileSuccess = result[i].value;
+                this.modalData.udcMaintenanceDocumentSubmitted=true;
+              } 
+              if (result[i].key == 'sirReport'){
+                this.sirReportFileSuccess = result[i].value;
+                this.modalData.sirReportSubmitted=true;
+              } 
+              if (result[i].key == 'monthlyWalkThroughReport'){
+                this.monthlyWalkThroughReportFileSuccess = result[i].value;
+                this.modalData.monthlyWalkThroughReportSubmitted=true;
+              }
+              if (result[i].key == 'tankMonitorStaticIP'){
+                this.tankMonitorStaticIPFileSuccess = result[i].value;
+                this.modalData.tankMonitorStaticIPSubmitted=true;
+              } 
+              
             }
 
             //notification form start
@@ -1158,19 +1449,45 @@ export class HomeComponent implements OnInit {
   }
   resetComplianceForm(frmData, clearTick) {
     this.showUploadLoading = false;
-    this.lineLeakFileName = "";
-    this.cathodicProtectionFileName = "";
-    this.tankTestingReportFileName = "";
+    this.releaseDetectionReportFileName = "";
     this.repairDocumentsFileName = "";
-    this.releaseDetectionFile = "";
-    this.internalLiningFileName = "";
+    this.tankTestingReportFileName = "";
+    this.tankTestingReportFile = "";
+    this.cathodicProtectionFileName = "";
+    this.internalLiningFileName="";
+    this. pipingCathodicProtectionFile="";
+    this.dropTubeRepairDocumentFile="";
+    this.tankInterstitialMonitoringFile="";
+    this.pipinginterstitialMonitoringFile ="";
+    this.atgTestReportFile="";
+    this.atgRepairReportFile="";
+    this.spillBucketTestingDocumentFile="";
+    this.spillBucketRepairDocumentFile="";
+    this.sumpMaintenanceDocumentFile="";
+    this.udcMaintenanceDocumentFile="";
+    this.sirReportFile="";
+    this.monthlyWalkThroughReportFile="";
+    this.tankMonitorStaticIPFile="";
     if (clearTick) {
-      this.lineLeakFileSuccess = "false";
-      this.cathodicProtectionFileSuccess = "false";
-      this.tankTestingReportFileSuccess = "false";
+      this.releaseDetectionReportFileSuccess = "false";
       this.repairDocumentsFileSuccess = "false";
-      this.releaseDetectionFileSuccess = "false";
-      this.internalLiningFileSuccess = "false";
+      this.tankTestingReportFileSuccess = "false";
+      this.tankTestingReportFileSuccess = "false";
+      this.cathodicProtectionFileSuccess = "false";
+      this.internalLiningFileSuccess="false"
+      this. pipingCathodicProtectionFileSuccess="false";
+      this.dropTubeRepairDocumentFileSuccess="false";
+      this.tankInterstitialMonitoringFileSuccess="false";
+      this.pipinginterstitialMonitoringFileSuccess="false";
+      this.atgTestReportFileSuccess="false";
+      this.atgRepairReportFileSuccess="false";
+      this.spillBucketTestingDocumentFileSuccess="false";
+      this.spillBucketRepairDocumentFileSuccess="false";
+      this.sumpMaintenanceDocumentFileSuccess="false";
+      this.udcMaintenanceDocumentFileSuccess="false";
+      this.sirReportFileSuccess="false"
+      this.monthlyWalkThroughReportFileSuccess="false";
+      this.tankMonitorStaticIPFileSuccess="false";
     }
     if(frmData != null)
     frmData = new FormData();
@@ -1211,15 +1528,15 @@ export class HomeComponent implements OnInit {
             for (var i = 0; i < result.length; i++) {
               if (result[i].key == 'operatorAcertificate'){
                 this.operatorAcertificateFileSuccess = result[i].value;
-                this.modalData.operatorAcertificateEnable = false;
+                this.modalData.operatorAcertificateSubmitted = false;
               }
               if (result[i].key == 'operatorBcertificate'){
                 this.operatorBcertificateFileSuccess = result[i].value;
-                this.modalData.operatorBcertificateEnable = false;
+                this.modalData.operatorBcertificateSubmitted = true;
               }
               if (result[i].key == 'operatorCcertificate'){
                 this.operatorCcertificateFileSuccess = result[i].value;
-                this.modalData.operatorCcertificateEnable = false;
+                this.modalData.operatorCcertificateSubmitted = true;
               }
             }
             this.resetCertificationForm(frmData,false);
@@ -1477,5 +1794,137 @@ export class HomeComponent implements OnInit {
           $('#gasLevelModal').modal('hide');
         });
 
+  }
+  getTankLeakModalData(facilityId){
+    this.tankDetailsData=[];
+    this.setTankTitles(1);
+    this.dashboardService.getLeakTankDetails(this.commonService.getUserName(), facilityId) 
+    .subscribe(
+      leakTankDetails => {
+
+        this.tankDetailsData = leakTankDetails;
+        this.tankDetailsKeys =["ANNUAL","GROSS", "PERIODIC"];
+        this.tankDetailsFirstTabData = this.tankDetailsData[this.tankDetailsKeys[0]];
+        this.tankDetailsSecondTabData = this.tankDetailsData[this.tankDetailsKeys[1]];
+        this.tankDetailsThirdTabData = this.tankDetailsData[this.tankDetailsKeys[2]];
+        this.tankDetailsFirstTabKeys = Object.keys(this.tankDetailsFirstTabData).sort();
+        this.tankDetailsSecondTabKeys = Object.keys(this.tankDetailsSecondTabData).sort();
+        this.tankDetailsThirdTabKeys = Object.keys(this.tankDetailsThirdTabData).sort();
+        console.log(leakTankDetails)
+        this.selectedTankReportTTab = "LeakTest";
+
+      },
+      error => {
+        console.log(error);
+      });
+  }
+  getTankStatusModalData(facilityId){
+    this.tankDetailsData=[];
+    this.setTankTitles(2);
+    this.dashboardService.getTankStatusDetails(this.commonService.getUserName(), facilityId) 
+    .subscribe(
+      leakTankDetails => {
+
+        this.tankDetailsData = leakTankDetails;
+        this.tankDetailsKeys =["UNLEADED","PREMIUM", "DIESEL"];
+        this.tankDetailsFirstTabData = this.tankDetailsData[this.tankDetailsKeys[0]];
+        this.tankDetailsSecondTabData = this.tankDetailsData[this.tankDetailsKeys[1]];
+        this.tankDetailsThirdTabData = this.tankDetailsData[this.tankDetailsKeys[2]];
+        this.tankDetailsFirstTabKeys = Object.keys(this.tankDetailsFirstTabData).sort();
+        this.tankDetailsSecondTabKeys = Object.keys(this.tankDetailsSecondTabData).sort();
+        this.tankDetailsThirdTabKeys = Object.keys(this.tankDetailsThirdTabData).sort();
+        this.selectedTankReportTTab = "TankStatus";
+        console.log(leakTankDetails)
+
+      },
+      error => {
+        console.log(error);
+      });
+  }
+  getCSCLStatusModalData(facilityId){
+    this.setTankTitles(3);
+    this.tankDetailsData=[];
+
+    this.dashboardService.getCSLDTestDetails(this.commonService.getUserName(), facilityId) 
+    .subscribe(
+      leakTankDetails => {
+
+        this.tankDetailsData = leakTankDetails;
+        this.tankDetailsKeys =["UNLEADED","PREMIUM", "DIESEL"];
+        this.tankDetailsFirstTabData = this.tankDetailsData[this.tankDetailsKeys[0]];
+        this.tankDetailsSecondTabData = this.tankDetailsData[this.tankDetailsKeys[1]];
+        this.tankDetailsThirdTabData = this.tankDetailsData[this.tankDetailsKeys[2]];
+        this.tankDetailsFirstTabKeys = Object.keys(this.tankDetailsFirstTabData).sort();
+        this.tankDetailsSecondTabKeys = Object.keys(this.tankDetailsSecondTabData).sort();
+        this.tankDetailsThirdTabKeys = Object.keys(this.tankDetailsThirdTabData).sort();
+        this.selectedTankReportTTab = "CSLDTest";
+        console.log(leakTankDetails)
+
+      },
+      error => {
+        console.log(error);
+      });
+  }
+  setTankTitles(index){
+if(index == 1){
+  this.tankReportsModalTitle = "Tank Reports: Leak Test";
+  this.tankReportTab1Title1 = "ANNUAL";
+  this.tankReportTab1Title2 = "GROSS";
+  this.tankReportTab1Title3 = "PERIODIC";
+
+}else if(index == 2){
+  this.tankReportsModalTitle = "Tank Reports: Tank Status";
+  this.tankReportTab1Title1 = "UNLEADED";
+  this.tankReportTab1Title2 = "PREMIUM";
+  this.tankReportTab1Title3 = "DIESEL";
+
+}else if(index == 3){
+  this.tankReportsModalTitle = "Tank Reports: CSLD Report";
+  this.tankReportTab1Title1 = "UNLEADED";
+  this.tankReportTab1Title2 = "PREMIUM";
+  this.tankReportTab1Title3 = "DIESEL";
+
+}
+  }
+  setDocumentURL(documentURL){
+    this. documentURL= documentURL;
+  }
+  resetTankReports(){
+    if(this.tankDetailsData  == null || this.tankDetailsData.length == 0)
+    return;
+    if(this.selectedTankReportTTab == "LeakTest"){
+      this.dashboardService.resetLeakTankDetails(this.rightDetailsContent.facilityId)
+      .subscribe(
+        leakTankDetails => {
+          this.rightDetailsContent.leakTankTestButtonStatus = "#808080";
+          this.selectedFacility.leakTankTestButtonStatus = "#808080";
+        },
+        error => {
+          console.log(error);
+        });
+    }
+    if(this.selectedTankReportTTab == "TankStatus"){
+      this.dashboardService.resetTankStatusDetails(this.rightDetailsContent.facilityId)
+      .subscribe(
+        leakTankDetails => {
+          this.rightDetailsContent.tankStatusButtonStatus = "#808080";
+          this.selectedFacility.tankStatusButtonStatus = "#808080";
+        },
+        error => {
+          console.log(error);
+        });
+    }
+    if(this.selectedTankReportTTab == "CSLDTest"){
+      this.dashboardService.resetCSLDTestDetails(this.rightDetailsContent.facilityId)
+      .subscribe(
+        leakTankDetails => {
+          this.rightDetailsContent.csldButtonStatus = "#808080";
+          this.selectedFacility.csldButtonStatus = "#808080";
+        },
+        error => {
+          console.log(error);
+        });
+    }
+    this.rightDetailsContent.facilityId
   }
 }

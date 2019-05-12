@@ -15,10 +15,12 @@ export class URLConstants {
     public static FORGOT_PASSWORD_URL = environment.server+'/CustomerPortalServer/rest/forgotpassword';
 
     public static DASHBOARD_URL = environment.server+'/CustomerPortalServer/rest/dashboard';
-    public static FaCILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilities';
+    public static FACILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilities';
     public static COMPANIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies';
     public static COMPLIANCE_URL = environment.server+'/CustomerPortalServer/rest/dashboard/compliance';
     public static  FACILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
+    public static  FACILITIES_UST_COMPLIANCE_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/ustcompliance';
+    public static  FACILITIES_OPERATOR_CERTIFICATES_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/operatorcertificates';
     public static USSBOA_URL = environment.server+'/CustomerPortalServer/rest/dashboard/ussboa';
     public static TANK_MONITOR_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankmonitorsignup';
     public static TANK_MONITOR_SEARCH_URL = environment.server+'/CustomerPortalServer/rest/dashboard/tankmonitorsearch';
@@ -27,4 +29,7 @@ export class URLConstants {
     public static JOB_SCHEDULE = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedule';
     public static JOB_SCHEDULE_HISTORY = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedulehistory';
     public static GASLEVES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/gaslevel';
+    public static LEAKTANK_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/leaktestDetails';
+    public static TANK_STATUS_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/tankstatusDetails';
+    public static CSLD_TEST_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/csldtestDetails';
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+ <class name="com.customerportal.bean.CustomerPortalAttachments" table="customer_portal_attachments__c">
+  <id name="id">
+   <column name="ID"  />
+  </id>
+  
+  <property name="name" column="Name"/>
+   <property name="approvalStatus" column="Approval_Status__c"/>
+  <property name="description" column="Description__c"/>	
+  <property name="facility" column="Facility__c"/>
+  <property name="g360URL" column="G360_URL__c"/>
+  <property name="type" column="Type__c"/>
+ </class>
+</hibernate-mapping>

@@ -22,7 +22,11 @@ public class Facilities {
 	private String notificationFormButtonEnable;
 	private String complianceButtonEnable;
 	private String certificationButtonEnable;
+	private String leakTankTestButtonStatus;
+	private String TankStatusButtonStatus;
+	private String csldButtonStatus;
 	private String compliance;
+	private String nfCompliant;
 	private String imageURL;
 	private Gaslevel gasLevel;
 	private String projectManager;
@@ -221,5 +225,35 @@ public class Facilities {
 
 	public String getFacilityTankPaidMessage() {
 		return facilityTankPaidMessage;
+	}
+
+	public String getLeakTankTestButtonStatus() {
+		return leakTankTestButtonStatus;
+	}
+
+	public void setLeakTankTestButtonStatus(String leakTankTestButtonStatus) {
+		this.leakTankTestButtonStatus = leakTankTestButtonStatus;
+	}
+
+	public String getTankStatusButtonStatus() {
+		return TankStatusButtonStatus;
+	}
+
+	public void setTankStatusButtonStatus(String tankStatusButtonStatus) {
+		TankStatusButtonStatus = tankStatusButtonStatus;
+	}
+
+	public String getCsldButtonStatus() {
+		return csldButtonStatus;
+	}
+
+	public void setCsldButtonStatus(String csldButtonStatus) {
+		this.csldButtonStatus = csldButtonStatus;
+	}
+	public void setNfCompliant(String nfCompliant) {
+		this.nfCompliant = nfCompliant;
+	}
+	public String getNfCompliant() {
+		return nfCompliant;
 	}
 }

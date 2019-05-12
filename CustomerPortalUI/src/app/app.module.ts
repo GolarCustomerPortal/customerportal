@@ -37,6 +37,7 @@ import { UssboaComponent } from './ussboa/ussboa.component';
 import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-signup.component';
 import { SafePipe } from './services/SafePipe';
 import { HttpService } from './services/http.service';
+import {TabViewModule} from 'primeng/tabview';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { HttpService } from './services/http.service';
     RadioButtonModule,
     DialogModule,
     CheckboxModule,
-    CalendarModule
+    CalendarModule,
+    TabViewModule
   ],
   providers: [  
     UserService,

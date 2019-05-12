@@ -46,6 +46,9 @@ public class CustomerPortalUtil {
 				if (facilitiesList != null && user != null && !user.isAdmin())
 					kvList = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
 				facility.setConsolidateReport(kvList);
+				facility.setLeakTankTestButtonStatus(DBUtil.getInstance().getLeakTankTestButtonStatus(facility));
+				facility.setTankStatusButtonStatus(DBUtil.getInstance().getTankStatusButtonStatus(facility));
+				facility.setCsldButtonStatus(DBUtil.getInstance().getCsldButtonStatus(facility));
 				if (notificationFormList.contains(facility.getFacilityId())) {
 					facility.setNotificationFormButtonEnable("true");
 				} else

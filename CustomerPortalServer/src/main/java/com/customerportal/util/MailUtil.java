@@ -16,17 +16,14 @@ import com.customerportal.bean.User;
 
 public class MailUtil {
 	public static void main(String[] args) {
-		User userobj = new User();
-		userobj.setFirstName("Srinivasa");
-		userobj.setLastName("Reddy");
-		userobj.setEmailAddress("avsrinivasa@gmail.com");
-		userobj.setUsername("avsrinivasa");
-		userobj.setPassword("cGFzc3dvcmQ=");
-		MailUtil util = new MailUtil();
-		util.fetchEmailProperties();
-//		String value = MessageFormat.format(emailProperties.getProperty("registerEmail"),new Object[] {"Srinivas ",emailProperties.getProperty("baseURL"),"testusername","testpassword" });
-//		System.out.println(value);
-		util.sendEmail(userobj, true);
+
+		User user = new User();
+		user.setFirstName("Srinivasa");
+		user.setLastName("Reddy");
+		user.setUsername("test");
+		user.setPassword("test");
+		user.setEmailAddress("avsrinivasa3@gmail.com,avsrinivasa@gmail.com");
+		new MailUtil().sendEmail(user, false);
 
 	}
 
