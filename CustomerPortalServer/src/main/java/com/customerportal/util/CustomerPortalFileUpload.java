@@ -28,7 +28,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
 public class CustomerPortalFileUpload {
-	Properties urlProperties = new Properties();
+	static Properties urlProperties = new Properties();
 	Properties notificationProperties = new Properties();
 	Properties complianceandcertification = new Properties();
 	private static String USERNAME;
@@ -80,12 +80,12 @@ public class CustomerPortalFileUpload {
 					resultList.add(result);
 					String label = getFieldLabel(keyValue, meta.getFileName());
 					result.setKey(label);
-					String fieldlabel = urlProperties.getProperty(label);
-					String salesForceLabel = null;
-					if(fieldlabel.indexOf("__")>0){
-						salesForceLabel = fieldlabel.substring(0,fieldlabel.indexOf("__"));
-						salesForceLabel = salesForceLabel.replaceAll("_", " ");	
-					}
+					String salesForceLabel = getFieldLabelFromPropertiesFile(label);
+//					String salesForceLabel = null;
+//					if(fieldlabel.indexOf("__")>0){
+//						salesForceLabel = fieldlabel.substring(0,fieldlabel.indexOf("__"));
+//						salesForceLabel = salesForceLabel.replaceAll("_", " ");	
+//					}
 					KeyValue responseEntity = clientResp.getEntity(KeyValue.class);
 					if (responseEntity ==null) {
 						result.setValue("false");
@@ -111,7 +111,7 @@ public class CustomerPortalFileUpload {
 						continue;
 					}
 					
-					DBUtil.getInstance().insertCustomPortalAttachment(fieldlabel, facilityId,gen(),getFieldLabelFromPropertiesFile(label));
+					DBUtil.getInstance().insertCustomPortalAttachment(facilityId,gen(),getFieldLabelFromPropertiesFile(label));
 					result.setValue("true");
 					
 
@@ -175,4 +175,5 @@ public class CustomerPortalFileUpload {
 		Random r = new Random(System.currentTimeMillis());
 		return 100000 + r.nextInt(200000);
 	}
+
 }

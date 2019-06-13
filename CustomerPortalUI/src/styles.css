@@ -166,6 +166,9 @@ background: #ebf7ec !important;
     background-color: transparent !important;
     color: #2c347e !important;
 }
+.facility-button-background-notification-red{
+    background-color: #ef4136  !important;
+}
 .facility-button-background-red{
     border: 13px solid #ef4136  !important;
 }

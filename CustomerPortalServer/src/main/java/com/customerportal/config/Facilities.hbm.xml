@@ -19,7 +19,7 @@
 		<property name="name" column="Facility_Name__c" />
 		<property name="brand" column="Facility_Brand__c" />
 		<property name="paidService" column="USSBOA_Paid_Service__c" />
-		<property name="compliance" column="Is_GT_Compliant__c" />
+		<property name="compliance" column="Compliant__c" />
 		<property name="nfCompliant" column="Is_NF_Compliant__c" />
 		<property name="projectManagerPhone" column="GT_Project_Manager_Phone__c" />
 		<property name="projectManager" column="GT_Project_Manager__c" />

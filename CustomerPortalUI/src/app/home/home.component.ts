@@ -539,7 +539,10 @@ selectedTankReportTTab;
     this.rightDetailsContent.notificationFormButtonEnable = fdata.notificationFormButtonEnable;
     this.rightDetailsContent.complianceButtonEnable = fdata.complianceButtonEnable;
     this.rightDetailsContent.certificationButtonEnable = fdata.certificationButtonEnable;
-    
+    this.rightDetailsContent.leakTankTestCount = fdata.leakTankTestCount;
+    this.rightDetailsContent.tankStatusCount = fdata.tankStatusCount;
+    this.rightDetailsContent.csldCount = fdata.csldCount;
+
     this.rightDetailsContent.leakTankTestButtonStatus = fdata.leakTankTestButtonStatus;
     this.rightDetailsContent.tankStatusButtonStatus = fdata.tankStatusButtonStatus;
     this.rightDetailsContent.csldButtonStatus = fdata.csldButtonStatus;
@@ -990,7 +993,7 @@ selectedTankReportTTab;
   }
   modalData;
   getNotificationModalData(facilitiesId) {
-    this.dashboardService.getNotifictionUploadData(facilitiesId) // retrieve all thd parent folders
+    this.dashboardService.getNotifictionUSTCertificationUploadData(facilitiesId) // retrieve all thd parent folders
       .subscribe(
         modalData => {
           this.modalData = modalData;
@@ -1000,7 +1003,7 @@ selectedTankReportTTab;
         });
   }
   getUSTComplianceData(facilitiesId) {
-    this.dashboardService.getUSTComplianceData(facilitiesId) // retrieve all thd parent folders
+    this.dashboardService.getNotifictionUSTCertificationUploadData(facilitiesId) // retrieve all thd parent folders
       .subscribe(
         modalData => {
           this.modalData = modalData;
@@ -1010,7 +1013,7 @@ selectedTankReportTTab;
         });
   }
   getCertificationData(facilitiesId) {
-    this.dashboardService.getOperatorCertificatesData(facilitiesId) // retrieve all thd parent folders
+    this.dashboardService.getNotifictionUSTCertificationUploadData(facilitiesId) // retrieve all thd parent folders
       .subscribe(
         modalData => {
           this.modalData = modalData;
@@ -1050,17 +1053,17 @@ selectedTankReportTTab;
 
   getNotificationFormButtonClass(rightDetailsContent) {
     if ((rightDetailsContent.notificationFormButtonEnable != null && rightDetailsContent.notificationFormButtonEnable == "true"))
-      return 'facility-button-background-red'
+      return 'facility-button-background-notification-red'
     return ""
   }
   getComplianceButtonClass(rightDetailsContent) {
     if ((rightDetailsContent.complianceButtonEnable != null && rightDetailsContent.complianceButtonEnable == "true"))
-      return 'facility-button-background-red'
+      return 'facility-button-background-notification-red'
     return ""
   }
   getCertificationButtonClass(rightDetailsContent) {
     if ((rightDetailsContent.certificationButtonEnable != null && rightDetailsContent.certificationButtonEnable == "true"))
-      return 'facility-button-background-red'
+      return 'facility-button-background-notification-red'
     return ""
   }
   getFacilitiesSubList(facilitiesRightdata, i) {
@@ -1375,7 +1378,7 @@ selectedTankReportTTab;
                 this.cathodicProtectionFileSuccess = result[i].value;
                 this.modalData.cathodicProtectionSubmitted=true;
               }
-              if (result[i].key == 'internalLiningInspection'){
+              if (result[i].key == 'internalLining'){
                 this.internalLiningFileSuccess = result[i].value;
                 this.modalData.internalLiningInspectionSubmitted=true;
               }
@@ -1896,8 +1899,8 @@ if(index == 1){
       this.dashboardService.resetLeakTankDetails(this.rightDetailsContent.facilityId)
       .subscribe(
         leakTankDetails => {
-          this.rightDetailsContent.leakTankTestButtonStatus = "#808080";
-          this.selectedFacility.leakTankTestButtonStatus = "#808080";
+         // this.rightDetailsContent.leakTankTestButtonStatus = "#808080";
+          //this.selectedFacility.leakTankTestButtonStatus = "#808080";
         },
         error => {
           console.log(error);
@@ -1907,8 +1910,8 @@ if(index == 1){
       this.dashboardService.resetTankStatusDetails(this.rightDetailsContent.facilityId)
       .subscribe(
         leakTankDetails => {
-          this.rightDetailsContent.tankStatusButtonStatus = "#808080";
-          this.selectedFacility.tankStatusButtonStatus = "#808080";
+          //this.rightDetailsContent.tankStatusButtonStatus = "#808080";
+         // this.selectedFacility.tankStatusButtonStatus = "#808080";
         },
         error => {
           console.log(error);
@@ -1918,13 +1921,19 @@ if(index == 1){
       this.dashboardService.resetCSLDTestDetails(this.rightDetailsContent.facilityId)
       .subscribe(
         leakTankDetails => {
-          this.rightDetailsContent.csldButtonStatus = "#808080";
-          this.selectedFacility.csldButtonStatus = "#808080";
+          //this.rightDetailsContent.csldButtonStatus = "#808080";
+          //this.selectedFacility.csldButtonStatus = "#808080";
         },
         error => {
           console.log(error);
         });
     }
-    this.rightDetailsContent.facilityId
+
+  }
+  getFontWeight(viewed){
+    if(viewed === null || viewed=== 'false')
+    return "bold";
+    return "normal";
+
   }
 }

@@ -17,6 +17,7 @@
   <property name="tank__c" column="Tank__c"/>
   <property name="tankType__c" column="TankType__c"/>
    <property name="product__c" column="Product__C"/>
+    <property name="viewed" column="Viewed"/>
  
 
  </class>

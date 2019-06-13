@@ -208,7 +208,10 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response complianceData(@QueryParam("facilitiesId") String facilitiesId) {
-		Account account = DBUtil.getInstance().fetchFacilitiesNotificationData(facilitiesId);
+		Account account = new Account();
+		account = DBUtil.getInstance().fetchFacilitiesNotificationData(facilitiesId,account);
+		account = DBUtil.getInstance().fetchUSTComplianceDataData(facilitiesId,account);
+		account = DBUtil.getInstance().fetchOperatorCertificatesData(facilitiesId,account);
 		return Response.status(200).entity(account).build();
 
 	}
@@ -216,7 +219,8 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUSTComplianceData(@QueryParam("facilitiesId") String facilitiesId) {
-		Account account = DBUtil.getInstance().fetchUSTComplianceDataData(facilitiesId);
+		Account account = new Account();
+		account = DBUtil.getInstance().fetchUSTComplianceDataData(facilitiesId,account);
 		return Response.status(200).entity(account).build();
 
 	}
@@ -224,7 +228,8 @@ public class DashBoardService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getOperatorCertificatesData(@QueryParam("facilitiesId") String facilitiesId) {
-		Account account = DBUtil.getInstance().fetchOperatorCertificatesData(facilitiesId);
+		Account account = new Account();
+		account = DBUtil.getInstance().fetchOperatorCertificatesData(facilitiesId,account);
 		return Response.status(200).entity(account).build();
 
 	}

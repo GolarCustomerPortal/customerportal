@@ -15,6 +15,6 @@
   <property name="description" column="Description__c"/>
   <property name="name" column="Name"/>
   <property name="reportDatae" column="Report_Date__c"/>
-
+ <property name="active" column="Active__c"/>
  </class>
 </hibernate-mapping>

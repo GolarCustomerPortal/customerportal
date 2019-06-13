@@ -18,6 +18,7 @@
 		<property name="rate__c" column="RATE__c" />
 		<property name="result__c" column="RESULT__c" />
 		<property name="startTime__c" column="STARTTIME__c" />
+		   <property name="viewed" column="Viewed"/>
 		
 
 	</class>

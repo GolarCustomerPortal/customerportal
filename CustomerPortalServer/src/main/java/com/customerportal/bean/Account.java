@@ -253,6 +253,10 @@ public class Account {
 	private String operatorAcertificateURL;
 	private String operatorBcertificateURL;
 	private String operatorCcertificateURL;
+	
+	//pending text
+	
+	private String pendingStatuText="Pending";
 
 	public String getId() {
 		return Id;
@@ -2168,5 +2172,10 @@ public class Account {
 	public void setCofaLinkURL(String cofaLinkURL) {
 		this.cofaLinkURL = cofaLinkURL;
 	}
-
+	public void setPendingStatuText(String pendingStatuText) {
+		this.pendingStatuText = pendingStatuText;
+	}
+	public String getPendingStatuText() {
+		return pendingStatuText;
+	}
 }

@@ -1,11 +1,13 @@
 package com.customerportal.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -40,6 +42,8 @@ public class DBUtil {
 	private static String RED_COLOR="#ff0000";
 	private static String GRAY_COLOR="#808080";
 	private static String GREEN_COLOR="#00FF00";
+	static Properties urlProperties = new Properties();
+	static String errorHandlingPDF = "http://golars360.com/golars/rest/import/1016388/Error+Handling.pdf";
 
 	public DBUtil() {
 	}
@@ -47,6 +51,11 @@ public class DBUtil {
 	public static DBUtil getInstance() {
 		if (dbObj == null) {
 			dbObj = new DBUtil();
+			try {
+				urlProperties.load(CustomerPortalFileUpload.class.getResourceAsStream("/customerportal.properties"));
+				errorHandlingPDF = urlProperties.getProperty("errorHandlingPDF");
+			} catch (IOException e) {
+			}
 		}
 		return dbObj;
 	}
@@ -519,7 +528,6 @@ public class DBUtil {
 					"OR (Is_Operator_Lease_Agreement__c = 'true' AND Operator_Lease_Agreement_new__c IS NULL) \r\n" + 
 					"OR (Is_Financial_Responsibility__c = 'true' AND Financial_Responsibility__c IS NULL) \r\n" + 
 					"OR (Is_Deed_or_LC_Required__c = 'true' AND Deed_or_Land_Contract__c IS NULL)\r\n" + 
-					"OR (COFA_Link__c IS NULL)\r\n" +
 					"OR (Is_Facility_Site_Map__c IS NOT NULL AND Facility_Site_Map__c IS NULL) and  MGT_Paid_Service__c = 'true') ";
 
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
@@ -903,7 +911,7 @@ public class DBUtil {
 		return address;
 	}
 
-	public Account fetchFacilitiesNotificationData(String facilitiesId) {
+	public Account fetchFacilitiesNotificationData(String facilitiesId, Account account) {
 
 		String  operatorBusinessRegistration="NF - Operator Business Registration";
 		String propertyOwnerBusinessRegistration="NF - Property Owner Business Registration";
@@ -915,7 +923,6 @@ public class DBUtil {
 		String financialResponsibility="NF - Financial Responsibility (Insurance)";
 		String deedOrLandContract="NF - Deed or Land Contract";
 		String facilitySiteMap="NF - Facility Site Map";
-		String cofaLink="NF - COFA Link";
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -929,59 +936,65 @@ public class DBUtil {
 			trx.commit();
 			session.close();
 			if (lst.size() > 0) {
-				Account account = lst.get(0);
+				Account localAccount = lst.get(0);
 				
 				
 
-				if(account.getIsOperatorBusinessRegistration()!= null && account.getIsOperatorBusinessRegistration().equalsIgnoreCase("true") && account.getOperatorBusinessRegistration() == null)
+				if(localAccount.getIsOperatorBusinessRegistration()!= null && localAccount.getIsOperatorBusinessRegistration().equalsIgnoreCase("true") && localAccount.getOperatorBusinessRegistration() == null)
 					account.setOperatorBusinessEnable(true);
-				if(account.getIsPropertyOwnerBusinessRegistration()!=null && account.getIsPropertyOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getPropertyOwnerBusinessRegistration() == null)
+				if(localAccount.getOperatorBusinessRegistration() !=null)
+					account.setOperatorBusinessURL(localAccount.getOperatorBusinessRegistration());
+				if(localAccount.getIsPropertyOwnerBusinessRegistration()!=null && localAccount.getIsPropertyOwnerBusinessRegistration().equalsIgnoreCase("true") && localAccount.getPropertyOwnerBusinessRegistration() == null)
 					account.setPropertyOwnerBusinessEnable(true);
-				if(account.getIsOwnerBusinessRegistration()!=null && account.getIsOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getUstOwnerBusinessRegistration() == null)
+				if(localAccount.getPropertyOwnerBusinessRegistration() !=null)
+					account.setPropertyOwnerBusinessURL(localAccount.getPropertyOwnerBusinessRegistration());
+				if(localAccount.getIsOwnerBusinessRegistration()!=null && localAccount.getIsOwnerBusinessRegistration().equalsIgnoreCase("true") && localAccount.getUstOwnerBusinessRegistration() == null)
 					account.setUstOwnerBusinessEnable(true);
-				if(account.getIsOperatorOwnerTaxId()!=null && account.getIsOperatorOwnerTaxId().equalsIgnoreCase("true") && account.getOperatorOwnerTaxId() == null)
+				if(localAccount.getUstOwnerBusinessRegistration() !=null)
+					account.setUstOwnerBusinessURL(localAccount.getUstOwnerBusinessRegistration());
+				if(localAccount.getIsOperatorOwnerTaxId()!=null && localAccount.getIsOperatorOwnerTaxId().equalsIgnoreCase("true") && localAccount.getOperatorOwnerTaxId() == null)
 					account.setOperatorOwnerEnable(true);
-				if(account.getIsPropertyOwnerTaxId()!=null && account.getIsPropertyOwnerTaxId().equalsIgnoreCase("true") && account.getPropertyOwnerTaxId() == null)
+				if(localAccount.getIsPropertyOwnerTaxId()!=null && localAccount.getIsPropertyOwnerTaxId().equalsIgnoreCase("true") && localAccount.getPropertyOwnerTaxId() == null)
 					account.setPropertyOwnerTaxIDEnable(true);
-				if(account.getIsUSTOwnerTaxId()!=null && account.getIsUSTOwnerTaxId().equalsIgnoreCase("true") && account.getUstOwnerTaxId() == null)
+				if(localAccount.getIsUSTOwnerTaxId()!=null && localAccount.getIsUSTOwnerTaxId().equalsIgnoreCase("true") && localAccount.getUstOwnerTaxId() == null)
 					account.setUstOwnerBusinessEnable(true);
-				if(account.getIsOperatorLeaseAgreement()!=null && account.getIsOperatorLeaseAgreement().equalsIgnoreCase("true") && account.getOperatorLeaseAgreementNew() == null)
+				if(localAccount.getIsOperatorLeaseAgreement()!=null && localAccount.getIsOperatorLeaseAgreement().equalsIgnoreCase("true") && localAccount.getOperatorLeaseAgreementNew() == null)
 					account.setOperatorLeaseAgreementEnable(true);
-				if(account.getIsFinancialResponsibility()!=null && account.getIsFinancialResponsibility().equalsIgnoreCase("true") && account.getFinancialResponsibility() == null)
+				if(localAccount.getIsFinancialResponsibility()!=null && localAccount.getIsFinancialResponsibility().equalsIgnoreCase("true") && localAccount.getFinancialResponsibility() == null)
 					account.setFinancialResponsibilityEnable(true);
-				if(account.getIsDeedOrLCRequired()!=null && account.getIsDeedOrLCRequired().equalsIgnoreCase("true") && account.getDeedOrLandContract() == null)
+				if(localAccount.getIsDeedOrLCRequired()!=null && localAccount.getIsDeedOrLCRequired().equalsIgnoreCase("true") && localAccount.getDeedOrLandContract() == null)
 					account.setPropertyDeedLandContractEnable(true);
-				if(account.getIsFacilitySiteMap()!=null && account.getIsFacilitySiteMap().equalsIgnoreCase("true") && account.getFacilitySiteMap() == null)
+				if(localAccount.getIsFacilitySiteMap()!=null && localAccount.getIsFacilitySiteMap().equalsIgnoreCase("true") && localAccount.getFacilitySiteMap() == null)
 					account.setFacilitySiteMapEnable(true);
-				if(account.getCofaLink() == null)
-					account.setCofaLinkEnable(true);
+				if(localAccount.getCofaLink() != null)
+					account.setCofaLinkURL(localAccount.getCofaLink());
 			
 				
 				String custom_portal_whereclause = "";
 				
-				if(account.getIsOperatorBusinessRegistration().equalsIgnoreCase("true") && account.getOperatorBusinessRegistration()== null)
+				if(localAccount.getIsOperatorBusinessRegistration().equalsIgnoreCase("true") && localAccount.getOperatorBusinessRegistration()== null)
 					custom_portal_whereclause+= "'"+operatorBusinessRegistration+"'"+",";
-				if(account.getIsPropertyOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getPropertyOwnerBusinessRegistration()== null)
+				if(localAccount.getIsPropertyOwnerBusinessRegistration().equalsIgnoreCase("true") && localAccount.getPropertyOwnerBusinessRegistration()== null)
 					custom_portal_whereclause+= "'"+propertyOwnerBusinessRegistration+"'"+",";
-				if(account.getIsOwnerBusinessRegistration().equalsIgnoreCase("true") && account.getUstOwnerBusinessRegistration()== null)
+				if(localAccount.getIsOwnerBusinessRegistration().equalsIgnoreCase("true") && localAccount.getUstOwnerBusinessRegistration()== null)
 					custom_portal_whereclause+= "'"+ustOwnerBusinessRegistration+"'"+",";
-				if(account.getIsOperatorOwnerTaxId().equalsIgnoreCase("true") && account.getOperatorOwnerTaxId()== null)
+				if(localAccount.getIsOperatorOwnerTaxId().equalsIgnoreCase("true") && localAccount.getOperatorOwnerTaxId()== null)
 					custom_portal_whereclause+= "'"+operatorOwnerTaxId+"'"+",";
-				if(account.getIsPropertyOwnerTaxId().equalsIgnoreCase("true") && account.getPropertyOwnerTaxId()== null)
+				if(localAccount.getIsPropertyOwnerTaxId().equalsIgnoreCase("true") && localAccount.getPropertyOwnerTaxId()== null)
 					custom_portal_whereclause+= "'"+propertyOwnerTaxId+"'"+",";
-				if(account.getIsUSTOwnerTaxId().equalsIgnoreCase("true") && account.getUstOwnerTaxId()== null)
+				if(localAccount.getIsUSTOwnerTaxId().equalsIgnoreCase("true") && localAccount.getUstOwnerTaxId()== null)
 					custom_portal_whereclause+= "'"+ustOwnerTaxId+"'"+",";
-				if(account.getIsOperatorLeaseAgreement().equalsIgnoreCase("true") && account.getOperatorLeaseAgreementNew()== null)
+				if(localAccount.getIsOperatorLeaseAgreement().equalsIgnoreCase("true") && localAccount.getOperatorLeaseAgreementNew()== null)
 					custom_portal_whereclause+= "'"+operatorLeaseAgreement+"'"+",";
-				if(account.getIsFinancialResponsibility().equalsIgnoreCase("true") && account.getFinancialResponsibility()== null)
+				if(localAccount.getIsFinancialResponsibility().equalsIgnoreCase("true") && localAccount.getFinancialResponsibility()== null)
 					custom_portal_whereclause+= "'"+financialResponsibility+"'"+",";
 
-				if(account.getIsDeedOrLCRequired().equalsIgnoreCase("true") && account.getDeedOrLandContract()== null)
+				if(localAccount.getIsDeedOrLCRequired().equalsIgnoreCase("true") && localAccount.getDeedOrLandContract()== null)
 					custom_portal_whereclause+= "'"+deedOrLandContract+"'"+",";
-				if(account.getFacilitySiteMap() == null && account.getIsFacilitySiteMap() == null)
+				if(localAccount.getFacilitySiteMap() == null && localAccount.getIsFacilitySiteMap().equalsIgnoreCase("true"))
 					custom_portal_whereclause+= "'"+facilitySiteMap+"'"+",";
-				if(account.getCofaLink() == null)
-					custom_portal_whereclause+= "'"+cofaLink+"'"+",";
+//				if(localAccount.getCofaLink() == null)
+//					custom_portal_whereclause+= "'"+cofaLink+"'"+",";
 				if(custom_portal_whereclause.endsWith(","))
 					custom_portal_whereclause = custom_portal_whereclause.substring(0, custom_portal_whereclause.lastIndexOf(","));
 				if(custom_portal_whereclause.trim().length()>0){
@@ -1019,8 +1032,6 @@ public class DBUtil {
 							account.setPropertyDeedLandContractSubmitted(true);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(facilitySiteMap) && attachments.getApprovalStatus() != null)
 							account.setFacilitySiteMapSubmitted(true);
-						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cofaLink) && attachments.getApprovalStatus() != null)
-							account.setCofaLinkSubmitted(true);
 					}
 					}
 					
@@ -1038,30 +1049,27 @@ public class DBUtil {
 				//custom attachments
 				String custom_attachments_whereclause = "";
 				
-				if(account.getOperatorBusinessRegistration()!= null)
+				if(localAccount.getOperatorBusinessRegistration()!= null)
 					custom_attachments_whereclause+= "'"+operatorBusinessRegistration+"'"+",";
-				if(account.getPropertyOwnerBusinessRegistration()!= null)
+				if(localAccount.getPropertyOwnerBusinessRegistration()!= null)
 					custom_attachments_whereclause+= "'"+propertyOwnerBusinessRegistration+"'"+",";
-				if(account.getUstOwnerBusinessRegistration()!= null)
+				if(localAccount.getUstOwnerBusinessRegistration()!= null)
 					custom_attachments_whereclause+= "'"+ustOwnerBusinessRegistration+"'"+",";
-				if(account.getOperatorOwnerTaxId()!= null)
+				if(localAccount.getOperatorOwnerTaxId()!= null)
 					custom_attachments_whereclause+= "'"+operatorOwnerTaxId+"'"+",";
-				if(account.getPropertyOwnerTaxId()!= null)
+				if(localAccount.getPropertyOwnerTaxId()!= null)
 					custom_attachments_whereclause+= "'"+propertyOwnerTaxId+"'"+",";
-				if(account.getUstOwnerTaxId()!= null)
+				if(localAccount.getUstOwnerTaxId()!= null)
 					custom_attachments_whereclause+= "'"+ustOwnerTaxId+"'"+",";
-				if(account.getOperatorLeaseAgreement()!= null)
+				if(localAccount.getOperatorLeaseAgreement()!= null)
 					custom_attachments_whereclause+= "'"+operatorLeaseAgreement+"'"+",";
-				if(account.getFinancialResponsibility()!= null)
+				if(localAccount.getFinancialResponsibility()!= null)
 					custom_attachments_whereclause+= "'"+financialResponsibility+"'"+",";
 
-				if(account.getDeedOrLandContract()!= null)
+				if(localAccount.getDeedOrLandContract()!= null)
 					custom_attachments_whereclause+= "'"+deedOrLandContract+"'"+",";
-				if(account.getIsFacilitySiteMap() != null)
+				if(localAccount.getIsFacilitySiteMap() != null)
 					custom_attachments_whereclause+= "'"+facilitySiteMap+"'"+",";
-				
-				if(account.getCofaLink() != null)
-					custom_attachments_whereclause+= "'"+cofaLink+"'"+",";
 				
 				if(custom_attachments_whereclause.endsWith(","))
 					custom_attachments_whereclause = custom_attachments_whereclause.substring(0, custom_attachments_whereclause.lastIndexOf(","));
@@ -1070,36 +1078,38 @@ public class DBUtil {
 				try {
 					// Transaction t = session.beginTransaction();
 					query = session.createNativeQuery(
-							"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and type__c in ("+custom_attachments_whereclause+")",CustomAttachments.class);
+							"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and active__c='true' and type__c in ("+custom_attachments_whereclause+")",CustomAttachments.class);
 					query.setString("facilitiesId", facilitiesId);
 					List<CustomAttachments> customPortalList = query.list();
 					trx.commit();
 					session.close();
 					if(customPortalList.size()>0){
-						CustomAttachments attachments = customPortalList.get(0);
-						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorBusinessRegistration))
-							account.setOperatorBusinessURL(attachments.getG360URL());
-						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerBusinessRegistration))
-							account.setPropertyOwnerBusinessURL(attachments.getG360URL());
-						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerBusinessRegistration))
-							account.setUstOwnerBusinessURL(attachments.getG360URL());
+						for (CustomAttachments attachments : customPortalList) {
+//						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorBusinessRegistration))
+//							account.setOperatorBusinessURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
+//						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerBusinessRegistration))
+//							account.setPropertyOwnerBusinessURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
+//						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerBusinessRegistration))
+//							account.setUstOwnerBusinessURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorOwnerTaxId))
-							account.setOperatorOwnerURL(attachments.getG360URL());
+							account.setOperatorOwnerURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(propertyOwnerTaxId))
-							account.setPropertyOwnerTaxIDURL(attachments.getG360URL());
+							account.setPropertyOwnerTaxIDURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(ustOwnerTaxId))
-							account.setUstOwnerURL(attachments.getG360URL());
+							account.setUstOwnerURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorLeaseAgreement))
-							account.setOperatorLeaseAgreementURL(attachments.getG360URL());
+							account.setOperatorLeaseAgreementURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(financialResponsibility))
-							account.setFinancialResponsibilityURL(attachments.getG360URL());
+							account.setFinancialResponsibilityURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(deedOrLandContract))
-							account.setPropertyDeedLandContractURL(attachments.getG360URL());
+							account.setPropertyDeedLandContractURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(facilitySiteMap))
-							account.setFacilitySiteMapURL(attachments.getG360URL());;
-						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cofaLink))
-							account.setCofaLinkURL(attachments.getG360URL());
+							account.setFacilitySiteMapURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);;
+//						if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cofaLink))
+//							account.setCofaLinkURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 					}
+
+				}
 					
 				} catch (Exception exception) {
 					exception.printStackTrace();
@@ -1114,7 +1124,7 @@ public class DBUtil {
 
 				return account;
 			}
-			return null;
+			return account;
 		} catch (
 
 		Exception exception)
@@ -1137,7 +1147,7 @@ public class DBUtil {
 
 	}
 
-	public void insertCustomPortalAttachment(String fileuploadlabel, String facilityId, int id, String type) {
+	public void insertCustomPortalAttachment(String facilityId, int id, String type) {
 		CustomerPortalAttachments attachment = new CustomerPortalAttachments();
 		attachment.setApprovalStatus("Pending");
 		attachment.setId(id+"");
@@ -1941,7 +1951,7 @@ public String getLeakTankTestButtonStatus(Facilities facility) {
 				"            row_number() over(partition by T.testtype__C order by T.Date__c desc) as rn\r\n" + 
 				"     from leaktestresults__c as T\r\n" + 
 				"     ) as T\r\n" + 
-				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"' and (viewed is null or viewed ='false') ");
+				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"'");
 
 		List lst = new ArrayList();
 		List<Object[]> rows = query.list();
@@ -1968,6 +1978,103 @@ public String getLeakTankTestButtonStatus(Facilities facility) {
 
 
 	
+}
+
+public String getLeakTankTestCount(Facilities facility) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			long millisec = System.currentTimeMillis();
+			Query query = session.createNativeQuery("select * from leaktestresults__c where facility__C = '"
+					+ facility.getFacilityId() + "' and (viewed is null or viewed ='false')");
+
+			List rows = query.list();
+
+			trx.commit();
+			session.close();
+			if (rows == null)
+				return "0";
+			else
+				return rows.size() + "";
+		} catch (
+
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+		}
+		return "0";
+
+	}
+public String getTankStatusCount(Facilities facility) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select * from tankstatusreport__c where facility__C = '"
+				+ facility.getFacilityId() + "' and (viewed is null or viewed ='false')");
+
+		List rows = query.list();
+
+		trx.commit();
+		session.close();
+		if (rows == null)
+			return "0";
+		else
+			return rows.size() + "";
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+	}
+	return "0";
+
+}
+public String getCsldCount(Facilities facility) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("select * from csldtestresult__c where facility__C = '"
+				+ facility.getFacilityId() + "' and (viewed is null or viewed ='false')");
+
+		List rows = query.list();
+
+		trx.commit();
+		session.close();
+		if (rows == null)
+			return "0";
+		else
+			return rows.size() + "";
+	} catch (
+
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+	}
+	return "0";
+
 }
 
 private String checkLeakTankResult(List<Object[]> rows) {
@@ -1997,9 +2104,9 @@ public Map<String, HashMap<String, ArrayList<Tankstatusreport>>> getTankStatusTe
 				"from (\r\n" + 
 				"     select T.facility__C,T.name,T.tank__C,T.product__C,T.status__C,T.runDate__c,T.ID,T.viewed,\r\n" + 
 				"            row_number() over(partition by T.product__C order by T.runDate__c desc) as rn\r\n" + 
-				"     from tankstatusreport__c as T\r\n" + 
+				"     from tankstatusreport__c as T where facility__C = '"+facilityId+"' \r\n" + 
 				"     ) as T\r\n" + 
-				"where T.rn <= 10 and facility__C = '"+facilityId+"' and (viewed is null or viewed ='false') ");
+				"where T.rn <= 10 and facility__C = '"+facilityId+"'");
 
 		
 		List<Object[]> rows = query.list();
@@ -2025,6 +2132,8 @@ public Map<String, HashMap<String, ArrayList<Tankstatusreport>>> getTankStatusTe
 				tankstatusreport.setDate__c(row[4].toString());;
 			if (row[5] != null)
 				tankstatusreport.setId(row[5].toString());
+			if (row[6] != null)
+				tankstatusreport.setViewed(row[6].toString());
 			if(tankstatusreport.getProduct__c() != null && tankstatusreport.getProduct__c().equalsIgnoreCase("UNLEADED")){
 				if(annualMap.get(tankstatusreport.getTank__c())!=null){
 					annualMap.get(tankstatusreport.getTank__c()).add(tankstatusreport);
@@ -2091,9 +2200,9 @@ public Map<String, HashMap<String, ArrayList<Csldtestresult>>> getCSLDTestDetail
 				"     select T.facility__C,T.name,T.tank__C,\r\n" + 
 				"            T.RESULT__c,T.RunDate__c,T.TankType__c,T.ID,T.viewed,\r\n" + 
 				"            row_number() over(order by T.RunDate__c desc) as rn\r\n" + 
-				"     from csldtestresult__c as T\r\n" + 
+				"     from csldtestresult__c as T  where facility__C = '"+facilityId+"' \r\n" + 
 				"     ) as T\r\n" + 
-				"where T.rn <= 10 and facility__C = '"+facilityId+"' and (viewed is null or viewed ='false') ");
+				"where T.rn <= 10 and facility__C = '"+facilityId+"'");
 
 		
 		List<Object[]> rows = query.list();
@@ -2116,8 +2225,11 @@ public Map<String, HashMap<String, ArrayList<Csldtestresult>>> getCSLDTestDetail
 			if (row[4] != null)
 				csldtestresult.setTankType__c(row[4].toString());;
 				
+			if (row[5] != null)
+				csldtestresult.setId(row[5].toString());
 			if (row[6] != null)
-				csldtestresult.setId(row[6].toString());
+				csldtestresult.setViewed(row[6].toString());
+			
 			if(csldtestresult.getTankType__c() != null && csldtestresult.getTankType__c().equalsIgnoreCase("UNLEADED")){
 				if(annualMap.get(csldtestresult.getTank__c())!=null){
 					annualMap.get(csldtestresult.getTank__c()).add(csldtestresult);
@@ -2186,9 +2298,9 @@ public Map<String, HashMap<String, ArrayList<Leaktestresults>>> getLeakTankTestD
 				"     select T.facility__C,T.name,T.tank__C,T.testtype__c,\r\n" + 
 				"            T.type__C,T.RESULT__c,T.Date__c,T.ID,T.viewed,\r\n" + 
 				"            row_number() over(partition by T.testtype__C order by T.Date__c desc) as rn\r\n" + 
-				"     from leaktestresults__c as T\r\n" + 
+				"     from leaktestresults__c as T where T.facility__C = '"+facilityId+"' \r\n" + 
 				"     ) as T\r\n" + 
-				"where T.rn <= 10 and  T.facility__C = '"+facilityId+"' and (viewed is null or viewed ='false') ");
+				"where T.rn <= 10 and  T.facility__C = '"+facilityId+"'");
 
 		
 		List<Object[]> rows = query.list();
@@ -2216,6 +2328,8 @@ public Map<String, HashMap<String, ArrayList<Leaktestresults>>> getLeakTankTestD
 				leaktestresults.setDate__c(row[5].toString());
 			if (row[6] != null)
 				leaktestresults.setId(row[6].toString());
+			if (row[7] != null)
+				leaktestresults.setViewed(row[7].toString());
 			if(leaktestresults.getTesttype__c() != null && leaktestresults.getTesttype__c().equalsIgnoreCase("ANNUAL")){
 				if(annualMap.get(leaktestresults.getTank__c())!=null){
 					annualMap.get(leaktestresults.getTank__c()).add(leaktestresults);
@@ -2287,7 +2401,7 @@ public String getTankStatusButtonStatus(Facilities facility) {
 				"            row_number() over(partition by T.product__C order by T.runDate__c desc) as rn\r\n" + 
 				"     from tankstatusreport__c as T\r\n" + 
 				"     ) as T\r\n" + 
-				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"' and (viewed is null or viewed ='false') ");
+				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"'");
 
 		List lst = new ArrayList();
 		List<Object[]> rows = query.list();
@@ -2344,7 +2458,7 @@ public String getCsldButtonStatus(Facilities facility) {
 				"            row_number() over(order by T.RunDate__c desc) as rn\r\n" + 
 				"     from csldtestresult__c as T\r\n" + 
 				"     ) as T\r\n" + 
-				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"' and (viewed is null or viewed ='false') ");
+				"where T.rn <= 10 and facility__C = '"+facility.getFacilityId()+"'");
 
 		List lst = new ArrayList();
 		List<Object[]> rows = query.list();
@@ -2384,13 +2498,16 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 	return result;
 }
 
-	public Account fetchUSTComplianceDataData(String facilitiesId) {
+	public Account fetchUSTComplianceDataData(String facilitiesId, Account account) {
 
 		String releaseDetectionReport = "GT - Release Detection Report";
 		String repairDocuments = "GT - Repair Documents (Optional)";
 		String lineAndLeakDetector = "GT - Line and Leak Detector Test";
 		String tankTestingReport = "GT - Tank Tightness Report";
-		String cathodicProtection = "GT - Tank Cathodic Protection";
+		String cathodicProtectionAnode = "GT - Cathodic Protection (Anode)";
+		String cathodicProtectionElectric = "GT - Cathodic Protection (Electric))";
+		
+		String cathodicProtectionCheck = "Cathodic Protection ";
 		String internalLiningInspection = "GT - Internal Lining Inspection";
 		String pipingCathodicProtection = "GT - Piping Cathodic Protection";
 		String dropTubeRepairDocument = "GT - Drop Tube Repair Document";
@@ -2403,7 +2520,7 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 		String sumpMaintenanceDocument = "GT - Sump Maintenance Document";
 		String udcMaintenanceDocument = "GT - UDC Maintenance Document";
 		String sirReport = "GT - SIR Report";
-		String monthlyWalkThroughReport = "GT - Line and Leak Detector Test";
+		String monthlyWalkThroughReport = "GT - Monthly Walk Through Report";
 		String tankMonitorStaticIP = "GT - Release Detection Report";
 
 		Session session = HibernateUtil.getSession();
@@ -2419,117 +2536,117 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 			trx.commit();
 			session.close();
 			if (lst.size() > 0) {
-				Account account = lst.get(0);
+				Account localAccount = lst.get(0);
 
-				if (account.getIsReleaseDetectionReportRequired()!=null && account.getIsReleaseDetectionReportRequired().equalsIgnoreCase("true")
-						&& account.getReleaseDetectionReport() == null)
+				if (localAccount.getIsReleaseDetectionReportRequired()!=null && localAccount.getIsReleaseDetectionReportRequired().equalsIgnoreCase("true")
+						&& localAccount.getReleaseDetectionReport() == null)
 					account.setReleaseDetectionReportEnable(true);
-				if (account.getIsRepairDocumentRequired()!=null && account.getIsRepairDocumentRequired().equalsIgnoreCase("true")
-						&& account.getRepairDocuments() == null)
+				if (localAccount.getIsRepairDocumentRequired()!=null && localAccount.getIsRepairDocumentRequired().equalsIgnoreCase("true")
+						&& localAccount.getRepairDocuments() == null)
 					account.setRepairDocumentsEnable(true);
-				if (account.getIsLnlDetrTstRequrd()!=null && account.getIsLnlDetrTstRequrd().equalsIgnoreCase("true")
-						&& account.getLineAndLeakDetector() == null)
+				if (localAccount.getIsLnlDetrTstRequrd()!=null && localAccount.getIsLnlDetrTstRequrd().equalsIgnoreCase("true")
+						&& localAccount.getLineAndLeakDetector() == null)
 					account.setLineAndLeakDetectorEnable(true);
-				if (account.getIsTankTestingReportRequired()!=null && account.getIsTankTestingReportRequired().equalsIgnoreCase("true")
-						&& account.getTankTestingReport() == null)
+				if (localAccount.getIsTankTestingReportRequired()!=null && localAccount.getIsTankTestingReportRequired().equalsIgnoreCase("true")
+						&& localAccount.getTankTestingReport() == null)
 					account.setTankTestingReportEnable(true);
-				if (account.getIsCprequired()!=null && account.getIsCprequired().equalsIgnoreCase("true") && account.getCathodicProtection() == null)
+				if (localAccount.getIsCprequired()!=null && localAccount.getIsCprequired().equalsIgnoreCase("true") && localAccount.getCathodicProtection() == null)
 					account.setCathodicProtectionEnable(true);
-				if (account.getIsInternalLiningInspectionRequired()!=null && account.getIsInternalLiningInspectionRequired().equalsIgnoreCase("true")
-						&& account.getInternalLiningInspection() == null)
+				if (localAccount.getIsInternalLiningInspectionRequired()!=null && localAccount.getIsInternalLiningInspectionRequired().equalsIgnoreCase("true")
+						&& localAccount.getInternalLiningInspection() == null)
 					account.setInternalLiningInspectionEnable(true);
-				if (account.getIsPipingCPRequired()!=null && account.getIsPipingCPRequired().equalsIgnoreCase("true")
-						&& account.getPipingCathodicProtection() == null)
+				if (localAccount.getIsPipingCPRequired()!=null && localAccount.getIsPipingCPRequired().equalsIgnoreCase("true")
+						&& localAccount.getPipingCathodicProtection() == null)
 					account.setPipingCathodicProtectionEnable(true);
-				if (account.getIsDropTubeRepairRequired()!=null && account.getIsDropTubeRepairRequired().equalsIgnoreCase("true")
-						&& account.getDropTubeRepairDocument() == null)
+				if (localAccount.getIsDropTubeRepairRequired()!=null && localAccount.getIsDropTubeRepairRequired().equalsIgnoreCase("true")
+						&& localAccount.getDropTubeRepairDocument() == null)
 					account.setDropTubeRepairDocumentEnable(true);
-				if (account.getIsTankInterstitialMonitoringRequired()!=null && account.getIsTankInterstitialMonitoringRequired().equalsIgnoreCase("true")
-						&& account.getTankInterstitialMonitoring() == null)
+				if (localAccount.getIsTankInterstitialMonitoringRequired()!=null && localAccount.getIsTankInterstitialMonitoringRequired().equalsIgnoreCase("true")
+						&& localAccount.getTankInterstitialMonitoring() == null)
 					account.setTankInterstitialMonitoringEnable(true);
-				if (account.getIsPipeInterstitialMontoringRequired()!=null && account.getIsPipeInterstitialMontoringRequired().equalsIgnoreCase("true")
-						&& account.getPipinginterstitialMonitoring() == null)
+				if (localAccount.getIsPipeInterstitialMontoringRequired()!=null && localAccount.getIsPipeInterstitialMontoringRequired().equalsIgnoreCase("true")
+						&& localAccount.getPipinginterstitialMonitoring() == null)
 					account.setPipinginterstitialMonitoringEnable(true);
-				if (account.getIsATGTestRequired()!=null && account.getIsATGTestRequired().equalsIgnoreCase("true") && account.getAtgTestReport() == null)
+				if (localAccount.getIsATGTestRequired()!=null && localAccount.getIsATGTestRequired().equalsIgnoreCase("true") && localAccount.getAtgTestReport() == null)
 					account.setAtgTestReportEnable(true);
-				if (account.getIsATGRepairRequired()!=null && account.getIsATGRepairRequired().equalsIgnoreCase("true") && account.getAtgRepairReport() == null)
+				if (localAccount.getIsATGRepairRequired()!=null && localAccount.getIsATGRepairRequired().equalsIgnoreCase("true") && localAccount.getAtgRepairReport() == null)
 					account.setAtgRepairReportEnable(true);
-				if (account.getIsSpillBucketTestingDocument()!=null && account.getIsSpillBucketTestingDocument().equalsIgnoreCase("true")
-						&& account.getSpillBucketTestingDocument() == null)
+				if (localAccount.getIsSpillBucketTestingDocument()!=null && localAccount.getIsSpillBucketTestingDocument().equalsIgnoreCase("true")
+						&& localAccount.getSpillBucketTestingDocument() == null)
 					account.setSpillBucketTestingDocumentEnable(true);
-				if (account.getIsSpillBucketRepairRequired()!=null && account.getIsSpillBucketRepairRequired().equalsIgnoreCase("true")
-						&& account.getSpillBucketRepairDocument() == null)
+				if (localAccount.getIsSpillBucketRepairRequired()!=null && localAccount.getIsSpillBucketRepairRequired().equalsIgnoreCase("true")
+						&& localAccount.getSpillBucketRepairDocument() == null)
 					account.setSpillBucketRepairDocumentEnable(true);
-				if (account.getIsSumpMaintenanceRequired()!=null && account.getIsSumpMaintenanceRequired().equalsIgnoreCase("true")
-						&& account.getSumpMaintenanceDocument() == null)
+				if (localAccount.getIsSumpMaintenanceRequired()!=null && localAccount.getIsSumpMaintenanceRequired().equalsIgnoreCase("true")
+						&& localAccount.getSumpMaintenanceDocument() == null)
 					account.setSumpMaintenanceDocumentEnable(true);
-				if (account.getIsUDCMaintenanceRequired()!=null && account.getIsUDCMaintenanceRequired().equalsIgnoreCase("true")
-						&& account.getUdcMaintenanceDocument() == null)
+				if (localAccount.getIsUDCMaintenanceRequired()!=null && localAccount.getIsUDCMaintenanceRequired().equalsIgnoreCase("true")
+						&& localAccount.getUdcMaintenanceDocument() == null)
 					account.setUdcMaintenanceDocumentEnable(true);
-				if (account.getIsSirRequired()!=null && account.getIsSirRequired().equalsIgnoreCase("true") && account.getSirReport() == null)
+				if (localAccount.getIsSirRequired()!=null && localAccount.getIsSirRequired().equalsIgnoreCase("true") && localAccount.getSirReport() == null)
 					account.setSirReportEnable(true);
-				if (account.getIsMonthlyWalkThroughInspection()!=null && account.getIsMonthlyWalkThroughInspection().equalsIgnoreCase("true")
-						&& account.getMonthlyWalkThroughReport() == null)
+				if (localAccount.getIsMonthlyWalkThroughInspection()!=null && localAccount.getIsMonthlyWalkThroughInspection().equalsIgnoreCase("true")
+						&& localAccount.getMonthlyWalkThroughReport() == null)
 					account.setMonthlyWalkThroughReportEnable(true);
-				if (account.getIsTankMonitorStaticIP()!=null && account.getIsTankMonitorStaticIP().equalsIgnoreCase("true")
-						&& account.getTankMonitorStaticIP() == null)
+				if (localAccount.getIsTankMonitorStaticIP()!=null && localAccount.getIsTankMonitorStaticIP().equalsIgnoreCase("true")
+						&& localAccount.getTankMonitorStaticIP() == null)
 					account.setTankMonitorStaticIPEnable(true);
 
 				String custom_portal_whereclause = "";
 
-				if (account.getIsReleaseDetectionReportRequired().equalsIgnoreCase("true")
-						&& account.getReleaseDetectionReport() == null)
+				if (localAccount.getIsReleaseDetectionReportRequired().equalsIgnoreCase("true")
+						&& localAccount.getReleaseDetectionReport() == null)
 					custom_portal_whereclause += "'" + releaseDetectionReport + "'" + ",";
-				if (account.getIsRepairDocumentRequired().equalsIgnoreCase("true")
-						&& account.getRepairDocuments() == null)
+				if (localAccount.getIsRepairDocumentRequired().equalsIgnoreCase("true")
+						&& localAccount.getRepairDocuments() == null)
 					custom_portal_whereclause += "'" + repairDocuments + "'" + ",";
-				if (account.getIsLnlDetrTstRequrd().equalsIgnoreCase("true")
-						&& account.getLineAndLeakDetector() == null)
+				if (localAccount.getIsLnlDetrTstRequrd().equalsIgnoreCase("true")
+						&& localAccount.getLineAndLeakDetector() == null)
 					custom_portal_whereclause += "'" + lineAndLeakDetector + "'" + ",";
-				if (account.getIsTankTestingReportRequired().equalsIgnoreCase("true")
-						&& account.getTankTestingReport() == null)
+				if (localAccount.getIsTankTestingReportRequired().equalsIgnoreCase("true")
+						&& localAccount.getTankTestingReport() == null)
 					custom_portal_whereclause += "'" + tankTestingReport + "'" + ",";
-				if (account.getIsCprequired().equalsIgnoreCase("true") && account.getCathodicProtection() == null)
-					custom_portal_whereclause += "'" + cathodicProtection + "'" + ",";
-				if (account.getIsInternalLiningInspectionRequired().equalsIgnoreCase("true")
-						&& account.getInternalLiningInspection() == null)
+				if (localAccount.getIsCprequired().equalsIgnoreCase("true") && localAccount.getCathodicProtection() == null)
+					custom_portal_whereclause += "'" + cathodicProtectionAnode + "'" + ","+"'" + cathodicProtectionElectric + "'" + ",";
+				if (localAccount.getIsInternalLiningInspectionRequired().equalsIgnoreCase("true")
+						&& localAccount.getInternalLiningInspection() == null)
 					custom_portal_whereclause += "'" + internalLiningInspection + "'" + ",";
-				if (account.getIsPipingCPRequired().equalsIgnoreCase("true")
-						&& account.getPipingCathodicProtection() == null)
+				if (localAccount.getIsPipingCPRequired().equalsIgnoreCase("true")
+						&& localAccount.getPipingCathodicProtection() == null)
 					custom_portal_whereclause += "'" + pipingCathodicProtection + "'" + ",";
-				if (account.getIsDropTubeRepairRequired().equalsIgnoreCase("true")
-						&& account.getDropTubeRepairDocument() == null)
+				if (localAccount.getIsDropTubeRepairRequired().equalsIgnoreCase("true")
+						&& localAccount.getDropTubeRepairDocument() == null)
 					custom_portal_whereclause += "'" + dropTubeRepairDocument + "'" + ",";
 
-				if (account.getIsTankInterstitialMonitoringRequired().equalsIgnoreCase("true")
-						&& account.getTankInterstitialMonitoring() == null)
+				if (localAccount.getIsTankInterstitialMonitoringRequired().equalsIgnoreCase("true")
+						&& localAccount.getTankInterstitialMonitoring() == null)
 					custom_portal_whereclause += "'" + tankInterstitialMonitoring + "'" + ",";
-				if (account.getIsPipeInterstitialMontoringRequired().equalsIgnoreCase("true")
-						&& account.getPipinginterstitialMonitoring() == null)
+				if (localAccount.getIsPipeInterstitialMontoringRequired().equalsIgnoreCase("true")
+						&& localAccount.getPipinginterstitialMonitoring() == null)
 					custom_portal_whereclause += "'" + pipinginterstitialMonitoring + "'" + ",";
-				if (account.getIsATGTestRequired().equalsIgnoreCase("true") && account.getAtgTestReport() == null)
+				if (localAccount.getIsATGTestRequired().equalsIgnoreCase("true") && localAccount.getAtgTestReport() == null)
 					custom_portal_whereclause += "'" + atgTestReport + "'" + ",";
-				if (account.getIsATGRepairRequired().equalsIgnoreCase("true") && account.getAtgRepairReport() == null)
+				if (localAccount.getIsATGRepairRequired().equalsIgnoreCase("true") && localAccount.getAtgRepairReport() == null)
 					custom_portal_whereclause += "'" + atgRepairReport + "'" + ",";
-				if (account.getIsSpillBucketTestingDocument().equalsIgnoreCase("true")
-						&& account.getSpillBucketTestingDocument() == null)
+				if (localAccount.getIsSpillBucketTestingDocument().equalsIgnoreCase("true")
+						&& localAccount.getSpillBucketTestingDocument() == null)
 					custom_portal_whereclause += "'" + spillBucketTestingDocument + "'" + ",";
-				if (account.getIsSpillBucketRepairRequired().equalsIgnoreCase("true")
-						&& account.getSpillBucketRepairDocument() == null)
+				if (localAccount.getIsSpillBucketRepairRequired().equalsIgnoreCase("true")
+						&& localAccount.getSpillBucketRepairDocument() == null)
 					custom_portal_whereclause += "'" + spillBucketRepairDocument + "'" + ",";
-				if (account.getIsSumpMaintenanceRequired().equalsIgnoreCase("true")
-						&& account.getSumpMaintenanceDocument() == null)
+				if (localAccount.getIsSumpMaintenanceRequired().equalsIgnoreCase("true")
+						&& localAccount.getSumpMaintenanceDocument() == null)
 					custom_portal_whereclause += "'" + sumpMaintenanceDocument + "'" + ",";
-				if (account.getIsUDCMaintenanceRequired().equalsIgnoreCase("true")
-						&& account.getUdcMaintenanceDocument() == null)
+				if (localAccount.getIsUDCMaintenanceRequired().equalsIgnoreCase("true")
+						&& localAccount.getUdcMaintenanceDocument() == null)
 					custom_portal_whereclause += "'" + udcMaintenanceDocument + "'" + ",";
-				if (account.getIsSirRequired().equalsIgnoreCase("true") && account.getSirReport() == null)
+				if (localAccount.getIsSirRequired().equalsIgnoreCase("true") && localAccount.getSirReport() == null)
 					custom_portal_whereclause += "'" + sirReport + "'" + ",";
-				if (account.getIsMonthlyWalkThroughInspection().equalsIgnoreCase("true")
-						&& account.getMonthlyWalkThroughReport() == null)
+				if (localAccount.getIsMonthlyWalkThroughInspection().equalsIgnoreCase("true")
+						&& localAccount.getMonthlyWalkThroughReport() == null)
 					custom_portal_whereclause += "'" + monthlyWalkThroughReport + "'" + ",";
-				if (account.getIsTankMonitorStaticIP().equalsIgnoreCase("true")
-						&& account.getTankMonitorStaticIP() == null)
+				if (localAccount.getIsTankMonitorStaticIP().equalsIgnoreCase("true")
+						&& localAccount.getTankMonitorStaticIP() == null)
 					custom_portal_whereclause += "'" + tankMonitorStaticIP + "'" + ",";
 
 				if (custom_portal_whereclause.endsWith(","))
@@ -2563,7 +2680,7 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankTestingReport)
 										&& attachments.getApprovalStatus() != null)
 									account.setTankTestingReportSubmitted(true);
-								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtection)
+								if (attachments.getType()!=null && (attachments.getType().equalsIgnoreCase(cathodicProtectionAnode) || attachments.getType().equalsIgnoreCase(cathodicProtectionElectric))
 										&& attachments.getApprovalStatus() != null)
 									account.setCathodicProtectionSubmitted(true);
 								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(internalLiningInspection)
@@ -2593,7 +2710,7 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankTestingReport)
 										&& attachments.getApprovalStatus() != null)
 									account.setSpillBucketRepairDocumentSubmitted(true);
-								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtection)
+								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtectionAnode) || attachments.getType().equalsIgnoreCase(cathodicProtectionElectric)
 										&& attachments.getApprovalStatus() != null)
 									account.setSumpMaintenanceDocumentSubmitted(true);
 								if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(internalLiningInspection)
@@ -2626,45 +2743,45 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 				// custom attachments
 				String custom_attachments_whereclause = "";
 
-				if (account.getReleaseDetectionReport() != null)
+				if (localAccount.getReleaseDetectionReport() != null)
 					custom_attachments_whereclause += "'" + releaseDetectionReport + "'" + ",";
-				if (account.getRepairDocuments() != null)
+				if (localAccount.getRepairDocuments() != null)
 					custom_attachments_whereclause += "'" + repairDocuments + "'" + ",";
-				if (account.getLineAndLeakDetector() != null)
+				if (localAccount.getLineAndLeakDetector() != null)
 					custom_attachments_whereclause += "'" + lineAndLeakDetector + "'" + ",";
-				if (account.getTankTestingReport() != null)
+				if (localAccount.getTankTestingReport() != null)
 					custom_attachments_whereclause += "'" + tankTestingReport + "'" + ",";
-				if (account.getCathodicProtection() != null)
-					custom_attachments_whereclause += "'" + cathodicProtection + "'" + ",";
-				if (account.getInternalLiningInspection() != null)
+				if (localAccount.getCathodicProtection() != null)
+					custom_attachments_whereclause += "'" + cathodicProtectionAnode + "'" + ","+"'" + cathodicProtectionElectric + "'" + ",";
+				if (localAccount.getInternalLiningInspection() != null)
 					custom_attachments_whereclause += "'" + internalLiningInspection + "'" + ",";
-				if (account.getPipingCathodicProtection() != null)
+				if (localAccount.getPipingCathodicProtection() != null)
 					custom_attachments_whereclause += "'" + pipingCathodicProtection + "'" + ",";
-				if (account.getDropTubeRepairDocument() != null)
+				if (localAccount.getDropTubeRepairDocument() != null)
 					custom_attachments_whereclause += "'" + dropTubeRepairDocument + "'" + ",";
 
-				if (account.getTankInterstitialMonitoring() != null)
+				if (localAccount.getTankInterstitialMonitoring() != null)
 					custom_attachments_whereclause += "'" + tankInterstitialMonitoring + "'" + ",";
-				if (account.getPipinginterstitialMonitoring() != null)
+				if (localAccount.getPipinginterstitialMonitoring() != null)
 					custom_attachments_whereclause += "'" + pipinginterstitialMonitoring + "'" + ",";
-				if (account.getAtgTestReport() != null)
+				if (localAccount.getAtgTestReport() != null)
 					custom_attachments_whereclause += "'" + atgTestReport + "'" + ",";
-				if (account.getAtgRepairReport() != null)
+				if (localAccount.getAtgRepairReport() != null)
 					custom_attachments_whereclause += "'" + atgRepairReport + "'" + ",";
-				if (account.getSpillBucketTestingDocument() != null)
+				if (localAccount.getSpillBucketTestingDocument() != null)
 					custom_attachments_whereclause += "'" + spillBucketTestingDocument + "'" + ",";
-				if (account.getSpillBucketRepairDocument() != null)
+				if (localAccount.getSpillBucketRepairDocument() != null)
 					custom_attachments_whereclause += "'" + spillBucketRepairDocument + "'" + ",";
 
-				if (account.getSumpMaintenanceDocument() != null)
+				if (localAccount.getSumpMaintenanceDocument() != null)
 					custom_attachments_whereclause += "'" + sumpMaintenanceDocument + "'" + ",";
-				if (account.getUdcMaintenanceDocument() != null)
+				if (localAccount.getUdcMaintenanceDocument() != null)
 					custom_attachments_whereclause += "'" + udcMaintenanceDocument + "'" + ",";
-				if (account.getSirReport() != null)
+				if (localAccount.getSirReport() != null)
 					custom_attachments_whereclause += "'" + sirReport + "'" + ",";
-				if (account.getMonthlyWalkThroughReport() != null)
+				if (localAccount.getMonthlyWalkThroughReport() != null)
 					custom_attachments_whereclause += "'" + monthlyWalkThroughReport + "'" + ",";
-				if (account.getTankMonitorStaticIP() != null)
+				if (localAccount.getTankMonitorStaticIP() != null)
 					custom_attachments_whereclause += "'" + tankMonitorStaticIP + "'" + ",";
 
 				if (custom_attachments_whereclause.endsWith(","))
@@ -2676,7 +2793,7 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 				try {
 					// Transaction t = session.beginTransaction();
 					query = session.createNativeQuery(
-							"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and type__c in ("
+							"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and active__c='true' and type__c in ("
 									+ custom_attachments_whereclause + ")",
 							CustomAttachments.class);
 					query.setString("facilitiesId", facilitiesId);
@@ -2684,45 +2801,46 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 					trx.commit();
 					session.close();
 					if (customPortalList.size() > 0) {
-						CustomAttachments attachments = customPortalList.get(0);
+						for (CustomAttachments attachments : customPortalList) {
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(releaseDetectionReport))
-							account.setReleaseDetectionReportURL(attachments.getG360URL());
+							account.setReleaseDetectionReportURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(repairDocuments))
-							account.setRepairDocumentsURL(attachments.getG360URL());
+							account.setRepairDocumentsURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(lineAndLeakDetector))
-							account.setLineAndLeakDetectorURL(attachments.getG360URL());
+							account.setLineAndLeakDetectorURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankTestingReport))
-							account.setTankTestingReportURL(attachments.getG360URL());
-						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(cathodicProtection))
-							account.setCathodicProtectionURL(attachments.getG360URL());
+							account.setTankTestingReportURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
+						if (attachments.getType()!=null && attachments.getType().contains(cathodicProtectionCheck))
+							account.setCathodicProtectionURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(internalLiningInspection))
-							account.setInternalLiningInspectionURL(attachments.getG360URL());
+							account.setInternalLiningInspectionURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipingCathodicProtection))
-							account.setPipingCathodicProtectionURL(attachments.getG360URL());
+							account.setPipingCathodicProtectionURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(dropTubeRepairDocument))
-							account.setDropTubeRepairDocumentURL(attachments.getG360URL());
+							account.setDropTubeRepairDocumentURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankInterstitialMonitoring))
-							account.setTankInterstitialMonitoringURL(attachments.getG360URL());
+							account.setTankInterstitialMonitoringURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(pipinginterstitialMonitoring))
-							account.setPipinginterstitialMonitoringURL(attachments.getG360URL());
+							account.setPipinginterstitialMonitoringURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(atgTestReport))
-							account.setAtgTestReportURL(attachments.getG360URL());
+							account.setAtgTestReportURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(atgRepairReport))
-							account.setAtgRepairReportURL(attachments.getG360URL());
+							account.setAtgRepairReportURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(spillBucketTestingDocument))
-							account.setSpillBucketTestingDocumentURL(attachments.getG360URL());
+							account.setSpillBucketTestingDocumentURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(spillBucketRepairDocument))
-							account.setSpillBucketRepairDocumentURL(attachments.getG360URL());
+							account.setSpillBucketRepairDocumentURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(sumpMaintenanceDocument))
-							account.setSumpMaintenanceDocumentURL(attachments.getG360URL());
+							account.setSumpMaintenanceDocumentURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(udcMaintenanceDocument))
-							account.setUdcMaintenanceDocumentURL(attachments.getG360URL());
+							account.setUdcMaintenanceDocumentURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(sirReport))
-							account.setSirReportURL(attachments.getG360URL());
+							account.setSirReportURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(monthlyWalkThroughReport))
-							account.setMonthlyWalkThroughReportURL(attachments.getG360URL());
+							account.setMonthlyWalkThroughReportURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 						if (attachments.getType()!=null && attachments.getType().equalsIgnoreCase(tankMonitorStaticIP))
-							account.setTankMonitorStaticIPURL(attachments.getG360URL());
+							account.setTankMonitorStaticIPURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
+					}
 					}
 
 				} catch (Exception exception) {
@@ -2738,7 +2856,7 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 				}
 				return account;
 			}
-			return null;
+			return account;
 		} catch (Exception exception){
 
 			exception.printStackTrace();
@@ -2753,7 +2871,7 @@ private String checkCSLDStatusResult(List<Object[]> rows) {
 
 	}
 
-public Account fetchOperatorCertificatesData(String facilitiesId) {
+public Account fetchOperatorCertificatesData(String facilitiesId,Account account) {
 	String  operatorAcertificate="GT - Operator A certificate";
 	String  operatorBcertificate="GT - Operator B certificate";
 	String  operatorCcertificate="GT - Operator C certificate";
@@ -2770,23 +2888,21 @@ public Account fetchOperatorCertificatesData(String facilitiesId) {
 		trx.commit();
 		session.close();
 		if (lst.size() > 0) {
-			Account account = lst.get(0);
-			if(account.getOperatorAcertificate() == null)
-				account.setOperatorAcertificateEnable(true);
-			if(account.getOperatorBcertificate() == null)
-				account.setOperatorBcertificateEnable(true);
-			if(account.getOperatorCcertificate() == null)
-				account.setOperatorCcertificateEnable(true);
+			Account localAccount = lst.get(0);
+			account.setOperatorAcertificateEnable(true);
+			account.setOperatorBcertificateEnable(true);
+			account.setOperatorCcertificateEnable(true);
 			
 			String custom_portal_whereclause = "";
-			if(account.getOperatorAcertificate() == null)
+			if(localAccount.getOperatorAcertificate() == null)
 				custom_portal_whereclause+= "'"+operatorAcertificate+"'"+",";
-			if(account.getOperatorBcertificate() == null)
+			if(localAccount.getOperatorBcertificate() == null)
 				custom_portal_whereclause+= "'"+operatorBcertificate+"'"+",";
-			if(account.getOperatorCcertificate() == null)
+			if(localAccount.getOperatorCcertificate() == null)
 				custom_portal_whereclause+= "'"+operatorCcertificate+"'"+",";
 						if(custom_portal_whereclause.endsWith(","))
 				custom_portal_whereclause = custom_portal_whereclause.substring(0, custom_portal_whereclause.lastIndexOf(","));
+						System.out.println("custom_portal_whereclause----"+custom_portal_whereclause);
 			if(custom_portal_whereclause.trim().length()>0){
 			session = HibernateUtil.getSession();
 			trx = session.beginTransaction();
@@ -2824,11 +2940,11 @@ public Account fetchOperatorCertificatesData(String facilitiesId) {
 			
 			//custom attachments
 			String custom_attachments_whereclause = "";
-			if(account.getOperatorAcertificate()!= null)
+			if(localAccount.getOperatorAcertificate()!= null)
 				custom_attachments_whereclause+= "'"+operatorAcertificate+"'"+",";
-			if(account.getOperatorBcertificate()!= null)
+			if(localAccount.getOperatorBcertificate()!= null)
 				custom_attachments_whereclause+= "'"+operatorBcertificate+"'"+",";
-			if(account.getOperatorCcertificate()!= null)
+			if(localAccount.getOperatorCcertificate()!= null)
 				custom_attachments_whereclause+= "'"+operatorCcertificate+"'"+",";
 			if(custom_attachments_whereclause.endsWith(","))
 				custom_attachments_whereclause = custom_attachments_whereclause.substring(0, custom_attachments_whereclause.lastIndexOf(","));
@@ -2837,19 +2953,22 @@ public Account fetchOperatorCertificatesData(String facilitiesId) {
 			try {
 				// Transaction t = session.beginTransaction();
 				query = session.createNativeQuery(
-						"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and type__c in ("+custom_attachments_whereclause+")",CustomAttachments.class);
+						"SELECT * FROM custom_attachments__c  where facility__c =:facilitiesId and active__c='true' and type__c in ("+custom_attachments_whereclause+")",CustomAttachments.class);
 				query.setString("facilitiesId", facilitiesId);
 				List<CustomAttachments> customPortalList = query.list();
 				trx.commit();
 				session.close();
 				if(customPortalList.size()>0){
-					CustomAttachments attachments = customPortalList.get(0);
+					for (CustomAttachments attachments : customPortalList) {
+						
+					
 					if(attachments.getType()!=null && attachments.getType().equalsIgnoreCase(operatorAcertificate))
-						account.setOperatorAcertificateURL(attachments.getG360URL());;
+						account.setOperatorAcertificateURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 					if(attachments.getType().equalsIgnoreCase(operatorBcertificate))
-						account.setOperatorBcertificate(attachments.getG360URL());
+						account.setOperatorBcertificateURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);
 					if(attachments.getType().equalsIgnoreCase(operatorCcertificate))
-						account.setOperatorCcertificateURL(attachments.getG360URL());;
+						account.setOperatorCcertificateURL(attachments.getG360URL()!=null?attachments.getG360URL():errorHandlingPDF);;
+				}
 				}
 				
 			} catch (Exception exception) {
@@ -2864,7 +2983,7 @@ public Account fetchOperatorCertificatesData(String facilitiesId) {
 			
 			return account;
 		}
-		return null;
+		return account;
 	} catch (
 	Exception exception){
 		exception.printStackTrace();

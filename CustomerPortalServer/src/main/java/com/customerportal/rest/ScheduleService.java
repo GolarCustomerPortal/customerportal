@@ -25,11 +25,25 @@ public class ScheduleService extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
+		scheduleList = DBUtil.getInstance().getParentSchedulejobs();
+		startForFirstTime();
 		fetchParentJobs();
 	}
 
+	private void startForFirstTime() {
+		new Thread(){
+			@Override
+			public void run() {
+				System.out.println("jobs started for one time on server startup.......");
+				for (JobSchedule jobSchedule : scheduleList) {
+					checkAndExecuteJob(jobSchedule);
+				}
+			}
+		}.start();
+		
+	}
+
 	private void fetchParentJobs() {
-		scheduleList = DBUtil.getInstance().getParentSchedulejobs();
 		for (JobSchedule jobSchedule : scheduleList) {
 			int milliSeconds = CustomerPortalUtil.getMilliSeconds(jobSchedule.getSchedule());
 			startThread(jobSchedule, milliSeconds);

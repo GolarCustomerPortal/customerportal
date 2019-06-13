@@ -293,16 +293,19 @@
                       <button type="button" class="btn btn-default btn-tank-circle btn-lg"  ngClass="{{ getTankLeakTestButtonClass(rightDetailsContent)}}"
                        data-toggle="modal" data-target="#tankReportsModal"
                       (click)="getTankLeakModalData(rightDetailsContent.facilityId)">
+                      {{rightDetailsContent?.leakTankTestCount}}
                       </button>
                     </div>
                     <div class="ui-g-4">
                       <button type="button" class="btn btn-default btn-tank-circle btn-lg"  ngClass="{{ getTankStatusButtonClass(rightDetailsContent)}}"
                        data-toggle="modal" (click)="getTankStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal">
+                       {{rightDetailsContent?.tankStatusCount}}
                         </button>
                     </div>
                     <div class="ui-g-4">
                       <button type="button" class="btn btn-default btn-tank-circle btn-lg" ngClass="{{ getCSCLTestButtonClass(rightDetailsContent)}}" 
-                      data-toggle="modal" (click)="getCSCLStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal"></button>
+                      data-toggle="modal" (click)="getCSCLStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal">
+                      {{rightDetailsContent?.csldCount}}</button>
                     </div>
                   </div>
                   <div class="ui-g-12  margin-top">
@@ -369,7 +372,7 @@
       </div>
       <div class="modal-body file-upload-model">
         <form name="form" #notificationForm novalidate>
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.operatorBusinessEnable == true || modalData?.operatorBusinessURL != null || modalData?.operatorBusinessSubmitted == true">
             <div class="ui-g-8">Operator Business Registration</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorBusinessSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -385,7 +388,7 @@
             </div>
           </div>
           
-          <div class="ui-g-12 form-upload-padding file-upload-second">
+          <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.propertyOwnerBusinessEnable == true || modalData?.propertyOwnerBusinessURL != null || modalData?.propertyOwnerBusinessSubmitted == true">
             <div class="ui-g-8">Property Owner Business Registration</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyOwnerBusinessSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -401,7 +404,7 @@
             </div>
           </div>
           
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.ustOwnerBusinessEnable == true || modalData?.ustOwnerBusinessURL != null || modalData?.ustOwnerBusinessSubmitted == true">
             <div class="ui-g-8">UST Owner Business Registration</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.ustOwnerBusinessSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -416,7 +419,7 @@
                 <span *ngIf='ustOwnerBusinessFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ustOwnerBusinessFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-second">
+          <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.operatorOwnerEnable == true || modalData?.operatorOwnerURL != null || modalData?.operatorOwnerSubmitted == true">
             <div class="ui-g-8">Operator Owner Tax ID</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorOwnerSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -425,14 +428,14 @@
                 <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.operatorOwnerURL)"><i class="fa fa-file-text-o"></i></a>
               </div> -->
  
-            <div class="ui-g-4"  *ngIf=" modalData?.operatorOwnerEnable == true && modalData?.operatorOwnerURL == null && modalData?.operatorOwnerSubmitted == false">
+            <div class="ui-g-4"  *ngIf=" modalData?.operatorOwnerEnable == true && modalData?.operatorOwnerURL == null || modalData?.operatorOwnerSubmitted == false">
               <p-fileUpload name="operatorOwner[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}"
                  customUpload="true" (onSelect)="enableNotificationuploadButton = true;operatorOwnerFile = $event.files[0]; operatorOwnerFileName=$event.files[0].name"
                 ></p-fileUpload>
                 <span *ngIf='operatorOwnerSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorOwnerName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.propertyOwnerFileEnable == true || modalData?.propertyOwnerTaxIDURL != null && modalData?.propertyOwnerTaxIDSubmitted == true">
             <div class="ui-g-8">Property Owner Tax ID</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyOwnerTaxIDSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -448,7 +451,7 @@
                 <span *ngIf='propertyOwnerSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{propertyOwnerFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-second">
+          <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.ustOwnerEnable == true || modalData?.ustOwnerURL != null || modalData?.ustOwnerSubmitted == true">
             <div class="ui-g-8">UST Owner Tax ID</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.ustOwnerSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -473,7 +476,7 @@
                 <span *ngIf='ownerAffidavitFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{ownerAffidavitFileName}}</span>
             </div>
           </div> -->
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.operatorLeaseAgreementEnable == true || modalData?.operatorLeaseAgreementURL != null || modalData?.operatorLeaseAgreementSubmitted == true">
             <div class="ui-g-8">Operator Lease Agreement</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.operatorLeaseAgreementSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -489,7 +492,7 @@
                 <span *ngIf='operatorLeaseAgreementFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorLeaseAgreementFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-second">
+          <div class="ui-g-12 form-upload-padding file-upload-second"  *ngIf="modalData?.financialResponsibilityEnable == true || modalData?.financialResponsibilityURL != null && modalData?.financialResponsibilitySubmitted == true">
             <div class="ui-g-8">Financial Responsibility (Insurance)</div>
             <div class="ui-g-4 "  *ngIf="modalData?.financialResponsibilitySubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -505,7 +508,7 @@
                 <span *ngIf='financialResponsibilitySuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{financialResponsibilityFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <div class="ui-g-12 form-upload-padding file-upload-first"  *ngIf="modalData?.propertyDeedLandContractEnable == true || modalData?.propertyDeedLandContractURL != null || modalData?.propertyDeedLandContractSubmitted == true">
             <div class="ui-g-8">Deed or Land Contract</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.propertyDeedLandContractSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -514,14 +517,14 @@
                 <a  data-toggle="modal"  data-target="#notificationcontentModal" (click)="setDocumentURL(modalData?.propertyDeedLandContractURL)"><i class="fa fa-file-text-o"></i></a>
               </div>
  
-            <div class="ui-g-4" *ngIf="modalData?.propertyDeedLandContractEnable == true &&  modalData?.propertyDeedLandContractURL == null && modalData?.propertyDeedLandContractEnable == false">
+            <div class="ui-g-4" *ngIf="modalData?.propertyDeedLandContractEnable == true &&  modalData?.propertyDeedLandContractURL == null && modalData?.propertyDeedLandContractSubmitted == false">
               <p-fileUpload name="deedOrLandContractFile[]" mode="basic" class="no-left-round-radius" accept=".*" chooseLabel="{{uploadLabel}}" 
                 customUpload="true" (onSelect)="enableNotificationuploadButton = true;deedOrLandContractFile = $event.files[0]; deedOrLandContractFileName=$event.files[0].name"
                ></p-fileUpload>
-                <span *ngIf='deedOrLandContractFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{deedLandFileName}}</span>
+                <span *ngIf='deedOrLandContractFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{deedOrLandContractFileName}}</span>
             </div>
           </div>
-          <div class="ui-g-12 form-upload-padding file-upload-second">
+          <div class="ui-g-12 form-upload-padding file-upload-second"  *ngIf="modalData?.facilitySiteMapEnable == true || modalData?.facilitySiteMapURL != null || modalData?.facilitySiteMapSubmitted == true">
             <div class="ui-g-8">Facility Site Map</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.facilitySiteMapSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -535,7 +538,7 @@
                  customUpload="true" (onSelect)="enableNotificationuploadButton = true;facilitySiteMapFile = $event.files[0]; facilitySiteMapFileName=$event.files[0].name"
                 >
                 </p-fileUpload>
-                <span *ngIf='facilitySiteMapFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{facilitySiteMapFileFileName}}</span>
+                <span *ngIf='facilitySiteMapFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{facilitySiteMapFileName}}</span>
             </div>
           </div>
           <!-- <div class="ui-g-12 form-upload-padding file-upload-first">
@@ -568,7 +571,7 @@
                 <span *ngIf='letterOfNetworthCertificationFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{letterOfNetworthCertificationFileName}}</span>
             </div> -->
           <!-- </div> -->
-          <div class="ui-g-12 form-upload-padding file-upload-first">
+          <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.cofaLinkEnable == true ||  modalData?.cofaLinkURL != null || modalData?.cofaLinkSubmitted == true">
             <div class="ui-g-8">COFA Link</div>
             <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.cofaLinkSubmitted == true">
               <div class="pending-text">Pending</div>
@@ -609,7 +612,7 @@
         </div>
         <div class="modal-body file-upload-model">
           <form name="form" #complianceForm novalidate>
-            <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.releaseDetectionReportEnable == true || modalData?.releaseDetectionReportURL != null || modalData?.releaseDetectionReportSubmitted == true">
               <div class="ui-g-8">Release Detection Report</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.releaseDetectionReportSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -625,7 +628,7 @@
                   <span *ngIf='releaseDetectionReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{releaseDetectionReportFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.repairDocumentsEnable == true || modalData?.repairDocumentsURL != null || modalData?.repairDocumentsSubmitted == true" >
               <div class="ui-g-8">Repair Documents (Optional)</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.repairDocumentsSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -641,7 +644,7 @@
                   <span *ngIf='repairDocumentsFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{repairDocumentsFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.lineAndLeakDetectorEnable == true || modalData?.lineAndLeakDetectorURL != null || modalData?.lineAndLeakDetectorSubmitted == true">
               <div class="ui-g-8">Line and Leak Detector Test</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.lineAndLeakDetectorSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -657,7 +660,7 @@
                   <span *ngIf='lineAndLeakDetectorFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{lineAndLeakDetectorFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.tankTestingReportEnable == true || modalData?.tankTestingReportURL != null || modalData?.tankTestingReportSubmitted == true">
               <div class="ui-g-8">Tank Tightness Report</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankTestingReportSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -673,7 +676,7 @@
                   <span *ngIf='tankTestingReportFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{tankTestingReportFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.cathodicProtectionFileEnable == true || modalData?.cathodicProtectionURL != null || modalData?.cathodicProtectionSubmitted == true">
               <div class="ui-g-8">Tank Cathodic Protection</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.cathodicProtectionSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -689,7 +692,7 @@
                   <span *ngIf='cathodicProtectionFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{cathodicProtectionFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.internalLiningInspectionEnable == true || modalData?.internalLiningInspectionURL != null || modalData?.internalLiningInspectionSubmitted == true"> 
               <div class="ui-g-8">Internal Lining Inspection</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.internalLiningInspectionSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -706,7 +709,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.pipingCathodicProtectionFileSEnable == true || modalData?.pipingCathodicProtectionURL != null || modalData?.pipingCathodicProtectionSubmitted == true">
               <div class="ui-g-8">Piping Cathodic Protection</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.pipingCathodicProtectionSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -723,7 +726,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.dropTubeRepairDocumentEnable == true || modalData?.dropTubeRepairDocumentURL != null || modalData?.dropTubeRepairDocumentSubmitted == true">
               <div class="ui-g-8">Drop Tube Repair Document</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.dropTubeRepairDocumentSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -740,7 +743,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.tankInterstitialMonitoringEnable == true || modalData?.tankInterstitialMonitoringURL != null || modalData?.tankInterstitialMonitoringSubmitted == true">
               <div class="ui-g-8">Tank Interstitial Monitoring</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankInterstitialMonitoringSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -757,7 +760,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.pipinginterstitialMonitoringEnable == true || modalData?.pipinginterstitialMonitoringURL != null || modalData?.pipinginterstitialMonitoringSubmitted == true">
               <div class="ui-g-8">Piping Interstitial Monitoring</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.pipinginterstitialMonitoringSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -774,7 +777,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.atgTestReportEnable == true || modalData?.atgTestReportURL != null || modalData?.atgTestReportSubmitted == true">
               <div class="ui-g-8">ATG Test Report</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.atgTestReportSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -791,7 +794,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.atgRepairReportEnable == true || modalData?.atgRepairReportURL != null || modalData?.atgRepairReportSubmitted == true">
               <div class="ui-g-8">ATG Repair Report</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.atgRepairReportSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -808,7 +811,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.spillBucketTestingDocumentEnable == true || modalData?.spillBucketTestingDocumentURL != null || modalData?.spillBucketTestingDocumentSubmitted == true">
               <div class="ui-g-8">Spill Bucket Testing Document</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.spillBucketTestingDocumentSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -825,7 +828,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.spillBucketRepairDocumentEnable == true || modalData?.spillBucketRepairDocumentURL != null || modalData?.spillBucketRepairDocumentSubmitted == true">
               <div class="ui-g-8">Spill Bucket Repair Document</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.spillBucketRepairDocumentSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -842,7 +845,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.sumpMaintenanceDocumentEnable == true || modalData?.sumpMaintenanceDocumentURL != null || modalData?.sumpMaintenanceDocumentSubmitted == true">
               <div class="ui-g-8">Sump Maintenance Document</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.sumpMaintenanceDocumentSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -859,7 +862,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.udcMaintenanceDocumentEnable == true || modalData?.udcMaintenanceDocumentURL != null || modalData?.udcMaintenanceDocumentSubmitted == true">
               <div class="ui-g-8">UDC Maintenance Document</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.udcMaintenanceDocumentSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -876,7 +879,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.sirReportEnable == true || modalData?.sirReportURL != null || modalData?.sirReportSubmitted == true">
               <div class="ui-g-8">SIR Report</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.sirReportSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -893,7 +896,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.monthlyWalkThroughReportEnable == true || modalData?.monthlyWalkThroughReportURL != null || modalData?.monthlyWalkThroughReportSubmitted == true">
               <div class="ui-g-8">Monthly Walk Through Report</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.monthlyWalkThroughReportSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -910,7 +913,7 @@
               </div>
             </div>
 
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.tankMonitorStaticIPEnable == true || modalData?.tankMonitorStaticIPURL != null || modalData?.tankMonitorStaticIPSubmitted == true">
               <div class="ui-g-8">Tank Monitor Static IP</div>
               <div class="ui-g-4 font-awsome-file"  *ngIf="modalData?.tankMonitorStaticIPSubmitted == true">
                 <div class="pending-text">Pending</div>
@@ -951,7 +954,7 @@
         </div>
         <div class="modal-body file-upload-model">
           <form name="form" #certificationForm novalidate>
-            <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.operatorAcertificateEnable == true || modalData?.operatorAcertificateURL != null || modalData?.operatorAcertificateSubmitted == true">
               <div class="ui-g-8">Operator A certificate</div>
 
               <div class="ui-g-4 "  *ngIf="modalData?.operatorAcertificateSubmitted == true">
@@ -969,7 +972,7 @@
                   <span *ngIf='operatorAcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorAcertificateFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-second">
+            <div class="ui-g-12 form-upload-padding file-upload-second" *ngIf="modalData?.operatorBcertificateEnable == true || modalData?.operatorBcertificateURL != null || modalData?.operatorBcertificateSubmitted == true">
               <div class="ui-g-8">Operator B certificate</div>
               <div class="ui-g-4 "  *ngIf="modalData?.operatorBcertificateSubmitted == true">
                   <div class="pending-text">Pending</div>
@@ -985,7 +988,7 @@
                   <span *ngIf='operatorBcertificateFileSuccess == "true"'> <i class="fa fa-check success" aria-hidden="true"></i></span><span class="file-upload-font">{{operatorBcertificateFileName}}</span>
               </div>
             </div>
-            <div class="ui-g-12 form-upload-padding file-upload-first">
+            <div class="ui-g-12 form-upload-padding file-upload-first" *ngIf="modalData?.operatorCcertificateEnable == true || modalData?.operatorCcertificateURL != null || modalData?.operatorCcertificateSubmitted == true">
               <div class="ui-g-8">Operator C certificate</div>
               <div class="ui-g-4 "  *ngIf="modalData?.operatorCcertificateSubmitted == true">
                   <div class="pending-text">Pending</div>
@@ -1563,8 +1566,8 @@
                         <div class="ui-g-8 bold-class">Date</div>
                       </div>
                     <div *ngFor="let data of tankDetailsFirstTabData[key]; let i = index;" class="ui-g">
-                        <div class="ui-g-4">{{data.result__c}}</div>
-                        <div class="ui-g-8">{{data.date__c}}</div>
+                        <div class="ui-g-4" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.result__c}}</div>
+                        <div class="ui-g-8" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.date__c}}</div>
                       </div>
                 </div>
           
@@ -1580,8 +1583,8 @@
                           <div class="ui-g-8 bold-class">Date</div>
                         </div>
                       <div *ngFor="let data of tankDetailsSecondTabData[key]; let i = index;" class="ui-g">
-                          <div class="ui-g-4">{{data.result__c}}</div>
-                          <div class="ui-g-8">{{data.date__c}}</div>
+                          <div class="ui-g-4" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.result__c}}</div>
+                          <div class="ui-g-8" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.date__c}}</div>
                         </div>
                   </div>
             
@@ -1597,8 +1600,8 @@
                           <div class="ui-g-8 bold-class">Date</div>
                         </div>
                       <div *ngFor="let data of tankDetailsThirdTabData[key]; let i = index;" class="ui-g">
-                          <div class="ui-g-4">{{data.result__c}}</div>
-                          <div class="ui-g-8">{{data.date__c}}</div>
+                          <div class="ui-g-4" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.result__c}}</div>
+                          <div class="ui-g-8" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.date__c}}</div>
                         </div>
                   </div>
                   </div>

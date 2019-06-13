@@ -14,7 +14,7 @@ public class Leaktestresults {
 	private String testtype__c;
 	private String type__c;
 	private String volume__c;
-	private String viewed;
+	private String viewed="false";
 	
 	public String getId() {
 		return id;

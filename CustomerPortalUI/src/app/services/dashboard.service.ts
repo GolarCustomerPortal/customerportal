@@ -40,7 +40,7 @@ getComplianceList(userId,type) {
           return facilityNotificationData;
       });
 }
-getNotifictionUploadData(FacilitiesId){
+getNotifictionUSTCertificationUploadData(FacilitiesId){
   return this.http.get(URLConstants.FACILITIES_NOTIFICATION_DETAILS,this.getDashboardOptions(CRMConstants.FACILITIES_ID,FacilitiesId))
       .map(FacilitiesData => {
           

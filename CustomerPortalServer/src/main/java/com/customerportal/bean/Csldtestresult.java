@@ -11,6 +11,7 @@ public class Csldtestresult {
 	private String tank__c;
 	private String tankType__c;
 	private String product__c;
+	private String viewed="false";
 
 	public String getId() {
 		return id;
@@ -83,11 +84,20 @@ public class Csldtestresult {
 	public void setTankType__c(String tankType__c) {
 		this.tankType__c = tankType__c;
 	}
+
 	public void setProduct__c(String product__c) {
 		this.product__c = product__c;
 	}
+
 	public String getProduct__c() {
 		return product__c;
 	}
 
+	public void setViewed(String viewed) {
+		this.viewed = viewed;
+	}
+
+	public String getViewed() {
+		return viewed;
+	}
 }

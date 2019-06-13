@@ -1,7 +1,5 @@
 package com.customerportal.bean;
 
-import java.util.Date;
-
 public class CustomAttachments {
 
 	private String id;
@@ -12,6 +10,7 @@ public class CustomAttachments {
 	private String description;
 	private String name;
 	private String reportDatae;
+	private String active;
 	public String getId() {
 		return id;
 	}

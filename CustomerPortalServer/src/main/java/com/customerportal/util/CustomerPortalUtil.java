@@ -47,8 +47,11 @@ public class CustomerPortalUtil {
 					kvList = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
 				facility.setConsolidateReport(kvList);
 				facility.setLeakTankTestButtonStatus(DBUtil.getInstance().getLeakTankTestButtonStatus(facility));
+				facility.setLeakTankTestCount(DBUtil.getInstance().getLeakTankTestCount(facility));
 				facility.setTankStatusButtonStatus(DBUtil.getInstance().getTankStatusButtonStatus(facility));
+				facility.setTankStatusCount(DBUtil.getInstance().getTankStatusCount(facility));
 				facility.setCsldButtonStatus(DBUtil.getInstance().getCsldButtonStatus(facility));
+				facility.setCsldCount(DBUtil.getInstance().getCsldCount(facility));
 				if (notificationFormList.contains(facility.getFacilityId())) {
 					facility.setNotificationFormButtonEnable("true");
 				} else
@@ -85,7 +88,7 @@ public class CustomerPortalUtil {
 			if (facility == null)
 				continue;
 			String imageURL = "/" + contextpath + "/images/gasstation/not_found_logo.png";
-			if (facility.getBrand() != null) {
+			if (facility.getBrand() != null && !facility.getBrand().equalsIgnoreCase("")) {
 				String brand = facility.getBrand().replace(" ", "_");
 				String brandURL = imageProperties.getProperty(brand);
 				brandURL = brandURL == null ? "not_found_logo.png" : brandURL;

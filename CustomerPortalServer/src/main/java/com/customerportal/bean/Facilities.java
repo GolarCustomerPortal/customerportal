@@ -23,8 +23,11 @@ public class Facilities {
 	private String complianceButtonEnable;
 	private String certificationButtonEnable;
 	private String leakTankTestButtonStatus;
+	private String leakTankTestCount;
 	private String TankStatusButtonStatus;
+	private String TankStatusCount;
 	private String csldButtonStatus;
+	private String csldCount;
 	private String compliance;
 	private String nfCompliant;
 	private String imageURL;
@@ -256,4 +259,29 @@ public class Facilities {
 	public String getNfCompliant() {
 		return nfCompliant;
 	}
+
+	public String getLeakTankTestCount() {
+		return leakTankTestCount;
+	}
+
+	public void setLeakTankTestCount(String leakTankTestCount) {
+		this.leakTankTestCount = leakTankTestCount;
+	}
+
+	public String getTankStatusCount() {
+		return TankStatusCount;
+	}
+
+	public void setTankStatusCount(String tankStatusCount) {
+		TankStatusCount = tankStatusCount;
+	}
+
+	public String getCsldCount() {
+		return csldCount;
+	}
+
+	public void setCsldCount(String csldCount) {
+		this.csldCount = csldCount;
+	}
+	
 }

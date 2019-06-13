@@ -13,6 +13,7 @@ public class Tankstatusreport {
 	private String rate__c;
 	private String result__c;
 	private String startTime__c;
+	private String viewed="false";
 	public String getId() {
 		return id;
 	}
@@ -86,7 +87,13 @@ public String getDate__c() {
 		this.startTime__c = startTime__c;
 	}
 	
-	
+	public void setViewed(String viewed) {
+		this.viewed = viewed;
+	}
+
+	public String getViewed() {
+		return viewed;
+	}
 	
 	
 
