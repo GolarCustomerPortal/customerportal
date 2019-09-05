@@ -795,18 +795,22 @@ public class DBUtil {
 
 	public List<USSBOA> fetchUSSBOAContent(String vendorType) {
 
+		List<USSBOA> lst = new ArrayList<USSBOA>();
+		if(!vendorType.equalsIgnoreCase("preferred"))
+			return lst;
+		
 		Session session = HibernateUtil.getSession();
 		;
 		Transaction t = session.beginTransaction();
 		Query query = session.createNativeQuery(
 				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone, a.USSBOA_Documents_Link__c "
-						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Approved Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id and a.vendor_type__c =:vendorType");
-		if(vendorType.equalsIgnoreCase("preferred"))
-			query.setString("vendorType", "Preferred Vendor");
-		else
-			query.setString("vendorType", "Associate Vendor");
+						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Preferred Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id");
+//		if(vendorType.equalsIgnoreCase("preferred"))
+//			query.setString("vendorType", "Preferred Vendor");
+//		else
+//			query.setString("vendorType", "Associate Vendor");
 
-		List<USSBOA> lst = new ArrayList<USSBOA>();
+		
 		List<Object[]> rows = query.list();
 		for (Object[] row : rows) {
 			USSBOA ussboa = new USSBOA();
