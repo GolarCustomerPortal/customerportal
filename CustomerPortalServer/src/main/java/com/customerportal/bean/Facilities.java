@@ -35,6 +35,7 @@ public class Facilities {
 	private String projectManager;
 	private String projectManagerPhone;
 	private String facilityTankPaidMessage;
+	private String incomeExpenseUpdatesButtonEnable;
 
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
@@ -283,5 +284,10 @@ public class Facilities {
 	public void setCsldCount(String csldCount) {
 		this.csldCount = csldCount;
 	}
-	
+	public void setIncomeExpenseUpdatesButtonEnable(String incomeExpenseUpdatesButtonEnable) {
+		this.incomeExpenseUpdatesButtonEnable = incomeExpenseUpdatesButtonEnable;
+	}
+	public String getIncomeExpenseUpdatesButtonEnable() {
+		return incomeExpenseUpdatesButtonEnable;
+	}
 }

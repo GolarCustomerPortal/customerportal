@@ -38,6 +38,9 @@ import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-s
 import { SafePipe } from './services/SafePipe';
 import { HttpService } from './services/http.service';
 import {TabViewModule} from 'primeng/tabview';
+import { CurrencyMaskModule } from "ng2-currency-mask";
+import {CustomDatePipe} from './services/custom.datepipe';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +52,9 @@ import {TabViewModule} from 'primeng/tabview';
     ScheduleComponent,
     UssboaComponent,
     TankMonitorSignupComponent,
-    SafePipe
+    SafePipe,
+    CustomDatePipe,
+    SettingsComponent
   ],  
   imports: [
     routing,
@@ -74,8 +79,10 @@ import {TabViewModule} from 'primeng/tabview';
     DialogModule,
     CheckboxModule,
     CalendarModule,
-    TabViewModule
+    TabViewModule,
+    CurrencyMaskModule
   ],
+  exports:    [ CustomDatePipe ],
   providers: [  
     UserService,
     CommonService,
@@ -83,6 +90,7 @@ import {TabViewModule} from 'primeng/tabview';
     DashboardService,
     ImportService,
     HttpService,
+    CustomDatePipe,
     {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
   bootstrap: [AppComponent]

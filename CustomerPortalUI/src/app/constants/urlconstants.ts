@@ -32,4 +32,11 @@ export class URLConstants {
     public static LEAKTANK_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/leaktestDetails';
     public static TANK_STATUS_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/tankstatusDetails';
     public static CSLD_TEST_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/csldtestDetails';
+    public static SITE_INCOME_MONTHLY = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income';
+    public static SITE_INCOME_TYPE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/type';
+    public static SITE_INCOME_MONTHLY_CUSTOM_DATE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/detail';
+    public static SITE_INCOME_PICKLIST = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/pickList';
+    public static SITE_EXPENDITURE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/expenses';
+    public static SITE_EXPENDITURE_CUSTOM_DATE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/expenses/detail';
+    
 }

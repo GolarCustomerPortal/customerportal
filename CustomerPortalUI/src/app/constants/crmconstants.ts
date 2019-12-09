@@ -30,5 +30,9 @@ export class CRMConstants {
     public static JOB_NAME = 'jobName';
     public static VENDOR_TYPE = 'vendorType';
     public static FACILITY_ID = "facilityId";
+    public static STARTDATE = "startDate";
+    public static ENDDATE = "endDate";
+    public static CHARTTYPE = "chartType";
+    public static SETTINGS ="Settings";
     public static LOGOUT_TIME =1800
     }

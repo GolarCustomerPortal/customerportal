@@ -112,6 +112,75 @@ saveUserPreferences(name,value){
      });
 }
 
+saveSiteIncome(incomeModel){
+    return this.http.post(URLConstants.SITE_INCOME_MONTHLY, {accountID: incomeModel.accountID, fID: incomeModel.fID
+        , fromDate: incomeModel.fromFormatedDate, gallonsSold: incomeModel.gallonsSold, gasAmount: incomeModel.gasAmount, insideSalesAmount: incomeModel.insideSalesAmount
+        , lotteryAmount: incomeModel.lotteryAmount, scratchOffSold: incomeModel.scratchOffSold, toDate: incomeModel.toFormatedDate,dataEnteredBy:incomeModel.dataEnteredBy,
+        tax:incomeModel.tax})
+     .map(incomeResult => {
+         // Registration response 
+         return incomeResult;
+     });
+}
+saveSiteExpenditure(expenditureModel){
+    return this.http.post(URLConstants.SITE_EXPENDITURE, {accountID: expenditureModel.accountID, fID: expenditureModel.fID,amount: expenditureModel.amount
+        , date: expenditureModel.checkFormateddate,checkNo: expenditureModel.checkNo, vendor: expenditureModel.vendor.value,dataEnteredBy:expenditureModel.dataEnteredBy,
+    others:expenditureModel.others})
+     .map(incomeResult => {
+         // Registration response 
+         return incomeResult;
+     });
+}
+saveIncomePicklistValue(labels){
+    return this.http.post(URLConstants.SITE_INCOME_PICKLIST, {value:labels})
+     .map(incomeResult => {
+         // Registration response 
+         return incomeResult;
+     });
+}
+getIncomePicklistValue(){
+    return this.http.get(URLConstants.SITE_INCOME_PICKLIST)
+     .map(incomeResult => {
+         // Registration response 
+         return incomeResult;
+     });
+}
+getExpendatureData(expensesModel){
+    return this.http.get(URLConstants.SITE_EXPENDITURE,this.getExpensesOptions(expensesModel))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
+getExpensesForCustomDate(expensesModel){
+    return this.http.get(URLConstants.SITE_EXPENDITURE_CUSTOM_DATE,this.getExpensesOptions(expensesModel))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
+getIncomeForCustomDate(incomeModel){
+    return this.http.get(URLConstants.SITE_INCOME_MONTHLY_CUSTOM_DATE,this.getIncomeOptionsCustomDate(incomeModel))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
+getIncomeDataByMonthly(incomeChartModel){
+    return this.http.get(URLConstants.SITE_INCOME_MONTHLY,this.getIncomeOptions(incomeChartModel))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
+getIncomeDataByType(incomeChartModel){
+    return this.http.get(URLConstants.SITE_INCOME_TYPE,this.getIncomeOptions(incomeChartModel))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
+
 getUserPreferences(){
     return this.http.get(URLConstants.USER_PREFERENCES)
      .map(preferencesList => {
@@ -227,6 +296,24 @@ getCSLDTestDetails(userId,facilitiesId) {
             return result;
         });
 }
+private getExpensesOptions(expensesModel) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,expensesModel.id).set(CRMConstants.FACILITY_ID,expensesModel.accountID).set(CRMConstants.STARTDATE,expensesModel.fromFormatedDate)
+      .set(CRMConstants.ENDDATE,expensesModel.endFormatedDate)
+    };
+  }
+  private getIncomeOptions(incomeChartModel) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,incomeChartModel.id).set(CRMConstants.FACILITY_ID,incomeChartModel.accountID).set(CRMConstants.STARTDATE,incomeChartModel.fromFormatedDate)
+      .set(CRMConstants.ENDDATE,incomeChartModel.endFormatedDate).set(CRMConstants.CHARTTYPE,incomeChartModel.chartType)
+    };
+  }
+  private getIncomeOptionsCustomDate(incomeChartModel) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,incomeChartModel.id).set(CRMConstants.FACILITY_ID,incomeChartModel.accountID).set(CRMConstants.STARTDATE,incomeChartModel.fromFormatedDate)
+      .set(CRMConstants.ENDDATE,incomeChartModel.endFormatedDate)
+    };
+  }
 resetLeakTankDetails(facilitiesId){
     return this.http.post(URLConstants.LEAKTANK_DETAILS, facilitiesId)
      .map(result => {

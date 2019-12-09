@@ -1,8 +1,11 @@
 package com.customerportal.util;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +25,7 @@ import com.customerportal.bean.CustomAttachments;
 import com.customerportal.bean.CustomerPortalAttachments;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.Gaslevel;
+import com.customerportal.bean.IncomeReportData;
 import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
@@ -29,6 +33,9 @@ import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.Leaktestresults;
 import com.customerportal.bean.LoginHistory;
 import com.customerportal.bean.SearchResults;
+import com.customerportal.bean.Settings;
+import com.customerportal.bean.SiteExpenses;
+import com.customerportal.bean.SiteIncome;
 import com.customerportal.bean.TankAarmHistory;
 import com.customerportal.bean.TankAlarmHistoryData;
 import com.customerportal.bean.TankMonitorSignup;
@@ -36,6 +43,7 @@ import com.customerportal.bean.Tankstatusreport;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
 import com.customerportal.bean.Userpreferences;
+import com.sforce.soap.enterprise.SaveResult;
 
 public class DBUtil {
 	private static DBUtil dbObj;
@@ -2048,6 +2056,33 @@ public String getTankStatusCount(Facilities facility) {
 	return "0";
 
 }
+public String getIncomeExpenseUpdates(Facilities facility) {
+
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	try {
+		long millisec = System.currentTimeMillis();
+		Query query = session.createNativeQuery("SELECT Income_Expense_Updates__c FROM customerportal.account where id='"+ facility.getFacilityId() + "'");
+		List rows = query.list();
+		trx.commit();
+		session.close();
+		if (rows == null)
+			return "false";
+		else
+			return rows.get(0).toString().equalsIgnoreCase("false")?"true":"false";
+	} catch (
+	Exception exception)
+
+	{
+		exception.printStackTrace();
+		System.out.println("Exception occred in getTankalarmHistory method -- " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+	}
+	return "false";
+}
 public String getCsldCount(Facilities facility) {
 
 	Session session = HibernateUtil.getSession();
@@ -3036,6 +3071,282 @@ public boolean resetTankreportDeatils(String type, String facilitiesId) {
 	}
 	return true;
 
+}
+
+	public String saveSiteIncome(SiteIncome siteIncome) {
+		boolean needToUpdateAccount = false;
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			boolean sameDate = GolarsUtil.isSameDay(siteIncome.getFromDate(), Calendar.getInstance().getTime());
+			session.save(siteIncome);
+			if (sameDate) {
+				Account account = (Account) session.get(Account.class, siteIncome.getAccountID());
+				account.setIncomeExpenseUpdates("true");
+				session.saveOrUpdate(account);
+				needToUpdateAccount = true;
+			}
+			trx.commit();
+			session.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in SiteIncome method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return "false";
+		} finally {
+
+		}
+		SaveResult[] saveResults = GolarsUtil.saveIncomeIntoSalesForce(siteIncome, needToUpdateAccount);
+		if (saveResults != null && saveResults[0] != null && saveResults[0].getErrors().length > 0) {
+			return "salesforceError";
+		}
+		session = HibernateUtil.getSession();
+		trx = session.beginTransaction();
+		try {
+			siteIncome.setSalesforceId(saveResults[0].getId());
+			session.saveOrUpdate(siteIncome);
+			trx.commit();
+			session.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in SiteIncome method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return "false";
+		} finally {
+
+		}
+
+		return "true";
+
+	}
+
+	public String saveSiteExpenses(SiteExpenses siteExpenses) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			session.save(siteExpenses);
+			trx.commit();
+			session.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in saveSiteExpenses   method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return "false";
+		} finally {
+
+		}
+		SaveResult[] saveResults = GolarsUtil.saveExpensesIntoSalesForce(siteExpenses);
+		if (saveResults != null && saveResults[0] != null && saveResults[0].getErrors().length > 0) {
+			return "salesforceError";
+		}
+		session = HibernateUtil.getSession();
+		trx = session.beginTransaction();
+		try {
+			siteExpenses.setSalesforceId(saveResults[0].getId());
+			session.saveOrUpdate(siteExpenses);
+			trx.commit();
+			session.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred in saveSiteExpenses method --" + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return "false";
+		} finally {
+
+		}
+
+		return "true";
+	}
+public boolean saveIncomePickList(String key,String incomePickListValues) {
+
+	Session session = null;
+
+	Transaction trx = null;
+	try {
+		// stub
+			session = HibernateUtil.getSession();
+
+			trx = session.beginTransaction();// TODO Auto-generated method
+			Settings settings = (Settings) session.get(Settings.class, key);
+			Query query = null;
+			if (settings != null) {
+				query = session.createNativeQuery("UPDATE settings s SET s.value =:value WHERE s.key =:key");
+				query.setString("value", incomePickListValues);
+				query.setString("key", key);
+				int result = query.executeUpdate();
+			} else {
+				query = session.createSQLQuery("INSERT INTO  settings(`key`,`value`) values(?,?)  ");
+				query.setParameter(0, key);
+				query.setParameter(1, incomePickListValues);
+				query.executeUpdate();
+			}
+			trx.commit();
+			session.close();
+		
+	} catch (Exception exception) {
+		System.out.println("Exception occred while updating Setting : " + exception.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+		return false;
+	}
+	// User user = (User) session.get(User.class, username);
+return true;
+
+}
+public Settings retrieveUserPreferences(String key) {
+	Session session = HibernateUtil.getSession();
+	Transaction trx = session.beginTransaction();
+	// query.setString("preferenceName", preferenceName);
+	List lst = null;
+	try {
+		Query query = session.createNativeQuery("SELECT * FROM customerportal.settings as s where s.key=:key", Settings.class);
+		query.setString("key", key);
+		lst = query.list();
+		trx.commit();
+		session.close();
+		if(lst.size()==0)
+			return new Settings();
+		return (Settings) lst.get(0);
+	} catch (Exception e) {
+		System.out.println("Exception occred while retrieveUserPreferences : " + e.getMessage());
+		if (trx != null)
+			trx.rollback();
+		if (session != null)
+			session.close();
+	}
+	// session.close();
+	return new Settings();
+}
+public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId, Date startDate, Date endDate){
+	List<KeyValue> expensesList = new ArrayList<KeyValue>();
+	Session session = HibernateUtil.getSession();
+	Transaction t = session.beginTransaction();
+	Query query = session.createNativeQuery(
+			"SELECT sum(Amount__C), DATE_FORMAT(Date__C, '%M') AS month  FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 1 DAY) \r\n" + 
+			"AND Date__C< SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL -1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
+	List<Object[]> lst = query.list();
+	System.out.println(lst.size());
+	for (Object[] object : lst) {
+		KeyValue rep = new KeyValue();
+		rep.setKey(object[1].toString());
+		rep.setValue(object[0].toString());
+		rep.setName(object[1].toString());
+		expensesList.add(rep);
+	}
+	
+	t.commit();
+	session.close();
+	return expensesList;
+}
+
+public List<SiteExpenses> getExpensesForUserForCustomDate(String userId,String facilityId, Date startDate, Date endDate){
+	Session session = HibernateUtil.getSession();
+	Transaction t = session.beginTransaction();
+	Query query = session.createNativeQuery(
+			"SELECT * FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 1 DAY) \r\n" + 
+			"AND Date__C< SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL -1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
+	List<SiteExpenses> lst = query.list();
+	System.out.println(lst.size());
+	t.commit();
+	session.close();
+	return lst;
+}
+
+	public List<KeyValue> getIncomeForUserByMonthly(String userId,String facilityId, Date startDate, Date endDate, String chartType){
+	List<KeyValue> expensesList = new ArrayList<KeyValue>();
+	Session session = HibernateUtil.getSession();
+	Transaction t = session.beginTransaction();
+
+	Query query = session.createNativeQuery(
+			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gallons_Sold__c) as Gallons_Sold__c ,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
+			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
+			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL -1 DAY)  AND "
+					+ "DATE(To_Date__c) <= SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL +1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+			"");
+	List<Object[]> lst = query.list();
+	System.out.println(lst.size());
+	for (Object[] object : lst) {
+		double totalValue=0;
+		KeyValue rep = new KeyValue();
+		totalValue = object[1] !=null ?totalValue+Double.parseDouble(object[1].toString()):totalValue;
+		totalValue = object[2] !=null ?totalValue+Double.parseDouble(object[2].toString()):totalValue;
+		totalValue = object[3] !=null ?totalValue+Double.parseDouble(object[3].toString()):totalValue;
+		totalValue = object[4] !=null ?totalValue+Double.parseDouble(object[4].toString()):totalValue;
+		totalValue = object[5] !=null ?totalValue+Double.parseDouble(object[5].toString()):totalValue;
+		
+		rep.setKey(object[0].toString());
+		rep.setValue(Double. toString(totalValue));
+		rep.setName(object[0].toString());
+		expensesList.add(rep);
+	}
+	
+	t.commit();
+	session.close();
+	return expensesList;
+}
+
+public List<IncomeReportData> getIncomeForUserByType(String userId,String facilityId, Date startDate, Date endDate, String chartType){
+	List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
+	Session session = HibernateUtil.getSession();
+	Transaction t = session.beginTransaction();
+
+	Query query = session.createNativeQuery(
+			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gallons_Sold__c) as Gallons_Sold__c ,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
+			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
+			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
+			"' and DATE(from_Date__c)>=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL -1 DAY)  AND "
+					+ "DATE(To_Date__c) <=  SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL +1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+			"");
+	List<Object[]> lst = query.list();
+	System.out.println(lst.size());
+	List<String> labelsList = Arrays.asList("Gallons Sold","Gas Amount","Inside Sales Amount","Lottery Amount","Scratch Off Sold");
+	int index = 0;
+	for (Object[] object : lst) {
+		IncomeReportData data = new IncomeReportData();
+		data.setMonth(object[0].toString());
+		data.setLabel(labelsList.get(index));
+		data.setGallonsSold(object[1] !=null ?Double.parseDouble(object[1].toString()):0);
+		data.setGasAmount(object[2] !=null ?Double.parseDouble(object[2].toString()):0);
+		data.setInsideSalesAmount(object[3] !=null ?Double.parseDouble(object[3].toString()):0);
+		data.setLotteryAmount(object[4] !=null ?Double.parseDouble(object[4].toString()):0);
+		data.setScratchOffSold(object[5] !=null ?Double.parseDouble(object[5].toString()):0);
+		expensesList.add(data);
+	}
+	
+	t.commit();
+	session.close();
+	return expensesList;
+}
+public List<SiteIncome> getIncomeForUserByCustomDate(String userId,String facilityId, Date startDate, Date endDate){
+	List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
+	Session session = HibernateUtil.getSession();
+	Transaction t = session.beginTransaction();
+
+	Query query = session.createNativeQuery(
+			"select * FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
+			"' and DATE(from_Date__c)>=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL -1 DAY)  AND "
+					+ "DATE(To_Date__c) <=  SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL +1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+			"",SiteIncome.class);
+	List<SiteIncome> lst = query.list();
+	System.out.println(lst.size());
+	
+	t.commit();
+	session.close();
+	return lst;
 }
 
 }

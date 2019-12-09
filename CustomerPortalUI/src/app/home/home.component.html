@@ -18,6 +18,13 @@
 <split [hidden]="commonService.getMobileAccess()" id="split-panel" direction="horizontal" class="split-pane-class" [useTransition]="true" gutterSize="3" gutterColor="{{GUTTER_COLOR}}" *ngIf="!showSearchResults"> 
    
   <split-area [visible]="area.leftVisible" [size]="area.left" order="1" id="left-split-panel">
+    <!-- delete -->
+    <!-- <div class="ui-g-3">
+        <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
+        data-toggle="modal" (click)="getIncomeexpenditureDetails(rightDetailsContent.facilityId)" data-target="#incomeAndexpenditureModal">Income<br>expenditure<br>Report </button>
+      </div> -->
+
+    <!-- delete -->
     <div class="ui-g-12  margin-top" style="cursor: pointer;">
       <i *ngIf="showBack" i class="fa fa-arrow-left back-refresh-button" aria-hidden="true"  title="{{dashboardConst.BACKTOSHOWALL}}"
         aria-hidden="true" (click)="showAll()"></i>
@@ -336,21 +343,25 @@
         </div>
         
         <div class="ui-g-12 margin-top">
-          <div class="ui-g-4">
+          <div class="ui-g-3">
             <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
              data-toggle="modal" data-target="#notificationFormModal"
             (click)="getNotificationModalData(rightDetailsContent.facilityId)"
             >Notification
               <br>Form</button>
           </div>
-          <div class="ui-g-4">
+          <div class="ui-g-3">
             <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
              data-toggle="modal" (click)="getUSTComplianceData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">UST <br> Compliance
               </button>
           </div>
-          <div class="ui-g-4">
+          <div class="ui-g-3">
             <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
             data-toggle="modal" (click)="getCertificationData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Operator <br> Certificates </button>
+          </div>
+          <div class="ui-g-3">
+            <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getIncomeExpenseUpdatesButtonEnable(rightDetailsContent)}}" 
+            data-toggle="modal" (click)="getIncomeexpenditureDetails(rightDetailsContent.facilityId)" data-target="#incomeAndexpenditureModal">Income<br>expenditure<br>Report </button>
           </div>
         </div>
 
@@ -1318,20 +1329,24 @@
               </p-card>
             </div>
             <div class="ui-g-12 margin-top">
-              <div class="ui-g-4">
+              <div class="ui-g-3">
                 <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
                  data-toggle="modal" data-target="#notificationFormModal"
                 (click)="getNotificationModalData(rightDetailsContent.facilityId)"
                 >Notification
                   <br>Form</button>
               </div>
-              <div class="ui-g-4">
+              <div class="ui-g-3">
                 <button type="button" class="btn btn-default btn-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
                  data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#complianceFormModal">UST <br> Compliance</button>
               </div>
-              <div class="ui-g-4">
+              <div class="ui-g-3">
                 <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
                 data-toggle="modal" (click)="getNotificationModalData(rightDetailsContent.facilityId)" data-target="#certificationFormModal">Operator <br> Certificates </button>
+              </div>
+              <div class="ui-g-3">
+                <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getIncomeExpenseUpdatesButtonEnable(rightDetailsContent)}}" 
+                data-toggle="modal" (click)="getIncomeexpenditureDetails(rightDetailsContent.facilityId)" data-target="#incomeAndexpenditureModal">Income<br>expenditure<br>Report </button>
               </div>
             </div>
     
@@ -1516,21 +1531,25 @@
       </p-card>
     </div>
     <div class="ui-g-12 margin-top">
-      <div class="ui-g-4">
+      <div class="ui-g-3">
         <button type="button" class="btn btn-default btn-mobile-circle btn-lg"   ngClass="{{ getNotificationFormButtonClass(rightDetailsContent)}}"
         
          disabled
         >Notification
           <br>Form</button>
       </div>
-      <div class="ui-g-4">
+      <div class="ui-g-3">
         <button type="button" class="btn btn-default btn-mobile-circle btn-lg"  ngClass="{{ getComplianceButtonClass(rightDetailsContent)}}"
          disabled>UST <br> Compliance
           </button>
       </div>
-      <div class="ui-g-4">
+      <div class="ui-g-3">
         <button type="button" class="btn btn-default btn-mobile-circle btn-lg" ngClass="{{ getCertificationButtonClass(rightDetailsContent)}}" 
         disabled>Operator <br> Certificates </button>
+      </div>
+      <div class="ui-g-3">
+        <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getIncomeExpenseUpdatesButtonEnable(rightDetailsContent)}}" 
+        data-toggle="modal">Income<br>expenditure<br>Report </button>
       </div>
     </div>
 
@@ -1615,6 +1634,224 @@
   </div>
 </div>
 <!-- notification form end -->
+<!-- Income and expenditure modal dialog start -->
+<div class="modal fade" id="incomeAndexpenditureModal" tabindex="-1" role="dialog"
+  aria-labelledby="incomeAndexpenditureModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content  income-expenditure-model">
+      <div class="modal-header">
+        <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Income and Expenditure details for
+          {{rightDetailsContent?.facilityName}}</div>
+        <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body income-expenditure-model">
+        <p-tabView (onChange)="getIncomeExpenditureReport($event)" #incomeExpensesTab [activeIndex]="incomeTabIndex">
+          <p-tabPanel header="Income">
+            <!-- table start -->
+            <h6>Today's Income Details:</h6>
+            <p-table [value]="todayIncome">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Gallons Sold</th>
+                  <th>Gas Amount</th>
+                  <th>Inside Sales Amount</th>
+                  <th>Lottery Amount</th>
+                  <th>Scratch Off Sold</th>
+                  <th>Tax</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-income>
+                <tr>
+                  <td>{{income.startDate}}</td>
+                  <td>{{income.endDate}}</td>
+                  <td>{{income.gallonsSold}}</td>
+                  <!-- <td>{{user.admin}}</td> -->
+                  <td>{{income.gasAmount}}</td>
+                  <td>{{income.insideSalesAmount}}</td>
+                  <td>{{income.lotteryAmount}}</td>
+                  <td>{{income.scratchOffSold}}</td>
+                  <td>{{income.tax}}</td>
+                  <td> <a style="color:blue;cursor: pointer;"><i class="fa fa-edit" (click)="editUser(user)"></i></a>
+                    <a style="color:red;cursor: pointer;"><i class="fa fa-close" (click)="deleteUser(user)"></i></a>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <!-- table end -->
+            <br />
+            <h6>Enter Income Details</h6>
+            <div class="alert alert-success" [hidden]='!showSiteIncomeSuccessMessage'>
+              <strong>Success!</strong> {{siteIncomeSuccessMessage}}
+            </div>
+            <div [hidden]='!showSiteIncomeFailureMessage' class="alert alert-danger" role="alert">
+              {{siteIncomeFailureMessage}}
+            </div>
+            <div class="ui-g">
+              <div class="ui-g-6">
+                <div>Start Date:</div>
+                <p-calendar [(ngModel)]="incomeModal.fromDate" [showIcon]="true" [maxDate]="maxDateValue"
+                  appendTo="body" [readonlyInput]="true"></p-calendar>
+              </div>
+              <div class="ui-g-6">
+                <div>End Date:</div>
+                <p-calendar [(ngModel)]="incomeModal.toDate" [showIcon]="true" [maxDate]="maxDateValue"
+                  [readonlyInput]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-6">
+                <div>Gallons Sold:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.gallonsSold"
+                  [options]="numberMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Gas Amount:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.gasAmount"
+                  [options]="currencyMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Inside Sales Amount:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.insideSalesAmount"
+                  [options]="currencyMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Lottery Amount:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.lotteryAmount"
+                  [options]="currencyMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Scratch Off Sold:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.scratchOffSold"
+                  [options]="currencyMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Tax:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.tax" [options]="currencyMask" />
+              </div>
+              <div class="ui-g-12" style="text-align: right;">
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" (click)="saveSiteIncome()"
+                    [disabled]="checkIncomeFormValues()">Save</button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="expenditure">
+            <div class="alert alert-success" [hidden]='!showsiteExpensesSuccessMessage'>
+              <strong>Success!</strong> {{siteExpensesSuccessMessage}}
+            </div>
+            <div [hidden]='!showSiteExpensesFailureMessage' class="alert alert-danger" role="alert">
+              {{siteExpensesFailureMessage}}
+            </div>
+            <div class="ui-g">
+              <div class="ui-g-6">
+                <div>Amount:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="expenditureModel.amount"
+                  [options]="currencyMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Check No:</div>
+                <input class="currency-textfield" [(ngModel)]="expenditureModel.checkNo" />
+              </div>
+              <div class="ui-g-6">
+                <div>Date:</div>
+                <p-calendar [(ngModel)]="expenditureModel.checkdate" appendTo="body" [showIcon]="true"
+                  [maxDate]="maxDateValue" [readonlyInput]="true"></p-calendar>
+              </div>
+              <div class="ui-g-6">
+                <div>Vendor/Payee:</div>
+                <p-dropdown [options]="vendorsList" [(ngModel)]="expenditureModel.vendor" optionLabel="name"
+                  [style]="{'width':'calc(100% - 30%)'}" placeholder="Select a Vendor"></p-dropdown>
+              </div>
+              <div class="ui-g-6">
+                <div>&nbsp;</div>
+                &nbsp;
+              </div>
+              <div class="ui-g-6" *ngIf="expenditureModel?.vendor?.value=='Others'">
+                <div>Others:</div>
+                <input class="currency-textfield" [(ngModel)]="expenditureModel.others" maxlength="256" />
+              </div>
+              <div class="ui-g-12" style="text-align: right;">
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" (click)="saveSiteExpenses()"
+                    [disabled]="checkExpensisFormValues()">Save</button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Income Report">
+            <div class="ui-g">
+              <div class="ui-g-6">
+                <div>Chart Type</div>
+                <p-dropdown [options]="incomeChartByList" [(ngModel)]="incomeChartModel.incomeChartByItem"
+                  optionLabel="name" [style]="{'width':'calc(100% - 30%)'}" (onChange)="fetchIncomeChartValues()">
+                </p-dropdown>
+              </div>
+              <div class="ui-g-6">
+                <div>&nbsp;</div>
+              </div>
+
+              <div class="ui-g-5">
+                <div>Start Date:</div>
+                <p-calendar [(ngModel)]="incomeChartModel.startDate" [showIcon]="true" [maxDate]="maxDateValue"
+                  appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-5">
+                <div>End Date:</div>
+                <p-calendar [(ngModel)]="incomeChartModel.endDate" [showIcon]="true" [maxDate]="maxDateValue"
+                  appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-2">
+                <div>&nbsp;</div>
+                <button type="button" class="btn btn-primary" (click)="fetchIncomeChartValues()">Fetch</button>
+              </div>
+            </div>
+            <p-chart type="bar" #incomeChart (onDataSelect)="onIncomeChartDataSelect($event)" [data]="incomeData">
+            </p-chart>
+            <div class="ui-g-12" style="text-align: right;">
+              <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Expenditure Report">
+            <div class="ui-g">
+              <div class="ui-g-5">
+                <div>Start Date:</div>
+                <p-calendar [(ngModel)]="expensesModel.startDate" [showIcon]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-5">
+                <div>End Date:</div>
+                <p-calendar [(ngModel)]="expensesModel.endDate" [showIcon]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-2">
+                <div>&nbsp;</div>
+                <button type="button" class="btn btn-primary" (click)="fetchExpenditureValuesForChart()">Fetch</button>
+              </div>
+            </div>
+            <p-chart type="bar" #expencesChart (onDataSelect)="onExpensesChartDataSelect($event)" [data]="expencesData">
+            </p-chart>
+            <div class="ui-g-12" style="text-align: right;">
+              <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </p-tabPanel>
+        </p-tabView>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Income and expenditure modal dialog end -->
 
 <div  *ngIf="documentURL !== null" class="modal fade" id="notificationcontentModal" role="dialog" >
     <div class="modal-dialog modal-lg" style="height:90%">

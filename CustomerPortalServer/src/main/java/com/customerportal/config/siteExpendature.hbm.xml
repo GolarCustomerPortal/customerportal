@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.customerportal.bean.SiteExpenses"
+		table="site_expenses__c">
+		<id name="id" column="Custom_Id__c" >
+			<generator class="increment"></generator> 
+		</id>
+		<property name="accountID" column="Account_ID__c" />
+		<property name="fID" column="FID__c" />
+		<property name="others" column="Others__c" />
+		<property name="amount" column="Amount__c" />
+		<property name="date" column="Date__c" />
+		<property name="checkNo" column="Check_No__c" />
+		<property name="vendor" column="Vendor__c" />
+		<property name="salesforceId" column="Sales_Force_Id__c" />
+		<property name="dataEnteredBy" column="Data_Entered_By__c" />
+	</class>
+</hibernate-mapping>

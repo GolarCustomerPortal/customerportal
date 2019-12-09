@@ -6,6 +6,7 @@ import { UserComponent } from './user/user.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { UssboaComponent } from './ussboa/ussboa.component';
 import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-signup.component';
+import { SettingsComponent } from './settings/settings.component';
 
 
 
@@ -14,6 +15,7 @@ const appRoutes: Routes = [
     { path: '', component: HomeComponent},
     { path: 'login', component: LoginComponent },
     { path: 'users', component: UsersComponent },
+    { path: 'settings', component: SettingsComponent },
     { path: 'newuser', component: UserComponent },
     { path: 'schedule', component: ScheduleComponent },
     { path: 'ussboa', component: UssboaComponent },

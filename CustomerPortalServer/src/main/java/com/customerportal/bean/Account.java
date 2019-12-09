@@ -253,7 +253,7 @@ public class Account {
 	private String operatorAcertificateURL;
 	private String operatorBcertificateURL;
 	private String operatorCcertificateURL;
-	
+	private String incomeExpenseUpdates;
 	//pending text
 	
 	private String pendingStatuText="Pending";
@@ -2177,5 +2177,11 @@ public class Account {
 	}
 	public String getPendingStatuText() {
 		return pendingStatuText;
+	}
+	public void setIncomeExpenseUpdates(String incomeExpenseUpdates) {
+		this.incomeExpenseUpdates = incomeExpenseUpdates;
+	}
+	public String getIncomeExpenseUpdates() {
+		return incomeExpenseUpdates;
 	}
 }

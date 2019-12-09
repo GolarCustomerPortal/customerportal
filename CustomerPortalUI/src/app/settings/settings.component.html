@@ -1,0 +1,66 @@
+<div class="ui-g">
+    
+    
+    <div class="ui-g-3">
+      <div class="ui-g-6">
+        <label>New Picklist Value:</label>
+      </div>
+      <div class="ui-g-6">
+          <textarea [rows]="10" [cols]="30" name="incomePicklistValue" [(ngModel)]="incomePicklistValue" style="height:120px !important;width:300px !important;resize: none"
+            pInputTextarea placeholder="Enter Values to be added in separate line" (ngModelChange)="resetMessages()"></textarea>
+        </div>
+    </div>
+  
+  </div>
+  <div class="ui-g">
+      <div class="ui-g-3">
+        <div class="ui-g  pull-right">
+          <div class="ui-g-12 " style="padding-right:35px;">
+            <button type="button" class="btn btn-primary" [ngClass]="{disabled : incomePicklistValue?.trim().length == 0}" (click)="addToList()">Add</button>
+            <button type="button" class="btn btn-secondary" (click)="incomePicklistValue='';resetMessages()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="alert alert-success" [hidden]='!showIncomePicklistSuccessMessage'>
+      <strong>Success!</strong> {{incomePicklistSuccessMessage}}
+    </div>
+    <div [hidden]='!showIncomePicklistFailureMessage' class="alert alert-danger" role="alert">
+      {{incomePicklistFailureMessage}}
+    </div>
+<div class="ui-g">
+    <div class="ui-g-6">
+      <div>
+        <p-table [columns]="incomePicklistCols" [value]="incomePicklist"  [scrollable]="true" scrollHeight="300px">
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns">
+                {{col.header}}
+              </th>
+              <th width="100px">
+                Action
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-tableData let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+              <td *ngFor="let col of columns">
+                <div>{{tableData.label}}</div>
+              </td>
+              <td style="text-align: center" width="100px">
+                <i class="fa fa-trash" style="font-size:20px;cursor: pointer;" (click)="deleteRowData(tableData)" title="Delete"></i>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="ui-g  pull-right">
+        <div class="ui-g-12">
+          <button type="button" class="btn btn-primary" [ngClass]="{disabled : incomePicklist.length == 0}" (click)="saveIncomePicklistValue()">Save</button>
+          <button type="button" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

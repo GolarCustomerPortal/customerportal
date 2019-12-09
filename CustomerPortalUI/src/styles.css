@@ -210,7 +210,7 @@ background: #ebf7ec !important;
     background-color: #d7f0da;
 }
 #schedule-dialog #notificationFormModal .btn-primary, #certificationFormModal .btn-primary,  #complianceFormModal .btn-primary, 
-#notificationFormModal .btn-primary, .btn-secondary, #certificationFormModal .btn-secondary,  #complianceFormModal  .btn-secondary{
+#notificationFormModal .btn-primary, #notificationFormModal .btn-secondary, #certificationFormModal .btn-secondary,  #complianceFormModal  .btn-secondary,  .modal-close{
     background-color: #ef4136  !important;
     border-color: #ef4136  !important;
     color:#fdecea !important;
@@ -261,6 +261,11 @@ background: #ebf7ec !important;
 }
 .file-upload-model{
     max-height: calc(100vh - 210px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.income-expenditure-model{
+    /* height: calc(90vh); */
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -567,3 +572,13 @@ td{
     padding:0px;
     text-align: center;
 }
+.currency-textfield{
+    min-width: calc(100% - 30%)
+}
+
+#incomeAndexpenditureModal .modal-footer{
+    border-top:1px solid transparent !important;
+}
+.ui-datepicker {
+    z-index: 100000 !important;
+    }

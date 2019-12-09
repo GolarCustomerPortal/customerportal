@@ -38,6 +38,7 @@ public class CustomerPortalUtil {
 		List<Facilities> notificationFormList = DBUtil.getInstance().facilityNotificationFormList(facilitiesIdString);
 		List<Facilities> complianceList = DBUtil.getInstance().facilityComplianceList(facilitiesIdString);
 		List<Facilities> certificationList = DBUtil.getInstance().facilityCertificationList(facilitiesIdString);
+
 		if (facilitiesList != null)
 			for (Facilities facility : facilitiesList) {
 				if (facility == null)
@@ -52,6 +53,7 @@ public class CustomerPortalUtil {
 				facility.setTankStatusCount(DBUtil.getInstance().getTankStatusCount(facility));
 				facility.setCsldButtonStatus(DBUtil.getInstance().getCsldButtonStatus(facility));
 				facility.setCsldCount(DBUtil.getInstance().getCsldCount(facility));
+				facility.setIncomeExpenseUpdatesButtonEnable(DBUtil.getInstance().getIncomeExpenseUpdates(facility));
 				if (notificationFormList.contains(facility.getFacilityId())) {
 					facility.setNotificationFormButtonEnable("true");
 				} else

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonService } from '../services/common.service';
 import { DashboardService } from '../services/dashboard.service';
 import { ImportService } from '../services/import.service';
@@ -7,6 +7,8 @@ import { CRMConstants } from '../constants/crmconstants';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import 'chartjs-plugin-datalabels';
+import { CustomDatePipe } from '../services/custom.datepipe';
+import { TabView } from 'primeng/primeng';
 declare var $: any;
 @Component({
   selector: 'crm-home',
@@ -15,7 +17,41 @@ declare var $: any;
 })
 export class HomeComponent implements OnInit {
 
-
+  currencyMask = {
+    align: 'right',
+    prefix: '',
+    allowNegative:false,
+    thousands: '',
+    precision: '2'
+  };
+  numberMask = {
+    align: 'left',
+    prefix: '',
+    allowNegative:false,
+    thousands: '',
+    precision: '0'
+  };
+  incomeModal:any={fromDate:new Date,toDate:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
+  expenditureModel:any={checkdate:new Date(),vendor:{name: 'Others', value: 'Others'}};
+  vendorsList:any=[];;
+  incomeData: any;
+  expencesData: any;
+  showSiteIncomeSuccessMessage=false;
+  siteIncomeSuccessMessage=""; 
+  showSiteIncomeFailureMessage=false;
+  siteIncomeFailureMessage=""; 
+  showsiteExpensesSuccessMessage=false;
+  siteExpensesSuccessMessage=""; 
+  showSiteExpensesFailureMessage=false;
+  siteExpensesFailureMessage=""; 
+  maxDateValue= new Date();
+  incomeTabIndex=0;
+  todayIncome;
+  incomeChartByList:any=[{name: 'Monthly Income', value: 'MonthlyIncome'},
+  {name: 'By Item', value: 'ByItem'}];;
+  expensesModel:any={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date()};
+  incomeChartModel:any={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date(),incomeChartByItem:{name: 'Monthly Income', value: 'MonthlyIncome'}};
+  @ViewChild('incomeExpensesTab') tabView: TabView;
   ngOnInit() {
     var self = this;
     $('#notificationFormModal').on('hidden.bs.modal', function (e) {
@@ -37,6 +73,11 @@ export class HomeComponent implements OnInit {
       $(this).find('form')[0].reset();
       self.resetCertificationForm(null,true);
     })
+    $('#incomeAndexpenditureModal').on('hidden.bs.modal', function (e) {
+
+      self.resetIncomeExpenatureForm();
+    })
+
     //searchResults
     if (this.commonService.getSearchResult() != null) {
       var resultObj = JSON.parse(this.commonService.getSearchResult())
@@ -296,7 +337,8 @@ selectedTankReportTTab;
   //app component code end
 
   // middlepanel code start
-  constructor(private router: Router, public appcomponent: AppComponent, public commonService: CommonService, private dashboardService: DashboardService, private importService: ImportService) {
+  constructor(private router: Router, public appcomponent: AppComponent, public commonService: CommonService, 
+    private dashboardService: DashboardService, private importService: ImportService, private customDatePipe: CustomDatePipe) {
     // this.loadLeftPanelData();
     if (this.commonService.getSearchResult() == null){
       if(!this.commonService.getMobileAccess())
@@ -546,7 +588,7 @@ selectedTankReportTTab;
     this.rightDetailsContent.leakTankTestButtonStatus = fdata.leakTankTestButtonStatus;
     this.rightDetailsContent.tankStatusButtonStatus = fdata.tankStatusButtonStatus;
     this.rightDetailsContent.csldButtonStatus = fdata.csldButtonStatus;
-
+    this.rightDetailsContent.incomeExpenseUpdatesButtonEnable = fdata.incomeExpenseUpdatesButtonEnable;
     this.rightDetailsContent.address = fdata.address;
     this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
     this.rightDetailsContent.paidService = fdata.paidService;
@@ -1066,6 +1108,11 @@ selectedTankReportTTab;
       return 'facility-button-background-notification-red'
     return ""
   }
+  getIncomeExpenseUpdatesButtonEnable(rightDetailsContent) {
+    if ((rightDetailsContent.incomeExpenseUpdatesButtonEnable != null && rightDetailsContent.incomeExpenseUpdatesButtonEnable == "true"))
+      return 'facility-button-background-notification-red'
+    return ""
+  }
   getFacilitiesSubList(facilitiesRightdata, i) {
     var subList = [];
     if (facilitiesRightdata != null) {
@@ -1564,6 +1611,28 @@ selectedTankReportTTab;
     if(frmData != null)
     frmData = new FormData();
   }
+  resetIncomeExpenatureForm(){
+  
+    this.vendorsList=[];;
+    this.incomeModal={fromDate:new Date,toDate:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
+    this.expenditureModel={checkdate:new Date()};
+    this.incomeData={};
+    this.expencesData={};
+    this.showSiteIncomeSuccessMessage=false;
+    this.siteIncomeSuccessMessage=""; 
+    this.showSiteIncomeFailureMessage=false;
+    this.siteIncomeFailureMessage=""; 
+    this.showsiteExpensesSuccessMessage=false;
+    this.siteExpensesSuccessMessage=""; 
+    this.showSiteExpensesFailureMessage=false;
+    this.siteExpensesFailureMessage=""; 
+    this.maxDateValue= new Date();
+    this.incomeChartByList=[{name: 'Monthly Income', value: 'MonthlyIncome'},
+  {name: 'By Item', value: 'ByItem'}];;
+  this.expensesModel={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date()};
+  this.incomeChartModel={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date(),incomeChartByItem:"Monthly Income"};
+  this.incomeTabIndex=0;
+  }
   //import compliance end
 
   getDocumentProperties() {
@@ -1930,10 +1999,255 @@ if(index == 1){
     }
 
   }
+  getIncomeexpenditureDetails(facilityId){
+    for (let t of this.tabView.tabs) {
+      if (t.selected)
+        t.selected = false;
+    }
+    this.tabView.tabs[0].selected = true;
+    this.dashboardService.getIncomePicklistValue()
+    .subscribe(incomeData => {
+      this.vendorsList = [];
+      for (var i = 0; i < incomeData.length; i++) {
+        var element = incomeData[i];
+        this.vendorsList.push({name: element, value: element})
+      }
+    },
+      error => {
+        console.log(error);
+      });
+      this.incomeChartModel.accountID=this.rightDetailsContent.facilityId;
+      this.incomeChartModel.fID = this.rightDetailsContent.fid;
+      this.incomeChartModel.id = this.commonService.getUserName();
+      this.incomeChartModel.fromFormatedDate =this.customDatePipe.transform(this.incomeChartModel.startDate);
+      this.incomeChartModel.endFormatedDate =this.customDatePipe.transform(this.incomeChartModel.endDate);
+      this.incomeChartModel.chartType =this.incomeChartModel.incomeChartByItem;
+      this.dashboardService.getIncomeForCustomDate(this.incomeChartModel)
+      .subscribe(incomeData => {
+        this.todayIncome = incomeData;
+        
+      },
+        error => {
+          console.log(error);
+        });
+  }
+
+  saveSiteIncome(){
+    this.incomeModal.accountID=this.rightDetailsContent.facilityId;
+    this.incomeModal.fID = this.rightDetailsContent.fid;
+    this.incomeModal.dataEnteredBy = this.commonService.getUserName();
+    this.incomeModal.fromFormatedDate =this.customDatePipe.transform(this.incomeModal.fromDate);
+    this.incomeModal.toFormatedDate =this.customDatePipe.transform(this.incomeModal.toDate);
+    this.dashboardService.saveSiteIncome(this.incomeModal)
+    .subscribe(
+      data => {
+        if(data === "true"){
+          this.showSiteIncomeSuccessMessage=true;
+          this.showSiteIncomeFailureMessage=false;
+          this.siteIncomeSuccessMessage = "Site Income Saved Successfully.";
+          this.siteIncomeFailureMessage = ""
+        }else{
+          this.showSiteIncomeFailureMessage=true;
+          this.showSiteIncomeSuccessMessage=false;
+          this.siteIncomeSuccessMessage = "";
+          this.siteIncomeFailureMessage = "Problem while saving Site Income !!!."
+        }
+      },
+      error => {
+        this.showSiteIncomeFailureMessage=true;
+        this.showSiteIncomeSuccessMessage=false;
+        this.siteIncomeSuccessMessage = "";
+        this.siteIncomeFailureMessage = "Problem while saving Site Income !!!."
+        console.log(error);
+      });
+  }
+  saveSiteExpenses(){
+    this.expenditureModel.accountID=this.rightDetailsContent.facilityId;
+    this.expenditureModel.fID = this.rightDetailsContent.fid;
+    this.expenditureModel.dataEnteredBy = this.commonService.getUserName();
+    this.expenditureModel.checkFormateddate =this.customDatePipe.transform(this.expenditureModel.checkdate);
+    if(this.expenditureModel.vendor !=null && this.expenditureModel.vendor.value !== "Others"){
+      this.expenditureModel.others ="";
+    }
+    this.dashboardService.saveSiteExpenditure(this.expenditureModel)
+   .subscribe( data => {
+      if(data === "true"){
+        this.showsiteExpensesSuccessMessage=true;
+        this.showSiteExpensesFailureMessage=false;
+        this.siteExpensesSuccessMessage = "Site Expenditure Saved Successfully."
+        this.siteExpensesFailureMessage = ""
+      }else{
+        this.showSiteExpensesFailureMessage=true;
+        this.showsiteExpensesSuccessMessage=false;
+        this.siteExpensesSuccessMessage = "";
+        this.siteExpensesFailureMessage = "Problem while saving Site Expenditure !!!."
+      }
+    },
+    error => {
+      this.showSiteExpensesFailureMessage=true;
+      this.showsiteExpensesSuccessMessage=false;
+      this.siteExpensesSuccessMessage = "";
+      this.siteExpensesFailureMessage = "Problem while saving Site Expenditure !!!."
+      console.log(error);
+    });
+  }
+  getIncomeExpenditureReport($event){
+    switch($event.index){
+      case 2:
+          this.fetchIncomeChartValues();
+          break;
+      case 3:
+          this.fetchExpenditureValuesForChart();
+          break;
+    }
+  }
+  fetchExpenditureValuesForChart(){
+    this.expensesModel.accountID=this.rightDetailsContent.facilityId;
+    this.expensesModel.fID = this.rightDetailsContent.fid;
+    this.expensesModel.id = this.commonService.getUserName();
+    this.expensesModel.fromFormatedDate =this.customDatePipe.transform(this.expensesModel.startDate);
+    this.expensesModel.endFormatedDate =this.customDatePipe.transform(this.expensesModel.endDate);
+    this.dashboardService.getExpendatureData(this.expensesModel)
+   .subscribe( expensesData => {
+    this.expencesData = {
+      labels: [],
+      datasets: [
+        {
+          data: [],
+          label: 'Expenses',
+          backgroundColor: '#42A5F5',
+          borderColor: '#1E88E5',
+        }
+      ]
+    };
+
+    for (var i = 0; i < expensesData.length; i++) {
+      this.expencesData.labels.push(expensesData[i].key);
+      this.expencesData.datasets[0].data.push(Number(expensesData[i].value));
+    }
+    },
+    error => {
+      console.log(error);
+    });
+  }
+  fetchIncomeValuesForChartByMonthly(){
+    this.incomeChartModel.accountID=this.rightDetailsContent.facilityId;
+    this.incomeChartModel.fID = this.rightDetailsContent.fid;
+    this.incomeChartModel.id = this.commonService.getUserName();
+    this.incomeChartModel.fromFormatedDate =this.customDatePipe.transform(this.incomeChartModel.startDate);
+    this.incomeChartModel.endFormatedDate =this.customDatePipe.transform(this.incomeChartModel.endDate);
+    this.incomeChartModel.chartType =this.incomeChartModel.incomeChartByItem;
+    
+    this.dashboardService.getIncomeDataByMonthly(this.incomeChartModel)
+   .subscribe( incomeData => {
+    this.incomeData = {
+      labels: [],
+      datasets: [
+        {
+          data: [],
+          label: 'Income',
+          backgroundColor: '#42A5F5',
+          borderColor: '#1E88E5',
+        }
+      ]
+    };
+
+    for (var i = 0; i < incomeData.length; i++) {
+      this.incomeData.labels.push(incomeData[i].key);
+      this.incomeData.datasets[0].data.push(Number(incomeData[i].value));
+    }
+    },
+    error => {
+      console.log(error);
+    });
+  
+  }
+  fetchIncomeChartValues(){
+    // console.log($event.value.value)
+    if(this.incomeChartModel.incomeChartByItem === 'Monthly Income'||this.incomeChartModel.incomeChartByItem.value === 'MonthlyIncome'){
+      this.fetchIncomeValuesForChartByMonthly();
+    }
+      else{
+      this.fetchIncomeValuesForChartByType();
+    }
+    }
+    fetchIncomeValuesForChartByType(){
+      this.incomeChartModel.accountID=this.rightDetailsContent.facilityId;
+      this.incomeChartModel.fID = this.rightDetailsContent.fid;
+      this.incomeChartModel.id = this.commonService.getUserName();
+      this.incomeChartModel.fromFormatedDate =this.customDatePipe.transform(this.incomeChartModel.startDate);
+      this.incomeChartModel.endFormatedDate =this.customDatePipe.transform(this.incomeChartModel.endDate);
+      this.incomeChartModel.chartType =this.incomeChartModel.incomeChartByItem;
+      
+      this.dashboardService.getIncomeDataByType(this.incomeChartModel)
+     .subscribe( incomeData => {
+      this.incomeData = {
+        labels: [],
+        datasets: [
+        ]
+      };
+      var labelsList = ["Gallons Sold","Gas Amount","Inside Sales Amount","Lottery Amount","Scratch Off Sold"];
+      var backgroundColorsList = ['#42A5F5','#FF0000','#FFFF00','#FF00FF','#004400'];
+      this.incomeData.labels=[];
+      var gallonsSold=[];
+      var gasAmount=[];
+      var insideSalesAmount=[];
+      var lotteryAmount=[];
+      var scratchOffSold=[];
+
+      for (var i = 0; i < incomeData.length; i++) {
+        // this.incomeData.label.push(incomeData[i].month);
+        this.incomeData.labels.push(incomeData[i].month)
+        
+        gallonsSold.push(Number(incomeData[i].gallonsSold));
+        gasAmount.push(Number(incomeData[i].gasAmount));
+        insideSalesAmount.push(Number(incomeData[i].insideSalesAmount));
+        lotteryAmount.push(Number(incomeData[i].lotteryAmount));
+        scratchOffSold.push(Number(incomeData[i].scratchOffSold));
+      }
+      for (var i = 0; i < labelsList.length; i++) {
+        this.incomeData.datasets[i] = {};
+        this.incomeData.datasets[i].backgroundColor=backgroundColorsList[i];
+        this.incomeData.datasets[i].label=labelsList[i];
+      }
+      this.incomeData.datasets[0].data=gallonsSold
+      this.incomeData.datasets[1].data=gasAmount
+      this.incomeData.datasets[2].data=insideSalesAmount
+      this.incomeData.datasets[3].data=lotteryAmount
+      this.incomeData.datasets[4].data=scratchOffSold
+      },
+      error => {
+        console.log(error);
+      });
+    
+    }
+    onIncomeChartDataSelect(e){
+      console.log(e.element._model.label +"   "+e.element._model.datasetLabel);
+
+
+    }
+    onExpensesChartDataSelect(e){
+      console.log(e.element._model.label +"   "+e.element._model.datasetLabel);
+     
+    }
   getFontWeight(viewed){
     if(viewed === null || viewed=== 'false')
     return "bold";
     return "normal";
 
+  }
+  
+  checkIncomeFormValues(){
+    if(this.incomeModal.fromDate ==null || this.incomeModal.toDate ==null ||this.incomeModal.gallonsSold ==null|| 
+      this.incomeModal.gasAmount ==null||this.incomeModal.insideSalesAmount ==null|| this.incomeModal.lotteryAmount ==null|| this.incomeModal.scratchOffSold ==null)
+    return true;
+  return false;
+  }
+  checkExpensisFormValues(){
+    if(this.expenditureModel.amount ==null || this.expenditureModel.checkNo ==null || this.expenditureModel.checkNo.trim().length==0 ||this.expenditureModel.checkdate ==null|| 
+      this.expenditureModel.vendor ==null|| (this.expenditureModel.vendor !=null && this.expenditureModel.vendor.value=='Others' && this.expenditureModel.others ==null || 
+      (this.expenditureModel.others!== undefined &&  this.expenditureModel.others !== null && this.expenditureModel.others.length==0)))
+    return true;
+  return false;
   }
 }

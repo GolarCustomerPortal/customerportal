@@ -59,5 +59,11 @@ public class CustomAttachments {
 	public void setReportDatae(String reportDatae) {
 		this.reportDatae = reportDatae;
 	}
+	public String getActive() {
+		return active;
+	}
+	public void setActive(String active) {
+		this.active = active;
+	}
 	
 }

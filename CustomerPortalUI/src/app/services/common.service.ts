@@ -317,7 +317,7 @@ export class CommonService {
           return userObj;
       }
     }
-    return null;
+    return "";
   }
   getValueForName(userPrefList,name){
     for(var i=0;i<userPrefList.length;i++ ){
