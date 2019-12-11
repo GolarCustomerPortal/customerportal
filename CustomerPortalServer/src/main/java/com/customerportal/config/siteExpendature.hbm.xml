@@ -17,5 +17,9 @@
 		<property name="vendor" column="Vendor__c" />
 		<property name="salesforceId" column="Sales_Force_Id__c" />
 		<property name="dataEnteredBy" column="Data_Entered_By__c" />
+		<property name="dataModifiedBy" column="Data_Modified_By__c" />
+		<property name="createdDate" column="Created_Date__c" />
+		<property name="modifiedDate" column="Modified_Date__c" />
+		
 	</class>
 </hibernate-mapping>

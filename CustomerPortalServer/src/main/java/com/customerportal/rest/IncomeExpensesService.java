@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,6 +44,15 @@ public class IncomeExpensesService {
 			@QueryParam("startDate") Date startDate, @QueryParam("endDate") Date endDate, @QueryParam("chartType") String chartType) {
 		List<KeyValue> result =  DBUtil.getInstance().getIncomeForUserByMonthly(userId,facilityId,startDate,endDate,chartType);
 		
+		return Response.status(200).entity(result).build();
+
+	}
+	@Path("/income")
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteIncomeRecord(@QueryParam("incomeId")int incomeId,@QueryParam("userId")String userId, @QueryParam("facilityId")String facilityId) {
+		List<SiteIncome> result =  DBUtil.getInstance().deleteIncomeRecord(incomeId,userId,facilityId);
 		return Response.status(200).entity(result).build();
 
 	}
@@ -102,6 +112,16 @@ public class IncomeExpensesService {
 	public Response saveExpenses(SiteExpenses siteExpenses) {
 		String result =  DBUtil.getInstance().saveSiteExpenses(siteExpenses);
 		
+		return Response.status(200).entity(result).build();
+
+	}
+	
+	@Path("/expenses")
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response DeleteExpenses(@QueryParam("incomeId")int incomeId,@QueryParam("userId")String userId, @QueryParam("facilityId")String facilityId) {
+		List<SiteExpenses> result =  DBUtil.getInstance().deleteExpensesRecord(incomeId,userId,facilityId);
 		return Response.status(200).entity(result).build();
 
 	}

@@ -4,7 +4,7 @@
           "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class name="com.customerportal.bean.SiteIncome"
-		table="site_income__c">
+	table="site_income__c">
 		<id name="id"  column="Custom_Id__c">
 			<generator class="increment"></generator> 
 		</id>
@@ -21,6 +21,9 @@
 		<property name="tax" column="Tax__c" />
 		<property name="salesforceId" column="Sales_Force_Id__c" />
 		<property name="dataEnteredBy" column="Data_Entered_By__c" />
+		<property name="dataModifiedBy" column="Data_Modified_By__c" />
+		<property name="createdDate" column="Created_Date__c" />
+		<property name="modifiedDate" column="Modified_Date__c" />
 
 	</class>
 </hibernate-mapping>

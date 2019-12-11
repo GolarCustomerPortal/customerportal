@@ -34,5 +34,6 @@ export class CRMConstants {
     public static ENDDATE = "endDate";
     public static CHARTTYPE = "chartType";
     public static SETTINGS ="Settings";
+    public static SITE_INCOME_ID ="incomeId";
     public static LOGOUT_TIME =1800
     }

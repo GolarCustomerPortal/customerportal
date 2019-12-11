@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.ws.rs.QueryParam;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -43,6 +45,7 @@ import com.customerportal.bean.Tankstatusreport;
 import com.customerportal.bean.USSBOA;
 import com.customerportal.bean.User;
 import com.customerportal.bean.Userpreferences;
+import com.sforce.soap.enterprise.DeleteResult;
 import com.sforce.soap.enterprise.SaveResult;
 
 public class DBUtil {
@@ -3079,7 +3082,26 @@ public boolean resetTankreportDeatils(String type, String facilitiesId) {
 		Transaction trx = session.beginTransaction();
 		try {
 			boolean sameDate = GolarsUtil.isSameDay(siteIncome.getFromDate(), Calendar.getInstance().getTime());
-			session.save(siteIncome);
+			if(siteIncome.getId()==0) {
+				siteIncome.setCreatedDate(new  Date());
+				siteIncome.setModifiedDate(new Date());
+				siteIncome.setDataModifiedBy(siteIncome.getDataEnteredBy());
+				session.saveOrUpdate(siteIncome);
+			}else {
+				SiteIncome income = session.get(SiteIncome.class,siteIncome.getId());
+				income.setModifiedDate(new Date());
+				income.setGallonsSold(siteIncome.getGallonsSold());
+				income.setGasAmount(siteIncome.getGasAmount());
+				income.setInsideSalesAmount(siteIncome.getInsideSalesAmount());
+				income.setLotteryAmount(siteIncome.getLotteryAmount());
+				income.setScratchOffSold(siteIncome.getScratchOffSold());
+				income.setTax(siteIncome.getTax());
+				income.setDataModifiedBy(siteIncome.getDataEnteredBy());
+				session.update(income);
+				
+			}
+			
+			
 			if (sameDate) {
 				Account account = (Account) session.get(Account.class, siteIncome.getAccountID());
 				account.setIncomeExpenseUpdates("true");
@@ -3106,8 +3128,9 @@ public boolean resetTankreportDeatils(String type, String facilitiesId) {
 		session = HibernateUtil.getSession();
 		trx = session.beginTransaction();
 		try {
-			siteIncome.setSalesforceId(saveResults[0].getId());
-			session.saveOrUpdate(siteIncome);
+			SiteIncome income = session.get(SiteIncome.class,siteIncome.getId());
+			income.setSalesforceId(saveResults[0].getId());
+			session.update(income);
 			trx.commit();
 			session.close();
 		} catch (Exception exception) {
@@ -3130,7 +3153,23 @@ public boolean resetTankreportDeatils(String type, String facilitiesId) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
-			session.save(siteExpenses);
+			if(siteExpenses.getId()==0) {
+				siteExpenses.setCreatedDate(new  Date());
+				siteExpenses.setModifiedDate(new Date());
+				siteExpenses.setDataModifiedBy(siteExpenses.getDataEnteredBy());
+				session.saveOrUpdate(siteExpenses);
+			}else {
+				SiteExpenses expense = session.get(SiteExpenses.class,siteExpenses.getId());
+				expense.setModifiedDate(new Date());
+				expense.setAmount(siteExpenses.getAmount());
+				expense.setCheckNo(siteExpenses.getCheckNo());
+				expense.setDate(expense.getDate());
+				expense.setVendor(siteExpenses.getVendor());
+				expense.setOthers(siteExpenses.getOthers());
+				expense.setDataModifiedBy(siteExpenses.getDataEnteredBy());
+				session.update(expense);
+			}
+			
 			trx.commit();
 			session.close();
 		} catch (Exception exception) {
@@ -3151,8 +3190,9 @@ public boolean resetTankreportDeatils(String type, String facilitiesId) {
 		session = HibernateUtil.getSession();
 		trx = session.beginTransaction();
 		try {
-			siteExpenses.setSalesforceId(saveResults[0].getId());
-			session.saveOrUpdate(siteExpenses);
+			SiteExpenses expense = session.get(SiteExpenses.class,siteExpenses.getId());
+			expense.setSalesforceId(saveResults[0].getId());
+			session.update(expense);
 			trx.commit();
 			session.close();
 		} catch (Exception exception) {
@@ -3236,8 +3276,8 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 	Session session = HibernateUtil.getSession();
 	Transaction t = session.beginTransaction();
 	Query query = session.createNativeQuery(
-			"SELECT sum(Amount__C), DATE_FORMAT(Date__C, '%M') AS month  FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 1 DAY) \r\n" + 
-			"AND Date__C< SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL -1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
+			"SELECT sum(Amount__C), DATE_FORMAT(Date__C, '%M') AS month  FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY) \r\n" + 
+			"AND Date__C< date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
 	for (Object[] object : lst) {
@@ -3253,18 +3293,30 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 	return expensesList;
 }
 
-public List<SiteExpenses> getExpensesForUserForCustomDate(String userId,String facilityId, Date startDate, Date endDate){
-	Session session = HibernateUtil.getSession();
-	Transaction t = session.beginTransaction();
-	Query query = session.createNativeQuery(
-			"SELECT * FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 1 DAY) \r\n" + 
-			"AND Date__C< SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL -1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
-	List<SiteExpenses> lst = query.list();
-	System.out.println(lst.size());
-	t.commit();
-	session.close();
-	return lst;
-}
+	public List<SiteExpenses> getExpensesForUserForCustomDate(String userId, String facilityId, Date startDate,
+			Date endDate) {
+		if (startDate == null)
+			startDate = new Date();
+		if (endDate == null)
+			endDate = new Date();
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM site_expenses__c WHERE Account_ID__c ='" + facilityId
+				+ "' and  Created_Date__C >=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
+				+ "\", INTERVAL 0 DAY) \r\n" + "AND Created_Date__C< date_add(\""
+				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 1 DAY) order by Date__C;",
+				SiteExpenses.class);
+		List<SiteExpenses> lst = query.list();
+		System.out.println(lst.size());
+		if (lst != null) {
+			for (SiteExpenses siteIncome : lst) {
+				siteIncome.setDateString(new SimpleDateFormat("MMM d, yyyy h:mm:ss a").format(siteIncome.getDate()));
+			}
+		}
+		t.commit();
+		session.close();
+		return lst;
+	}
 
 	public List<KeyValue> getIncomeForUserByMonthly(String userId,String facilityId, Date startDate, Date endDate, String chartType){
 	List<KeyValue> expensesList = new ArrayList<KeyValue>();
@@ -3274,8 +3326,8 @@ public List<SiteExpenses> getExpensesForUserForCustomDate(String userId,String f
 	Query query = session.createNativeQuery(
 			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gallons_Sold__c) as Gallons_Sold__c ,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
-			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL -1 DAY)  AND "
-					+ "DATE(To_Date__c) <= SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL +1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY)  AND "
+					+ "DATE(To_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3308,8 +3360,8 @@ public List<IncomeReportData> getIncomeForUserByType(String userId,String facili
 			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gallons_Sold__c) as Gallons_Sold__c ,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
 			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
-			"' and DATE(from_Date__c)>=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL -1 DAY)  AND "
-					+ "DATE(To_Date__c) <=  SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL +1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+			"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND "
+					+ "DATE(To_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3331,22 +3383,61 @@ public List<IncomeReportData> getIncomeForUserByType(String userId,String facili
 	session.close();
 	return expensesList;
 }
-public List<SiteIncome> getIncomeForUserByCustomDate(String userId,String facilityId, Date startDate, Date endDate){
-	List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
+public List<SiteIncome> deleteIncomeRecord(int incomeId, String userId, String facilityId){
 	Session session = HibernateUtil.getSession();
 	Transaction t = session.beginTransaction();
-
-	Query query = session.createNativeQuery(
-			"select * FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
-			"' and DATE(from_Date__c)>=SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL -1 DAY)  AND "
-					+ "DATE(To_Date__c) <=  SUBDATE(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL +1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
-			"",SiteIncome.class);
-	List<SiteIncome> lst = query.list();
-	System.out.println(lst.size());
-	
-	t.commit();
+	SiteIncome income  = session.get(SiteIncome.class, incomeId);
+	session.delete(income);
+	t.commit();	
 	session.close();
-	return lst;
+	DeleteResult[] saveResults = GolarsUtil.deletencomeIntoSalesForce(income.getSalesforceId());
+	if (saveResults != null && saveResults[0] != null && saveResults[0].getErrors().length > 0) {
+		System.out.println("Salesforce error::: "+saveResults.toString());
+	}
+	return getIncomeForUserByCustomDate(userId, facilityId, new Date(), new Date());
 }
+public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, String facilityId){
+	Session session = HibernateUtil.getSession();
+	Transaction t = session.beginTransaction();
+	SiteExpenses siteExpense  = session.get(SiteExpenses.class, incomeId);
+	session.delete(siteExpense);
+	t.commit();	
+	session.close();
+	DeleteResult[] saveResults = GolarsUtil.deletencomeIntoSalesForce(siteExpense.getSalesforceId());
+	if (saveResults != null && saveResults[0] != null && saveResults[0].getErrors().length > 0) {
+		System.out.println("Salesforce error::: "+saveResults.toString());
+	}
+	return getExpensesForUserForCustomDate(userId, facilityId, new Date(), new Date());
+}
+
+	public List<SiteIncome> getIncomeForUserByCustomDate(String userId, String facilityId, Date startDate,
+			Date endDate) {
+		if (startDate == null)
+			startDate = new Date();
+		if (endDate == null)
+			endDate = new Date();
+		List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+
+		Query query = session.createNativeQuery("select * FROM site_income__c WHERE Account_ID__c ='" + facilityId
+				+ "' and DATE(Created_Date__C)>=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
+				+ "\" , INTERVAL 0 DAY)  AND " + "DATE(Created_Date__C) <=  date_add(\""
+				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate)
+				+ "\" , INTERVAL 1 DAY) order by from_Date__c, To_Date__c;\r\n" + "", SiteIncome.class);
+		List<SiteIncome> lst = query.list();
+		System.out.println(lst.size());
+		if (lst != null) {
+			for (SiteIncome siteIncome : lst) {
+				siteIncome.setFromDateString(
+						new SimpleDateFormat("MMM d, yyyy h:mm:ss a").format(siteIncome.getFromDate()));
+				siteIncome
+						.setToDateString(new SimpleDateFormat("MMM d, yyyy h:mm:ss a").format(siteIncome.getToDate()));
+			}
+		}
+		t.commit();
+		session.close();
+		return lst;
+	}
 
 }

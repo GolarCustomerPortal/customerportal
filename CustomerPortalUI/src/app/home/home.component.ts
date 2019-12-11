@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit {
   maxDateValue= new Date();
   incomeTabIndex=0;
   todayIncome;
+  todayExpenses;
   incomeChartByList:any=[{name: 'Monthly Income', value: 'MonthlyIncome'},
   {name: 'By Item', value: 'ByItem'}];;
   expensesModel:any={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date()};
@@ -2022,7 +2023,16 @@ if(index == 1){
       this.incomeChartModel.fromFormatedDate =this.customDatePipe.transform(this.incomeChartModel.startDate);
       this.incomeChartModel.endFormatedDate =this.customDatePipe.transform(this.incomeChartModel.endDate);
       this.incomeChartModel.chartType =this.incomeChartModel.incomeChartByItem;
-      this.dashboardService.getIncomeForCustomDate(this.incomeChartModel)
+      this.fetchTodaysIncomeData();
+      this.fetchTodaysExpensesData();
+  }
+fetchTodaysIncomeData(){
+  this.incomeModal.accountID=this.rightDetailsContent.facilityId;
+    this.incomeModal.fID = this.rightDetailsContent.fid;
+    this.incomeModal.dataEnteredBy = this.commonService.getUserName();
+    this.incomeModal.fromFormatedDate =this.customDatePipe.transform(new Date());
+    this.incomeModal.toFormatedDate =this.customDatePipe.transform(new Date());
+  this.dashboardService.getIncomeForCustomDate(this.incomeModal)
       .subscribe(incomeData => {
         this.todayIncome = incomeData;
         
@@ -2030,7 +2040,22 @@ if(index == 1){
         error => {
           console.log(error);
         });
-  }
+}
+fetchTodaysExpensesData(){
+  this.expenditureModel.accountID=this.rightDetailsContent.facilityId;
+    this.expenditureModel.fID = this.rightDetailsContent.fid;
+    this.expenditureModel.dataEnteredBy = this.commonService.getUserName();
+    this.expenditureModel.fromCheckdate =this.customDatePipe.transform(new Date());
+    this.expenditureModel.toCheckdate =this.customDatePipe.transform(new Date());
+    this.dashboardService.getExpensesForCustomDate(this.expenditureModel)
+      .subscribe(expenseData => {
+        this.todayExpenses = expenseData;
+        
+      },
+        error => {
+          console.log(error);
+        });
+}
 
   saveSiteIncome(){
     this.incomeModal.accountID=this.rightDetailsContent.facilityId;
@@ -2043,9 +2068,17 @@ if(index == 1){
       data => {
         if(data === "true"){
           this.showSiteIncomeSuccessMessage=true;
-          this.showSiteIncomeFailureMessage=false;
-          this.siteIncomeSuccessMessage = "Site Income Saved Successfully.";
-          this.siteIncomeFailureMessage = ""
+            this.showSiteIncomeFailureMessage=false;
+            this.siteIncomeSuccessMessage = "Site Income Saved Successfully.";
+            this.siteIncomeFailureMessage = ""
+            this.incomeModal={fromDate:new Date,toDate:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
+            this.fetchTodaysIncomeData();
+          setTimeout(() => {
+            this.showSiteIncomeSuccessMessage=false;
+            this.siteIncomeSuccessMessage = "";
+          }, 3000);
+         
+         
         }else{
           this.showSiteIncomeFailureMessage=true;
           this.showSiteIncomeSuccessMessage=false;
@@ -2075,7 +2108,13 @@ if(index == 1){
         this.showsiteExpensesSuccessMessage=true;
         this.showSiteExpensesFailureMessage=false;
         this.siteExpensesSuccessMessage = "Site Expenditure Saved Successfully."
-        this.siteExpensesFailureMessage = ""
+        this.siteExpensesFailureMessage = "";
+        this.expenditureModel={checkdate:new Date(),amount:0,checkNo:"",vendor:{name: 'Others', value: 'Others'},others:""};
+        this.fetchTodaysExpensesData();
+        setTimeout(() => {
+          this.showsiteExpensesSuccessMessage=false;
+          this.siteExpensesSuccessMessage = "";
+        }, 3000);
       }else{
         this.showSiteExpensesFailureMessage=true;
         this.showsiteExpensesSuccessMessage=false;
@@ -2221,6 +2260,74 @@ if(index == 1){
       });
     
     }
+    editIncomeRecord(incomeRec){
+      this.incomeModal.fromDate = new Date(incomeRec.fromDateString);
+      this.incomeModal.toDate = new Date(incomeRec.toDateString);
+      this.incomeModal.gallonsSold = incomeRec.gallonsSold;
+      this.incomeModal.gasAmount = incomeRec.gasAmount;
+      this.incomeModal.insideSalesAmount = incomeRec.insideSalesAmount;
+      this.incomeModal.lotteryAmount = incomeRec.lotteryAmount;
+      this.incomeModal.scratchOffSold = incomeRec.scratchOffSold;
+      this.incomeModal.id = incomeRec.id;
+      this.incomeModal.salesforceId = incomeRec.salesforceId;
+      this.incomeModal.tax = incomeRec.tax;
+      this.incomeModal.createdDate = incomeRec.createdDate;
+      this.incomeModal.modifiedDate = incomeRec.modifiedDate;
+      
+    }
+    deleteIncomeRecord(incomeRec){
+      incomeRec.accountID=this.rightDetailsContent.facilityId;
+      incomeRec.fID = this.rightDetailsContent.fid;
+      incomeRec.dataEnteredBy = this.commonService.getUserName();
+      incomeRec.fromFormatedDate =this.customDatePipe.transform(incomeRec.fromDate);
+      incomeRec.toFormatedDate =this.customDatePipe.transform(incomeRec.toDate);
+      this.dashboardService.deleteSiteIncome(incomeRec)
+      .subscribe( incomeData => {
+       this.todayIncome = incomeData
+       },
+       error => {
+         console.log(error);
+       });
+    }
+
+    editExpenses(expsnseRec){
+      this.expenditureModel.checkdate = new Date(expsnseRec.dateString);
+      this.expenditureModel.amount = expsnseRec.amount;
+      this.expenditureModel.checkNo = expsnseRec.checkNo;
+      this.expenditureModel.id = expsnseRec.id;
+      this.expenditureModel.salesforceId = expsnseRec.salesforceId;
+      this.expenditureModel.createdDate = expsnseRec.createdDate;
+      this.expenditureModel.modifiedDate = expsnseRec.modifiedDate;
+      var pickListFound = false;
+      for(var i=0; i<this.vendorsList.length; i++){
+        var elem = this.vendorsList[i];
+        if(elem.name == expsnseRec.vendor){
+          pickListFound = true;
+        }
+      }
+      if(expsnseRec.others != null && expsnseRec.others != ""){
+        this.expenditureModel.vendor = {name: 'Others', value: 'Others'}; 
+        this.expenditureModel.others = expsnseRec.others;
+      }else{
+        this.expenditureModel.vendor = {name:expsnseRec.vendor, value:expsnseRec.vendor};;
+        
+      }
+    }
+    deleteExpensesRecord(expenseRec){
+      expenseRec.accountID=this.rightDetailsContent.facilityId;
+      expenseRec.fID = this.rightDetailsContent.fid;
+      expenseRec.dataEnteredBy = this.commonService.getUserName();
+      expenseRec.fromFormatedDate =this.customDatePipe.transform(expenseRec.date);
+
+      this.dashboardService.deleteSiteExpenses(expenseRec)
+      .subscribe( expenseData => {
+        this.todayExpenses = expenseData;
+       },
+       error => {
+         console.log(error);
+       });
+    }
+
     onIncomeChartDataSelect(e){
       console.log(e.element._model.label +"   "+e.element._model.datasetLabel);
 

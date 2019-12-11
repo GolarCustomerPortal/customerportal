@@ -582,3 +582,6 @@ td{
 .ui-datepicker {
     z-index: 100000 !important;
     }
+.no-break-word{
+    word-break: break-word;
+}

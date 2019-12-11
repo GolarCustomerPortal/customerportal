@@ -1,5 +1,7 @@
 package com.customerportal.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
@@ -7,6 +9,7 @@ import java.util.Properties;
 import com.customerportal.bean.SiteExpenses;
 import com.customerportal.bean.SiteIncome;
 import com.sforce.soap.enterprise.Connector;
+import com.sforce.soap.enterprise.DeleteResult;
 import com.sforce.soap.enterprise.EnterpriseConnection;
 import com.sforce.soap.enterprise.SaveResult;
 import com.sforce.soap.enterprise.sobject.Account;
@@ -63,9 +66,7 @@ public class GolarsUtil {
 		return saveResults;
 		
 	}
-
-	public static SaveResult[] saveIncomeIntoSalesForce(SiteIncome siteIncome, boolean needToUpdateAccount) {
-
+	public static DeleteResult[] deletencomeIntoSalesForce(String salesForceId) {
 		try {
 			Class<GolarsUtil> cl = GolarsUtil.class;
 
@@ -76,7 +77,36 @@ public class GolarsUtil {
 		
 		final String USERNAME = salesforceProperties.getProperty("username");
 		final String PASSWORD = salesforceProperties.getProperty("password");
-		SaveResult[] saveResults = null;
+		DeleteResult[] saveResults = null;
+		try {
+			ConnectorConfig config = new ConnectorConfig();
+			config.setUsername(USERNAME);
+			config.setPassword(PASSWORD);
+			connection = Connector.newConnection(config);
+			String[] expenses_Record = new String[1];
+			expenses_Record[0] = salesForceId;
+			saveResults = connection.delete(expenses_Record);
+		} catch (ConnectionException e) {
+			System.out.println("Exception in saveDocumentURLINTOSalesForce--"+e.getMessage());
+			return saveResults;
+		}
+		return saveResults;
+	}
+
+	public static SaveResult[] saveIncomeIntoSalesForce(SiteIncome siteIncome, boolean needToUpdateAccount) {
+
+		try {
+
+			Class<GolarsUtil> cl = GolarsUtil.class;
+
+			salesforceProperties.load(cl.getResourceAsStream("/customerportal.properties"));
+		} catch (Exception e1) {
+			System.out.println("Email Configuration fiele not found" + e1.getMessage());
+		}
+		
+		final String USERNAME = salesforceProperties.getProperty("username");
+		final String PASSWORD = salesforceProperties.getProperty("password");
+		SaveResult[] incomesaveResults = null,accountsaveResults = null;
 		try {
 			ConnectorConfig config = new ConnectorConfig();
 			config.setUsername(USERNAME);
@@ -101,22 +131,25 @@ public class GolarsUtil {
 			Calendar toCal = Calendar.getInstance();
 			toCal.setTime(siteIncome.getToDate());
 			income_Record[0].setTo_Date__c(toCal);
-			
-			saveResults = connection.create(income_Record);
-			if(saveResults[0].getErrors().length == 0) {
+			if(siteIncome.getSalesforceId() != null) {
+				income_Record[0].setId(siteIncome.getSalesforceId());
+				incomesaveResults = connection.update(income_Record);
+			}else
+			incomesaveResults = connection.create(income_Record);
+			if(incomesaveResults[0].getErrors().length == 0) {
 			Account[] accountRecord = new Account[1];
 			accountRecord[0] = new Account();
 			accountRecord[0].setIncome_Expense_Updates__c(needToUpdateAccount);
 			accountRecord[0].setId(siteIncome.getAccountID());
-			saveResults = connection.update(accountRecord);
+			accountsaveResults = connection.update(accountRecord);
 			}
-			System.out.println(saveResults+"--------saveResults the error length is "+saveResults[0].getErrors().length);
+			System.out.println(accountsaveResults+"--------saveResults the error length is "+accountsaveResults[0].getErrors().length);
 
 		} catch (ConnectionException e) {
 			System.out.println("Exception in saveDocumentURLINTOSalesForce--"+e.getMessage());
-			return saveResults;
+			return incomesaveResults;
 		}
-		return saveResults;
+		return incomesaveResults;
 		
 	}
 	/**
@@ -162,4 +195,6 @@ public class GolarsUtil {
     public static boolean isToday(Date date) {
         return isSameDay(date, Calendar.getInstance().getTime());
     }
+
+
 }

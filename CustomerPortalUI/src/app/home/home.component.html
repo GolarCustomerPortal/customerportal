@@ -1650,25 +1650,25 @@
         <p-tabView (onChange)="getIncomeExpenditureReport($event)" #incomeExpensesTab [activeIndex]="incomeTabIndex">
           <p-tabPanel header="Income">
             <!-- table start -->
-            <h6>Today's Income Details:</h6>
-            <p-table [value]="todayIncome">
+            <h6 *ngIf="todayIncome?.length>0">Today's Income Details:</h6>
+            <div style="font-size: 12px;" *ngIf="todayIncome?.length>0"><p-table [value]="todayIncome" >
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Gallons Sold</th>
-                  <th>Gas Amount</th>
-                  <th>Inside Sales Amount</th>
-                  <th>Lottery Amount</th>
-                  <th>Scratch Off Sold</th>
-                  <th>Tax</th>
-                  <th>Action</th>
+                  <th class="no-break-word">Start Date</th>
+                  <th class="no-break-word">End Date</th>
+                  <th class="no-break-word">Gallons Sold</th>
+                  <th class="no-break-word">Gas Amount</th>
+                  <th class="no-break-word">Inside Sales Amount</th>
+                  <th class="no-break-word">Lottery Amount</th>
+                  <th class="no-break-word">Scratch Off Sold</th>
+                  <th class="no-break-word">Tax</th>
+                  <th class="no-break-word">Action</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-income>
                 <tr>
-                  <td>{{income.startDate}}</td>
-                  <td>{{income.endDate}}</td>
+                  <td>{{income.fromDateString | date:'d/MM/yyyy'}}</td>
+                  <td>{{income.toDateString | date:'dd/MM/yyyy'}}</td>
                   <td>{{income.gallonsSold}}</td>
                   <!-- <td>{{user.admin}}</td> -->
                   <td>{{income.gasAmount}}</td>
@@ -1676,12 +1676,13 @@
                   <td>{{income.lotteryAmount}}</td>
                   <td>{{income.scratchOffSold}}</td>
                   <td>{{income.tax}}</td>
-                  <td> <a style="color:blue;cursor: pointer;"><i class="fa fa-edit" (click)="editUser(user)"></i></a>
-                    <a style="color:red;cursor: pointer;"><i class="fa fa-close" (click)="deleteUser(user)"></i></a>
+                  <td> <a style="color:blue;cursor: pointer;font-size: 15px;"><i class="fa fa-edit" (click)="editIncomeRecord(income)" title="Edit"></i></a>
+                    <a style="color:red;cursor: pointer;font-size: 15px;"><i class="fa fa-close" (click)="deleteIncomeRecord(income)" title="Delete"></i></a>
                   </td>
                 </tr>
               </ng-template>
             </p-table>
+          </div>
             <!-- table end -->
             <br />
             <h6>Enter Income Details</h6>
@@ -1742,6 +1743,39 @@
             </div>
           </p-tabPanel>
           <p-tabPanel header="expenditure">
+            <!-- table start -->
+            <h6 *ngIf="todayExpenses?.length>0">Today's Expenses Details:</h6>
+            <div style="font-size: 12px;" *ngIf="todayExpenses?.length>0"><p-table [value]="todayExpenses" >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="no-break-word">Date</th>
+                  <th class="no-break-word">Check No</th>
+                  <th class="no-break-word">Amount</th>
+                  <th class="no-break-word">Vendor/Payee</th>
+                  <th class="no-break-word">Others</th>
+                  <th class="no-break-word">Action</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-expense>
+                <tr>
+                  <td>{{expense.dateString | date:'d/MM/yyyy'}}</td>
+                  <td>{{expense.checkNo}}</td>
+                  <!-- <td>{{user.admin}}</td> -->
+                  <td>{{expense.amount}}</td>
+                  <td>{{expense.vendor}}</td>
+                  <td>{{expense.others}}</td>
+                  <td> <a style="color:blue;cursor: pointer;font-size: 15px;"><i class="fa fa-edit" (click)="editExpenses(expense)" title="Edit"></i></a>
+                    <a style="color:red;cursor: pointer;font-size: 15px;"><i class="fa fa-close" (click)="deleteExpensesRecord(expense)" title="Delete"></i></a>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+            <!-- table end -->
+            <br />
+            <h6>Enter Expenses Details</h6>
+
+
             <div class="alert alert-success" [hidden]='!showsiteExpensesSuccessMessage'>
               <strong>Success!</strong> {{siteExpensesSuccessMessage}}
             </div>

@@ -113,19 +113,35 @@ saveUserPreferences(name,value){
 }
 
 saveSiteIncome(incomeModel){
-    return this.http.post(URLConstants.SITE_INCOME_MONTHLY, {accountID: incomeModel.accountID, fID: incomeModel.fID
+    return this.http.post(URLConstants.SITE_INCOME, {accountID: incomeModel.accountID, fID: incomeModel.fID
         , fromDate: incomeModel.fromFormatedDate, gallonsSold: incomeModel.gallonsSold, gasAmount: incomeModel.gasAmount, insideSalesAmount: incomeModel.insideSalesAmount
         , lotteryAmount: incomeModel.lotteryAmount, scratchOffSold: incomeModel.scratchOffSold, toDate: incomeModel.toFormatedDate,dataEnteredBy:incomeModel.dataEnteredBy,
-        tax:incomeModel.tax})
+        tax:incomeModel.tax,id:incomeModel.id,salesforceId:incomeModel.salesforceId,createdDate:incomeModel.createdDate,modifiedDate:incomeModel.modifiedDate})
      .map(incomeResult => {
          // Registration response 
          return incomeResult;
      });
 }
+deleteSiteIncome(incomeModel){
+    return this.http.delete(URLConstants.SITE_INCOME,this.getIncomeDeleteOptions(incomeModel))
+    .map(incomeResult => {
+        
+        return incomeResult;
+    });
+}
+deleteSiteExpenses(expenseModel){
+    return this.http.delete(URLConstants.SITE_EXPENDITURE,this.getExpenseDeleteOptions(expenseModel))
+    .map(incomeResult => {
+        
+        return incomeResult;
+    });
+}
+
+
 saveSiteExpenditure(expenditureModel){
     return this.http.post(URLConstants.SITE_EXPENDITURE, {accountID: expenditureModel.accountID, fID: expenditureModel.fID,amount: expenditureModel.amount
         , date: expenditureModel.checkFormateddate,checkNo: expenditureModel.checkNo, vendor: expenditureModel.vendor.value,dataEnteredBy:expenditureModel.dataEnteredBy,
-    others:expenditureModel.others})
+    others:expenditureModel.others,id:expenditureModel.id,salesforceId:expenditureModel.salesforceId,createdDate:expenditureModel.createdDate,modifiedDate:expenditureModel.modifiedDate})
      .map(incomeResult => {
          // Registration response 
          return incomeResult;
@@ -153,7 +169,7 @@ getExpendatureData(expensesModel){
     });
 }
 getExpensesForCustomDate(expensesModel){
-    return this.http.get(URLConstants.SITE_EXPENDITURE_CUSTOM_DATE,this.getExpensesOptions(expensesModel))
+    return this.http.get(URLConstants.SITE_EXPENDITURE_CUSTOM_DATE,this.getExpensesOptionsForCustomDate(expensesModel))
     .map(expensesData => {
         
         return expensesData;
@@ -167,7 +183,7 @@ getIncomeForCustomDate(incomeModel){
     });
 }
 getIncomeDataByMonthly(incomeChartModel){
-    return this.http.get(URLConstants.SITE_INCOME_MONTHLY,this.getIncomeOptions(incomeChartModel))
+    return this.http.get(URLConstants.SITE_INCOME,this.getIncomeOptions(incomeChartModel))
     .map(expensesData => {
         
         return expensesData;
@@ -308,10 +324,16 @@ private getExpensesOptions(expensesModel) {
       .set(CRMConstants.ENDDATE,incomeChartModel.endFormatedDate).set(CRMConstants.CHARTTYPE,incomeChartModel.chartType)
     };
   }
-  private getIncomeOptionsCustomDate(incomeChartModel) {
+  private getIncomeOptionsCustomDate(incomeModel) {
     return {
-      params: new HttpParams().set(CRMConstants.USER_ID,incomeChartModel.id).set(CRMConstants.FACILITY_ID,incomeChartModel.accountID).set(CRMConstants.STARTDATE,incomeChartModel.fromFormatedDate)
-      .set(CRMConstants.ENDDATE,incomeChartModel.endFormatedDate)
+      params: new HttpParams().set(CRMConstants.USER_ID,incomeModel.accountID).set(CRMConstants.FACILITY_ID,incomeModel.accountID).set(CRMConstants.STARTDATE,incomeModel.fromFormatedDate)
+      .set(CRMConstants.ENDDATE,incomeModel.toFormatedDate)
+    };
+  }
+  private getExpensesOptionsForCustomDate(expensesModel) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,expensesModel.dataEnteredBy).set(CRMConstants.FACILITY_ID,expensesModel.accountID).set(CRMConstants.STARTDATE,expensesModel.fromCheckdate)
+      .set(CRMConstants.ENDDATE,expensesModel.toCheckdate)
     };
   }
 resetLeakTankDetails(facilitiesId){
@@ -335,4 +357,15 @@ resetCSLDTestDetails(facilitiesId){
          return result;
      });
 }
+private getIncomeDeleteOptions(incomeModel) {
+    return {
+      params: new HttpParams().set(CRMConstants.SITE_INCOME_ID,incomeModel.id).set(CRMConstants.USER_ID,incomeModel.dataEnteredBy).set(CRMConstants.FACILITY_ID,incomeModel.accountID)
+    };
+  }
+  private getExpenseDeleteOptions(expenseModel) {
+    return {
+      params: new HttpParams().set(CRMConstants.SITE_INCOME_ID,expenseModel.id).set(CRMConstants.USER_ID,expenseModel.dataEnteredBy).set(CRMConstants.FACILITY_ID,expenseModel.accountID)
+    };
+  }
+
 }
