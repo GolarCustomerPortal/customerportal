@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
     precision: '0'
   };
   incomeModal:any={fromDate:new Date,toDate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
-  expenditureModel:any={checkdate:new Date(),vendor:{name: 'Others', value: 'Others'}};
+  expenditureModel:any={checkdate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),vendor:{name: 'Others', value: 'Others'}};
   vendorsList:any=[];;
   incomeData: any;
   expencesData: any;
@@ -1634,7 +1634,7 @@ selectedTankReportTTab;
   
     this.vendorsList=[];;
     this.incomeModal={fromDate:new Date,toDate:new Date(),startDateForAdmin:new Date(),endDateForAdmin:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
-    this.expenditureModel={checkdate:new Date()};
+    this.expenditureModel={checkdate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date()};
     this.incomeData={};
     this.expencesData={};
     this.showSiteIncomeSuccessMessage=false;
@@ -2130,7 +2130,7 @@ fetchTodaysExpensesData(fromDate,toDate){
         this.showSiteExpensesFailureMessage=false;
         this.siteExpensesSuccessMessage = "Site Expenditure Saved Successfully."
         this.siteExpensesFailureMessage = "";
-        this.expenditureModel={checkdate:new Date(),amount:0,checkNo:"",vendor:{name: 'Others', value: 'Others'},others:""};
+        this.expenditureModel={checkdate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),amount:0,checkNo:"",vendor:{name: 'Others', value: 'Others'},others:""};
         if(this.actualServerData.clientContact === null)
           this.fetchTodaysExpensesData(this.expenditureModel.checkdate,this.expenditureModel.checkdate);
         setTimeout(() => {
@@ -2164,6 +2164,10 @@ fetchTodaysExpensesData(fromDate,toDate){
   }
   fetchIncomeValuesForAdmin(){
     this.fetchTodaysIncomeData(this.incomeModal.startDateForAdmin,this.incomeModal.endDateForAdmin);
+    
+  }
+  fetchExpensesValuesForAdmin(){
+    this.fetchTodaysExpensesData(this.incomeModal.startDateForAdmin,this.incomeModal.endDateForAdmin);
     
   }
   fetchExpenditureValuesForChart(){

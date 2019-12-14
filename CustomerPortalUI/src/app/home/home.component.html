@@ -1648,8 +1648,13 @@
       </div>
       <div class="modal-body income-expenditure-model">
         <p-tabView (onChange)="getIncomeExpenditureReport($event)" #incomeExpensesTab [activeIndex]="incomeTabIndex">
-            <div class="ui-g" *ngIf="actualServerData?.clientContact !== null">
-              <div class="ui-g-5">
+           
+          
+          <p-tabPanel header="Income">
+            <!-- table start -->
+            <div class="ui-g" style="margin-top: 10px;" *ngIf="actualServerData?.clientContact !== null">
+                <div class="ui-g-12"><h6 *ngIf="actualServerData?.clientContact !== null"> Fetch Income Details:</h6></div>
+                <div class="ui-g-12"><div class="ui-g-5">
                 <div>Start Date:</div>
                 <p-calendar [(ngModel)]="incomeModal.startDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
               </div>
@@ -1661,9 +1666,8 @@
                 <div>&nbsp;</div>
                 <button type="button" class="btn btn-primary" (click)="fetchIncomeValuesForAdmin()">Fetch</button>
               </div>
+              </div>
             </div>
-          <p-tabPanel header="Income">
-            <!-- table start -->
             <h6 *ngIf="actualServerData?.clientContact !== null && todayIncome?.length>0">Income Details:</h6>
             <h6 *ngIf="actualServerData?.clientContact === null &&todayIncome?.length>0">Today's Income Details:</h6>
             <div style="font-size: 12px;" *ngIf="todayIncome?.length>0">
@@ -1760,8 +1764,24 @@
           </p-tabPanel>
           <p-tabPanel header="expenditure">
             <!-- table start -->
-            
-            <h6 *ngIf="todayExpenses?.length>0">Today's Expenses Details:</h6>
+            <div class="ui-g" style="margin-top: 10px;" *ngIf="actualServerData?.clientContact !== null">
+                <div class="ui-g-12"><h6 *ngIf="actualServerData?.clientContact !== null">Fetch Expenses Details:</h6></div>
+                <div class="ui-g-12"><div class="ui-g-5">
+                <div>Start Date:</div>
+                <p-calendar [(ngModel)]="expenditureModel.startDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-5">
+                <div>End Date:</div>
+                <p-calendar [(ngModel)]="expenditureModel.endDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-2">
+                <div>&nbsp;</div>
+                <button type="button" class="btn btn-primary" (click)="fetchExpensesValuesForAdmin()">Fetch</button>
+              </div>
+              </div>
+            </div>
+            <h6 *ngIf="actualServerData?.clientContact !== null && todayExpenses?.length>0">Expenses Details:</h6>
+            <h6 *ngIf="actualServerData?.clientContact === null &&todayExpenses?.length>0">Today's Expenses Details:</h6>
             <div style="font-size: 12px;" *ngIf="todayExpenses?.length>0">
               <p-table [value]="todayExpenses" scrollHeight="300px" [scrollable]="true">
               <ng-template pTemplate="header">

@@ -599,6 +599,12 @@ td{
     top: 20% !important;
     left: 40% !important;
 }
-#incomeAndexpenditureModal .ui-g-6{
-padding: 0px !important;
+#incomeAndexpenditureModal .ui-g-6,#incomeAndexpenditureModal .ui-g-5, 
+#incomeAndexpenditureModal .ui-tabview .ui-tabview-panel,
+#incomeAndexpenditureModal .ui-g-12,
+#incomeAndexpenditureModal .ui-g-2{
+padding: 3px !important;
 }
+.h6{
+    margin-bottom: 0px !important;
+} 
