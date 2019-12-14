@@ -38,5 +38,7 @@ export class URLConstants {
     public static SITE_INCOME_PICKLIST = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/pickList';
     public static SITE_EXPENDITURE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/expenses';
     public static SITE_EXPENDITURE_CUSTOM_DATE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/expenses/detail';
+    public static SITE_INCOME_CHART_DETAIL = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/chart/detail';
+    public static SITE_EXPENSES_CHART_DETAIL = environment.server+'/CustomerPortalServer/rest/incomeExpenses/expenses/chart/detail';
     
 }

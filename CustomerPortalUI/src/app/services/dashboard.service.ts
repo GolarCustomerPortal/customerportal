@@ -147,6 +147,20 @@ saveSiteExpenditure(expenditureModel){
          return incomeResult;
      });
 }
+getIncomeChartDetails(incomeChartModel,month){
+    return this.http.get(URLConstants.SITE_INCOME_CHART_DETAIL,this.getIncomeExpenseOptionsChartDetails(incomeChartModel,month))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
+getExpensesChartDetails(incomeChartModel,month){
+    return this.http.get(URLConstants.SITE_EXPENSES_CHART_DETAIL,this.getIncomeExpenseOptionsChartDetails(incomeChartModel,month))
+    .map(expensesData => {
+        
+        return expensesData;
+    });
+}
 saveIncomePicklistValue(labels){
     return this.http.post(URLConstants.SITE_INCOME_PICKLIST, {value:labels})
      .map(incomeResult => {
@@ -322,6 +336,12 @@ private getExpensesOptions(expensesModel) {
     return {
       params: new HttpParams().set(CRMConstants.USER_ID,incomeChartModel.id).set(CRMConstants.FACILITY_ID,incomeChartModel.accountID).set(CRMConstants.STARTDATE,incomeChartModel.fromFormatedDate)
       .set(CRMConstants.ENDDATE,incomeChartModel.endFormatedDate).set(CRMConstants.CHARTTYPE,incomeChartModel.chartType)
+    };
+  }
+  private getIncomeExpenseOptionsChartDetails(model,month) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,model.id).set(CRMConstants.FACILITY_ID,model.accountID).set(CRMConstants.STARTDATE,model.fromFormatedDate)
+      .set(CRMConstants.ENDDATE,model.endFormatedDate).set(CRMConstants.CHARTTYPE,model.chartType).set(CRMConstants.MONTH,month)
     };
   }
   private getIncomeOptionsCustomDate(incomeModel) {

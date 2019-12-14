@@ -36,6 +36,7 @@ public class Facilities {
 	private String projectManagerPhone;
 	private String facilityTankPaidMessage;
 	private String incomeExpenseUpdatesButtonEnable;
+	private String clientContact;
 
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
@@ -289,5 +290,11 @@ public class Facilities {
 	}
 	public String getIncomeExpenseUpdatesButtonEnable() {
 		return incomeExpenseUpdatesButtonEnable;
+	}
+	public void setClientContact(String clientContact) {
+		this.clientContact = clientContact;
+	}
+	public String getClientContact() {
+		return clientContact;
 	}
 }

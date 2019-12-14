@@ -67,6 +67,29 @@ public class IncomeExpensesService {
 		return Response.status(200).entity(result).build();
 
 	}
+	@Path("/expenses/chart/detail")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getExpensesChartDetails(@QueryParam("userId")String userId, @QueryParam("facilityId")String facilityId,
+			@QueryParam("startDate") Date startDate, @QueryParam("endDate") Date endDate, @QueryParam("month") String month) {
+		List<SiteExpenses> result =  DBUtil.getInstance().getExpensesChartCick(userId,facilityId,startDate,endDate,month);
+		
+		return Response.status(200).entity(result).build();
+
+	}
+
+	@Path("/income/chart/detail")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getIncomeChartDetails(@QueryParam("userId")String userId, @QueryParam("facilityId")String facilityId,
+			@QueryParam("startDate") Date startDate, @QueryParam("endDate") Date endDate, @QueryParam("month") String month) {
+		List<SiteIncome> result =  DBUtil.getInstance().getIncomeDetailsOnChartClick(userId,facilityId,startDate,endDate,month);
+		
+		return Response.status(200).entity(result).build();
+
+	}
 	@Path("/income/detail")
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)

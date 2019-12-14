@@ -1648,10 +1648,26 @@
       </div>
       <div class="modal-body income-expenditure-model">
         <p-tabView (onChange)="getIncomeExpenditureReport($event)" #incomeExpensesTab [activeIndex]="incomeTabIndex">
+            <div class="ui-g" *ngIf="actualServerData?.clientContact !== null">
+              <div class="ui-g-5">
+                <div>Start Date:</div>
+                <p-calendar [(ngModel)]="incomeModal.startDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-5">
+                <div>End Date:</div>
+                <p-calendar [(ngModel)]="incomeModal.endDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
+              </div>
+              <div class="ui-g-2">
+                <div>&nbsp;</div>
+                <button type="button" class="btn btn-primary" (click)="fetchIncomeValuesForAdmin()">Fetch</button>
+              </div>
+            </div>
           <p-tabPanel header="Income">
             <!-- table start -->
-            <h6 *ngIf="todayIncome?.length>0">Today's Income Details:</h6>
-            <div style="font-size: 12px;" *ngIf="todayIncome?.length>0"><p-table [value]="todayIncome" >
+            <h6 *ngIf="actualServerData?.clientContact !== null && todayIncome?.length>0">Income Details:</h6>
+            <h6 *ngIf="actualServerData?.clientContact === null &&todayIncome?.length>0">Today's Income Details:</h6>
+            <div style="font-size: 12px;" *ngIf="todayIncome?.length>0">
+              <p-table [value]="todayIncome" scrollHeight="150px" [scrollable]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th class="no-break-word">Start Date</th>
@@ -1744,8 +1760,10 @@
           </p-tabPanel>
           <p-tabPanel header="expenditure">
             <!-- table start -->
+            
             <h6 *ngIf="todayExpenses?.length>0">Today's Expenses Details:</h6>
-            <div style="font-size: 12px;" *ngIf="todayExpenses?.length>0"><p-table [value]="todayExpenses" >
+            <div style="font-size: 12px;" *ngIf="todayExpenses?.length>0">
+              <p-table [value]="todayExpenses" scrollHeight="300px" [scrollable]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th class="no-break-word">Date</th>
@@ -1820,7 +1838,7 @@
 
             </div>
           </p-tabPanel>
-          <p-tabPanel header="Income Report">
+          <p-tabPanel header="Income Report" *ngIf="actualServerData?.clientContact !== null"> 
             <div class="ui-g">
               <div class="ui-g-6">
                 <div>Chart Type</div>
@@ -1847,7 +1865,7 @@
                 <button type="button" class="btn btn-primary" (click)="fetchIncomeChartValues()">Fetch</button>
               </div>
             </div>
-            <p-chart type="bar" #incomeChart (onDataSelect)="onIncomeChartDataSelect($event)" [data]="incomeData">
+            <p-chart type="bar" #incomeChart (onDataSelect)="onIncomeChartDataSelect($event)" [data]="incomeData" [options]="incomeExpensesChartOptions">
             </p-chart>
             <div class="ui-g-12" style="text-align: right;">
               <div class="modal-footer">
@@ -1856,7 +1874,7 @@
               </div>
             </div>
           </p-tabPanel>
-          <p-tabPanel header="Expenditure Report">
+          <p-tabPanel header="Expenditure Report"  *ngIf="actualServerData?.clientContact !== null">
             <div class="ui-g">
               <div class="ui-g-5">
                 <div>Start Date:</div>
@@ -1868,10 +1886,10 @@
               </div>
               <div class="ui-g-2">
                 <div>&nbsp;</div>
-                <button type="button" class="btn btn-primary" (click)="fetchExpenditureValuesForChart()">Fetch</button>
+                <button type="button" class="btn btn-primary" (click)="fetchExpenditureValuesForChart()" >Fetch</button>
               </div>
             </div>
-            <p-chart type="bar" #expencesChart (onDataSelect)="onExpensesChartDataSelect($event)" [data]="expencesData">
+            <p-chart type="bar" #expencesChart (onDataSelect)="onExpensesChartDataSelect($event)" [data]="expencesData" [options]="incomeExpensesChartOptions">
             </p-chart>
             <div class="ui-g-12" style="text-align: right;">
               <div class="modal-footer">
@@ -1897,3 +1915,91 @@
       </div>
     </div>
   </div>
+  <!-- income table details start -->
+  <div class=" modal incomeDetailsModal fade" id="incomeDetailsModal" tabindex="-1" role="dialog" aria-labelledby="incomeDetailsModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="font-size: 12px;">
+            <div class="modal-header">
+              <div class="modal-title income-modal-header-round" id="exampleModalCenterTitle">Income details for
+                {{rightDetailsContent?.facilityName}} for the month {{month}}</div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <p-table [value]="incomeChartDetailsData" scrollHeight="300px" [scrollable]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="no-break-word">Start Date</th>
+                    <th class="no-break-word">End Date</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Gallons Sold')">Gallons Sold</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Gas Amount')">Gas Amount</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Inside Sales Amount')">Inside Sales Amount</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Lottery Amount')">Lottery Amount</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Scratch Off Sold')">Scratch Off Sold</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Tax')">Tax</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-income>
+                  <tr>
+                    <td>{{income.fromDateString | date:'d/MM/yyyy'}}</td>
+                    <td>{{income.toDateString | date:'dd/MM/yyyy'}}</td>
+                    <td *ngIf="isChartSpecficItem('Gallons Sold')">{{income.gallonsSold}}</td>
+                    <!-- <td>{{user.admin}}</td> -->
+                    <td *ngIf="isChartSpecficItem('Gas Amount')">{{income.gasAmount}}</td>
+                    <td *ngIf="isChartSpecficItem('Inside Sales Amount')">{{income.insideSalesAmount}}</td>
+                    <td *ngIf="isChartSpecficItem('Lottery Amount')">{{income.lotteryAmount}}</td>
+                    <td *ngIf="isChartSpecficItem('Scratch Off Sold')">{{income.scratchOffSold}}</td>
+                    <td *ngIf="isChartSpecficItem('Tax')">{{income.tax}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+  <!-- income table details end -->
+    <!-- Expenses table details start -->
+    <div class=" modal incomeDetailsModal fade" id="expensesDetailsModal" tabindex="-1" role="dialog" aria-labelledby="expensesDetailsModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content" style="font-size: 12px;">
+              <div class="modal-header">
+                <div class="modal-title income-modal-header-round" id="expensesModalCenterTitle">Expenses details for
+                  {{rightDetailsContent?.facilityName}} for the month {{month}}</div>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <p-table [value]="expensesChartDetailsData" scrollHeight="300px" [scrollable]="true" >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="no-break-word">Date</th>
+                      <th class="no-break-word">Amount</th>
+                      <th class="no-break-word" >Check No</th>
+                      <th class="no-break-word" >Vendor/Payee</th>
+                      <th class="no-break-word" >Others</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-expense>
+                    <tr>
+                      <td>{{expense.dateString | date:'d/MM/yyyy'}}</td>
+                      <td>{{expense.amount}}</td>
+                      <!-- <td>{{user.admin}}</td> -->
+                      <td>{{expense.checkNo}}</td>
+                      <td >{{expense.vendor}}</td>
+                      <td>{{expense.others}}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
+    <!--Expensestable details end -->

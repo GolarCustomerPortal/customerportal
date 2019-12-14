@@ -585,3 +585,20 @@ td{
 .no-break-word{
     word-break: break-word;
 }
+.income-modal-header-round{
+    width: max-content !important;
+    background-color: #2c347e;
+    font-weight: bold !important;
+    color: #ffffff;
+    padding: 10px;
+    margin-left: -16px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.incomeDetailsModal{
+    top: 20% !important;
+    left: 40% !important;
+}
+#incomeAndexpenditureModal .ui-g-6{
+padding: 0px !important;
+}

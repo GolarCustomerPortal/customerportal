@@ -23,6 +23,6 @@
 		<property name="nfCompliant" column="Is_NF_Compliant__c" />
 		<property name="projectManagerPhone" column="GT_Project_Manager_Phone__c" />
 		<property name="projectManager" column="GT_Project_Manager__c" />
-
+		<property name="clientContact" column="Client_Contact__c" />
 	</class>
 </hibernate-mapping>

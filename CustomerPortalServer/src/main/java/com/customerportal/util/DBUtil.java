@@ -3439,5 +3439,51 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		session.close();
 		return lst;
 	}
+	public List<SiteIncome> getIncomeDetailsOnChartClick(String userId,String facilityId, Date startDate, Date endDate, String month){
+		List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
 
+		Query query = session.createNativeQuery(
+				"select * FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
+				"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND DATE_FORMAT(from_Date__c, '%M') ='"+month+"' order by from_Date__c",SiteIncome.class);
+		List<SiteIncome> incomeList = query.list();
+		System.out.println(incomeList.size());
+		if (incomeList != null) {
+			for (SiteIncome siteIncome : incomeList) {
+				siteIncome.setFromDateString(
+						new SimpleDateFormat("MMM d, yyyy h:mm:ss a").format(siteIncome.getFromDate()));
+				siteIncome
+						.setToDateString(new SimpleDateFormat("MMM d, yyyy h:mm:ss a").format(siteIncome.getToDate()));
+			}
+		}
+
+		t.commit();
+		session.close();
+		return incomeList;
+	}
+	public List<SiteExpenses> getExpensesChartCick(String userId, String facilityId, Date startDate,
+			Date endDate, String month) {
+		if (startDate == null)
+			startDate = new Date();
+		if (endDate == null)
+			endDate = new Date();
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM site_expenses__c WHERE Account_ID__c ='" + facilityId
+				+ "' and  Created_Date__C >=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
+				+ "\", INTERVAL 0 DAY) \r\n" + "AND Created_Date__C< date_add(\""
+				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 1 DAY)  AND DATE_FORMAT(Date__c, '%M') ='"+month+"' order by Date__C;",
+				SiteExpenses.class);
+		List<SiteExpenses> lst = query.list();
+		System.out.println(lst.size());
+		if (lst != null) {
+			for (SiteExpenses siteIncome : lst) {
+				siteIncome.setDateString(new SimpleDateFormat("MMM d, yyyy h:mm:ss a").format(siteIncome.getDate()));
+			}
+		}
+		t.commit();
+		session.close();
+		return lst;
+	}
 }
