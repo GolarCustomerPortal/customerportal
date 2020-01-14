@@ -46,10 +46,12 @@ export class HomeComponent implements OnInit {
   siteExpensesFailureMessage=""; 
   maxDateValue= new Date();
   incomeTabIndex=0;
-  todayIncome;
-  todayExpenses;
-  incomeChartDetailsData;
-  expensesChartDetailsData;
+  todayIncome=[];
+  todayExpenses=[];
+  incomeChartDetailsData=[];
+  expensesChartDetailsData=[];
+  siteExpensesSubmitted=false;
+  siteIncomeSubmitted=false;
   incomeChartByList:any=[{name: 'Monthly Income', value: 'MonthlyIncome'},
   {name: 'By Item', value: 'ByItem'}];;
   expensesModel:any={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date()};
@@ -123,7 +125,7 @@ export class HomeComponent implements OnInit {
   // fOperatorFileName;
   // commom properties end
   //consolidate report start
-  consolidateReportColors = { "UNLEADED": "#ffffff", "PREMIUM": "#C35A3A", "RECOVERY": "#E18230", "DIESEL": "#F6C918" }
+  consolidateReportColors = ["#FF9416", "#C35A3A",  "#E18230", "#F6C918","#CAEEFC","#FFE0B2" ];
   consolidateFacilitiesdata = [];
   FILL_COLOR = "#2c347E";
   GAL_LEVEL_BELOW_COLOR = "#FF0000";
@@ -325,6 +327,7 @@ tankDetailsKeys;
 tankDetailsDataKeys;
 documentURL=null;
 selectedTankReportTTab;
+gasRefreshClicked=false;
 // tank reports panel variables end
 
   //app component code start
@@ -606,6 +609,8 @@ selectedTankReportTTab;
     if(fdata.consolidateReport!=null)
     this.rightDetailsContent.consolidateReport = this.generateInventoryReportForRightSideData(fdata.consolidateReport, this.rightDetailsContent.consolidateReport,fdata.gasLevel);
     //actualServerData details.
+    this.rightDetailsContent.gaslevel = fdata.gaslevel;
+    this.rightDetailsContent.gasLastUpdatedDate = fdata.gasLevelUpdatedDate;
     this.actualServerData.docUpdateDate = new Date();
     this.actualServerData.facilityName = fdata.name;
     this.actualServerData.facilityId = fdata.facilityId;
@@ -821,12 +826,16 @@ selectedTankReportTTab;
     for (var i = 0; i < consolidateData.length; i++) {
       consolidateReportdata.labels.push(consolidateData[i].key);
       consolidateReportdata.datasets[0].data.push(Number(consolidateData[i].value));
-      consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
-      consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
-      if (consolidateData[i].key === "UNLEADED")
+      if (consolidateData[i].key === "UNLEADED"){
         consolidateReportdata.datasets[0].borderColor.push('#000000');
-      else
-        consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[consolidateData[i].key]);
+        consolidateReportdata.datasets[0].backgroundColor.push('#FFFFFF');
+        consolidateReportdata.datasets[0].hoverBackgroundColor.push('#FFFFFF');
+      }  
+      else{
+        consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[i]);
+        consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[i]);
+        consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[i]);
+      }
     }
 
     return consolidateReportdata;
@@ -850,6 +859,7 @@ selectedTankReportTTab;
     
     if(gasResult)
         for (var i = 0; i < gasResult.length; i++) {
+          if(gasResult[i].key == "updatedDate")continue;
           var row = {};
           row["key"] = gasResult[i].key;
           row["value"] = gasResult[i].value;
@@ -857,6 +867,7 @@ selectedTankReportTTab;
         }
       }
     for (var i = 0; i < consolidateData.length; i++) {
+      if(consolidateData[i].key == "updatedDate")continue;
       consolidateReportdata.labels.push(consolidateData[i].key);
       consolidateReportdata.datasets[0].data.push(Number(consolidateData[i].value));
       var result=false;
@@ -872,12 +883,17 @@ selectedTankReportTTab;
         consolidateReportdata.datasets[0].backgroundColor.push(this.GAL_LEVEL_BELOW_COLOR);
       consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.GAL_LEVEL_BELOW_COLOR);
       }else{
-      consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
-      consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[consolidateData[i].key]);
-      if (consolidateData[i].key === "UNLEADED")
+     
+      if (consolidateData[i].key === "UNLEADED"){
         consolidateReportdata.datasets[0].borderColor.push('#000000');
-      else
-        consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[consolidateData[i].key]);
+        consolidateReportdata.datasets[0].backgroundColor.push('#FFFFFF');
+        consolidateReportdata.datasets[0].hoverBackgroundColor.push('#FFFFFF');
+      }  
+      else{
+        consolidateReportdata.datasets[0].borderColor.push(this.consolidateReportColors[i]);
+        consolidateReportdata.datasets[0].backgroundColor.push(this.consolidateReportColors[i]);
+        consolidateReportdata.datasets[0].hoverBackgroundColor.push(this.consolidateReportColors[i]);
+      }
     }
       
     }
@@ -930,12 +946,16 @@ selectedTankReportTTab;
          display: true,
          align: '100',
          anchor: 'top',
-         font: { weight: 'bold',size:'14' }
+         font: { weight: 'bold',size:'10' }
       }
    },
     scales: {
       xAxes: [{
-        stacked: true // this should be set to make the bars stacked
+        stacked: true,
+                 ticks: {
+            fontSize: 9
+          }
+ // this should be set to make the bars stacked
       }],
       yAxes: [{
         stacked: true // this also..
@@ -969,8 +989,26 @@ selectedTankReportTTab;
          if (point.length) e.target.style.cursor = 'pointer';
          else e.target.style.cursor = 'default';
       }
+   },
+   responsive: false,
+   maintainAspectRatio: false,
+   plugins: {
+     datalabels: {
+        display: true,
+        align: '100',
+        anchor: 'top',
+        font: { weight: 'bold',size:'12' }
+     }
+  },
+   scales: {
+     xAxes: [{
+       stacked: true // this should be set to make the bars stacked
+     }],
+     yAxes: [{
+       stacked: true // this also..
+     }]
    }
-  }
+}
   showAll() {
     this.selectedChart = 'dashboard';
     this.showBack = false;
@@ -1858,7 +1896,24 @@ selectedTankReportTTab;
         });
 
   }
-  getGasLevels(gaslevelData) {
+
+  refreshGasLevel(rightDetailsContent){
+    this.gasRefreshClicked = true;
+    this.dashboardService.getGasLevelsForFacilityDirectlyFromStation(this.commonService.getUserName(),rightDetailsContent.fid,rightDetailsContent.facilityId) 
+    .subscribe(
+      facility => {
+        this.gasRefreshClicked = false;
+        if (facility !== null || facility.consolidateReport.length>0) {
+          this.rightDetailsContent.consolidateReport =  this.generateInventoryReportForRightSideData(facility.consolidateReport, facility.consolidateReport,this.rightDetailsContent.gasLevel);
+          this.rightDetailsContent.gasLastUpdatedDate = facility.gasLevelUpdatedDate;
+        }
+      },
+      error => {
+        this.gasRefreshClicked = false;
+        console.log(error);
+      });
+  }
+    getGasLevels(gaslevelData) {
     var str = gaslevelData.gaslevels;
     var res = str.split(",");
     var result = []
@@ -2078,6 +2133,7 @@ fetchTodaysExpensesData(fromDate,toDate){
 }
 
   saveSiteIncome(){
+    this.siteIncomeSubmitted=true;
     this.incomeModal.accountID=this.rightDetailsContent.facilityId;
     this.incomeModal.fID = this.rightDetailsContent.fid;
     this.incomeModal.dataEnteredBy = this.commonService.getUserName();
@@ -2086,6 +2142,7 @@ fetchTodaysExpensesData(fromDate,toDate){
     this.dashboardService.saveSiteIncome(this.incomeModal)
     .subscribe(
       data => {
+        this.siteIncomeSubmitted=false;
         if(data === "true"){
           this.showSiteIncomeSuccessMessage=true;
             this.showSiteIncomeFailureMessage=false;
@@ -2094,6 +2151,8 @@ fetchTodaysExpensesData(fromDate,toDate){
             this.incomeModal={fromDate:new Date,toDate:new Date(),startDateForAdmin:this.incomeModal.startDateForAdmin,endDateForAdmin:this.incomeModal.endDateForAdmin,gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
             if(this.actualServerData.clientContact === null)
               this.fetchTodaysIncomeData(this.incomeModal.fromDate,this.incomeModal.toDate);
+              else
+            this.fetchTodaysIncomeData(this.incomeModal.startDateForAdmin,this.incomeModal.endDateForAdmin);
           setTimeout(() => {
             this.showSiteIncomeSuccessMessage=false;
             this.siteIncomeSuccessMessage = "";
@@ -2108,6 +2167,7 @@ fetchTodaysExpensesData(fromDate,toDate){
         }
       },
       error => {
+        this.siteIncomeSubmitted=false;
         this.showSiteIncomeFailureMessage=true;
         this.showSiteIncomeSuccessMessage=false;
         this.siteIncomeSuccessMessage = "";
@@ -2116,6 +2176,7 @@ fetchTodaysExpensesData(fromDate,toDate){
       });
   }
   saveSiteExpenses(){
+    this.siteExpensesSubmitted=true;
     this.expenditureModel.accountID=this.rightDetailsContent.facilityId;
     this.expenditureModel.fID = this.rightDetailsContent.fid;
     this.expenditureModel.dataEnteredBy = this.commonService.getUserName();
@@ -2125,13 +2186,16 @@ fetchTodaysExpensesData(fromDate,toDate){
     }
     this.dashboardService.saveSiteExpenditure(this.expenditureModel)
    .subscribe( data => {
+    this.siteExpensesSubmitted = false;
       if(data === "true"){
         this.showsiteExpensesSuccessMessage=true;
         this.showSiteExpensesFailureMessage=false;
         this.siteExpensesSuccessMessage = "Site Expenditure Saved Successfully."
         this.siteExpensesFailureMessage = "";
-        this.expenditureModel={checkdate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),amount:0,checkNo:"",vendor:{name: 'Others', value: 'Others'},others:""};
+        this.expenditureModel={checkdate:new Date(),startDateForAdmin:this.expenditureModel.startDateForAdmin,endDateForAdmin:this.expenditureModel.endDateForAdmin,amount:0,checkNo:"",vendor:{name: 'Others', value: 'Others'},others:""};
         if(this.actualServerData.clientContact === null)
+          this.fetchTodaysExpensesData(this.expenditureModel.checkdate,this.expenditureModel.checkdate);
+          else
           this.fetchTodaysExpensesData(this.expenditureModel.checkdate,this.expenditureModel.checkdate);
         setTimeout(() => {
           this.showsiteExpensesSuccessMessage=false;
@@ -2143,8 +2207,10 @@ fetchTodaysExpensesData(fromDate,toDate){
         this.siteExpensesSuccessMessage = "";
         this.siteExpensesFailureMessage = "Problem while saving Site Expenditure !!!."
       }
+
     },
     error => {
+      this.siteExpensesSubmitted=false;
       this.showSiteExpensesFailureMessage=true;
       this.showsiteExpensesSuccessMessage=false;
       this.siteExpensesSuccessMessage = "";
@@ -2256,7 +2322,7 @@ fetchTodaysExpensesData(fromDate,toDate){
         ]
       };
       var labelsList = ["Gallons Sold","Gas Amount","Inside Sales Amount","Lottery Amount","Scratch Off Sold"];
-      var backgroundColorsList = ['#42A5F5','#FF0000','#FFFF00','#FF00FF','#004400'];
+      var backgroundColorsList = ['#3A90DB','#6E8342','#563A5E','#F4AA60','#858585'];
       this.incomeData.labels=[];
       var gallonsSold=[];
       var gasAmount=[];
@@ -2360,7 +2426,7 @@ fetchTodaysExpensesData(fromDate,toDate){
   month;
   chartTypeSelected;
   isChartSpecficItem(item) {
-    if (this.incomeChartModel.incomeChartByItem.value == "ByItem" && this.chartTypeSelected == item || this.incomeChartModel.incomeChartByItem.value == 'MonthlyIncome') {
+    if (this.incomeChartModel.incomeChartByItem.value == "ByItem" && this.chartTypeSelected == item || (this.incomeChartModel.incomeChartByItem == 'Monthly Income' ||this.incomeChartModel.incomeChartByItem.value == 'MonthlyIncome')) {
       return true;
     }
     return false;
@@ -2415,17 +2481,43 @@ fetchTodaysExpensesData(fromDate,toDate){
 
   }
   
+  getExpensesDetailsTitle(){
+    if(this.actualServerData.clientContact !== null && this.todayExpenses.length>0)
+      return "Fetch Expenses Details";
+     else if(this.actualServerData.clientContact === null &&this.todayExpenses.length>0)
+      return "Today's Expenses Details";
+    else  return "";
+    
+  }
+  getIncomeDetailsTitle(){
+    if(this.actualServerData.clientContact !== null && this.todayIncome.length>0)
+    return "Fetch Income Details";
+   else if(this.actualServerData.clientContact === null &&this.todayIncome.length>0)
+    return "Today's Income Details";
+  else  return "";
+  }
+
   checkIncomeFormValues(){
     if(this.incomeModal.fromDate ==null || this.incomeModal.toDate ==null ||this.incomeModal.gallonsSold ==null|| 
-      this.incomeModal.gasAmount ==null||this.incomeModal.insideSalesAmount ==null|| this.incomeModal.lotteryAmount ==null|| this.incomeModal.scratchOffSold ==null)
+      this.incomeModal.gasAmount ==null||this.incomeModal.insideSalesAmount ==null|| this.incomeModal.lotteryAmount ==null|| this.incomeModal.scratchOffSold ==null
+      || this.siteIncomeSubmitted)
     return true;
   return false;
   }
   checkExpensisFormValues(){
     if(this.expenditureModel.amount ==null || this.expenditureModel.checkNo ==null || this.expenditureModel.checkNo.trim().length==0 ||this.expenditureModel.checkdate ==null|| 
-      this.expenditureModel.vendor ==null|| (this.expenditureModel.vendor !=null && this.expenditureModel.vendor.value=='Others' && this.expenditureModel.others ==null || 
-      (this.expenditureModel.others!== undefined &&  this.expenditureModel.others !== null && this.expenditureModel.others.length==0)))
+      this.expenditureModel.vendor ==null|| (this.expenditureModel.vendor !=null  && this.expenditureModel.vendor.value=='Others' && 
+      ( this.expenditureModel.others ==null || this.expenditureModel.others.trim() === "") || 
+      (this.expenditureModel.others!== undefined &&  this.expenditureModel.others !== null && this.expenditureModel.others !== "" && this.expenditureModel.others.length==0)) || this.siteExpensesSubmitted)
     return true;
   return false;
+  }
+  getGasLastUpdatedDate(consolidateReport) {
+    if (consolidateReport == null)
+      return null
+    for (var index = 0; index < consolidateReport.length; index++)
+      if (consolidateReport[index].key === 'updatedDate')
+        return consolidateReport[index].value;
+    return null;
   }
 }

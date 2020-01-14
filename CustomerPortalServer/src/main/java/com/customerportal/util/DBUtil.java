@@ -1,6 +1,7 @@
 package com.customerportal.util;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +76,7 @@ public class DBUtil {
 
 		Session session = HibernateUtil.getSession();
 		Transaction t = session.beginTransaction();
-		Query query = session.createNativeQuery("SELECT * FROM crmuser", User.class);
+		Query query = session.createNativeQuery("SELECT * FROM crmuser order by firstName ASC  ", User.class);
 		List lst = query.list();
 		t.commit();
 		session.close();
@@ -1361,12 +1362,20 @@ public class DBUtil {
 							+ facilities.getFacilityId()
 							+ "' and Date__c  = (SELECT MAX(Date__c) FROM inventoryreport__c where Facility__c='"
 							+ facilities.getFacilityId()
-							+ "' )  group by Tank__C order by Date__C DESC   ;",
-					InventoryReport.class);
-			List<InventoryReport> lst = query.list();
+							+ "' )  group by Tank__C order by Date__C DESC;");
+			List<Object[]> lst = query.list();
 			System.out.println(lst.size());
 			if (lst.size() > 0) {
-				for (InventoryReport iReport : lst) {
+				for (Object[] row : lst) {
+					InventoryReport iReport = new InventoryReport();
+					if(row[0] !=null)
+						iReport.setDateTime(row[0].toString());
+					if(row[1] !=null)
+					iReport.setProduct(row[1].toString());
+					if(row[2] !=null)
+						iReport.setGallons(row[2].toString());
+					if(row[3] !=null)
+						iReport.setTank(row[3].toString());
 					boolean productFound = false;
 					KeyValue selectedKeyValue = null;
 					for (KeyValue keyvalue : consolidateList) {
@@ -1412,12 +1421,20 @@ public class DBUtil {
 								+ facilities.getFacilityId()
 								+ "' and Date__c  = (SELECT MAX(Date__c ) FROM inventoryreport__c where Facility__c='"
 								+ facilities.getFacilityId()
-								+ "' )  group by Tank__C order by Date__C  DESC   ;",
-						InventoryReport.class);
-		List<InventoryReport> lst = query.list();
+								+ "' )  group by Tank__C order by Date__C  DESC   ;");
+		List<Object[]> lst = query.list();
 		System.out.println(lst.size());
 		if (lst.size() > 0) {
-			for (InventoryReport iReport : lst) {
+			for (Object[] row : lst) {
+				InventoryReport iReport = new InventoryReport();
+				if(row[0] !=null)
+					iReport.setDateTime(row[0].toString());
+				if(row[1] !=null)
+				iReport.setProduct(row[1].toString());
+				if(row[2] !=null)
+					iReport.setGallons(row[2].toString());
+				if(row[3] !=null)
+					iReport.setTank(row[3].toString());
 				boolean productFound = false;
 				KeyValue selectedKeyValue = null;
 				for (KeyValue keyvalue : consolidateList) {
@@ -1438,7 +1455,16 @@ public class DBUtil {
 					kv.setValue(iReport.getGallons());
 					consolidateList.add(kv);
 				}
-				System.out.println(iReport);
+				if(facilities.getGasLevelUpdatedDate()== null) {
+					SimpleDateFormat df=new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
+					SimpleDateFormat df1=new SimpleDateFormat("E MMM dd hh:mm:ss aa z yyyy");
+				try {
+					facilities.setGasLevelUpdatedDate(df1.format(df.parse(iReport.getDateTime()+"")));
+				} catch (ParseException e) {
+					facilities.setGasLevelUpdatedDate("");
+				}
+				}
+				//				System.out.println(iReport);
 			}
 		}
 
@@ -3485,5 +3511,17 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		t.commit();
 		session.close();
 		return lst;
+	}
+
+	public void saveInventory(List<InventoryReport> inventoryReportList) {
+		
+		
+			for (InventoryReport inventoryReport : inventoryReportList) {
+				Session session = HibernateUtil.getSession();
+				Transaction trx = session.beginTransaction();
+				session.save(inventoryReport);
+				trx.commit();
+			}
+		
 	}
 }

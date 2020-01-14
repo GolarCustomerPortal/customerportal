@@ -26,6 +26,13 @@ export class DashboardService {
             return FacilitiesData;
         });
 }
+getFacilityDetails(userId,facilitiesId) {
+    return this.http.get(URLConstants.FACILITY_URL,this.getLeakTankOptions(userId,facilitiesId))
+        .map(FacilitiesData => {
+            
+            return FacilitiesData;
+        });
+}
 getCompaniesList(userId) {
   return this.http.get(URLConstants.COMPANIES_URL,this.getDashboardOptions(CRMConstants.USER_ID,userId))
       .map(companiesData => {
@@ -267,6 +274,13 @@ getGasLevelsForFacility(FacilitiesId) {
             return gaslevelData;
         });
 }
+getGasLevelsForFacilityDirectlyFromStation(userId,fid,facilitiesId) {
+    return this.http.get(URLConstants. GASLEVES_FROM_STATION_URL,this.getGasOptions(userId,fid,facilitiesId))
+        .map(gaslevelData => {
+            
+            return gaslevelData;
+        });
+}
 saveGasLevelsForFacility(facilitiesId,gasLevelModal){
     var gasLevel = this.gasLevels(gasLevelModal);
     return this.http.post(URLConstants.GASLEVES_URL, {facilityId: facilitiesId, gaslevels: gasLevel})
@@ -387,5 +401,9 @@ private getIncomeDeleteOptions(incomeModel) {
       params: new HttpParams().set(CRMConstants.SITE_INCOME_ID,expenseModel.id).set(CRMConstants.USER_ID,expenseModel.dataEnteredBy).set(CRMConstants.FACILITY_ID,expenseModel.accountID)
     };
   }
-
+  private getGasOptions(userId,fid,facilityId) {
+    return {
+      params: new HttpParams().set(CRMConstants.USER_ID,userId).set(CRMConstants.FID,fid).set(CRMConstants.FACILITY_ID,facilityId)
+    };
+  }
 }

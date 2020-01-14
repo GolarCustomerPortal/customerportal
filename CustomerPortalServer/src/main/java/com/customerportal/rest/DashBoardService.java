@@ -1,5 +1,6 @@
 package com.customerportal.rest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import com.customerportal.bean.User;
 import com.customerportal.bean.Userpreferences;
 import com.customerportal.util.CustomerPortalUtil;
 import com.customerportal.util.DBUtil;
+import com.customerportal.util.GolarsUtil;
 
 @Path("/dashboard")
 public class DashBoardService {
@@ -412,6 +414,21 @@ public class DashBoardService {
 		
 	}
 	
+	@Path("/gaslevelFromStation")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getGasLevelFromStation (@QueryParam("userId") String userId,@QueryParam("fId") String fid,@QueryParam("facilityId") String facilityId) {
+		
+		Facilities facility = null;
+		try {
+			facility = CustomerPortalUtil.getGasLevelsFromStation(userId,fid,facilityId);
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Response.status(200).entity(facility).build();
+		
+	}
 	@Path("/gaslevel")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })

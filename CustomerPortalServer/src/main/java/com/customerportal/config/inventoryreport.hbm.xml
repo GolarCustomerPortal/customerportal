@@ -4,11 +4,23 @@
           "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
  <class name="com.customerportal.bean.InventoryReport" table="inventoryreport__c">
- 		<id name="product">
-			<column name="PRODUCT__c" />
+ 		<id name="rowId">
+			<column name="rowId" />
 		</id>
-  <property name="dateTime" column="DATETIME"  />
+  <property name="product" column="PRODUCT__c"  />
+    <property name="dateTime" column="DATETIME"  />
   <property name="gallons" column="GALLONS__c"  />
-  <property name="tank" column="TANK__c"  />		
+  <property name="tank" column="TANK__c"  />	
+  <property name="name" column="Name"  />	
+  <property name="date" column="Date__c"  />
+  <property name="defg" column="DEGF__c"  />	
+  <property name="facility" column="Facility__c"  />	
+  <property name="fid" column="FID__c"  />	
+  <property name="inches" column="INCHES__c"  />	
+  <property name="ullage" column="ULLAGE__c"  />	
+  <property name="water" column="WATER__c"  />	
+  <property name="Id" column="Id"  />	
+  <property name="newDate" column="New_Date__c"  />	
+  	
  </class>
 </hibernate-mapping>

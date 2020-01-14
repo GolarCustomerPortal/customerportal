@@ -585,6 +585,9 @@ td{
 .no-break-word{
     word-break: break-word;
 }
+.no-wrap-text{
+    white-space: nowrap;
+}
 .income-modal-header-round{
     width: max-content !important;
     background-color: #2c347e;
@@ -603,8 +606,25 @@ td{
 #incomeAndexpenditureModal .ui-tabview .ui-tabview-panel,
 #incomeAndexpenditureModal .ui-g-12,
 #incomeAndexpenditureModal .ui-g-2{
-padding: 3px !important;
+padding: 5px !important;
 }
 .h6{
     margin-bottom: 0px !important;
 } 
+legend {
+    display: block;
+    width: inherit;
+    max-width: 100%;
+    /* padding: 0; */
+    margin-bottom: 0px; 
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    white-space: normal;
+}
+.fieldset-font-size{
+    font-size: 12px !important;
+}
+#incomeAndexpenditureModal .btn{
+    min-height: 28px !important;
+}

@@ -37,6 +37,7 @@ public class Facilities {
 	private String facilityTankPaidMessage;
 	private String incomeExpenseUpdatesButtonEnable;
 	private String clientContact;
+	private String gasLevelUpdatedDate;
 
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
@@ -296,5 +297,11 @@ public class Facilities {
 	}
 	public String getClientContact() {
 		return clientContact;
+	}
+	public void setGasLevelUpdatedDate(String gasLevelUpdatedDate) {
+		this.gasLevelUpdatedDate = gasLevelUpdatedDate;
+	}
+	public String getGasLevelUpdatedDate() {
+		return gasLevelUpdatedDate;
 	}
 }

@@ -16,6 +16,7 @@ export class URLConstants {
 
     public static DASHBOARD_URL = environment.server+'/CustomerPortalServer/rest/dashboard';
     public static FACILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilities';
+    public static FACILITY_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facility';
     public static COMPANIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies';
     public static COMPLIANCE_URL = environment.server+'/CustomerPortalServer/rest/dashboard/compliance';
     public static  FACILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
@@ -29,6 +30,7 @@ export class URLConstants {
     public static JOB_SCHEDULE = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedule';
     public static JOB_SCHEDULE_HISTORY = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedulehistory';
     public static GASLEVES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/gaslevel';
+    public static GASLEVES_FROM_STATION_URL = environment.server+'/CustomerPortalServer/rest/dashboard/gaslevelFromStation';
     public static LEAKTANK_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/leaktestDetails';
     public static TANK_STATUS_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/tankstatusDetails';
     public static CSLD_TEST_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/csldtestDetails';

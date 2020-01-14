@@ -334,8 +334,15 @@
             <div style="width: 100%">
                 <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
                   </div>
+                  
                   <i class="fa fa-eye" title="Set Gas Levels" style="font-size:24px;float: right;cursor: pointer;z-index: 1000;position: relative"
                    (click)="showGasLevelWindow(rightDetailsContent)"></i>
+                   <i class="fa fa-refresh" title="Refresh Gas Levels" style="font-size:20px;right:10px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative"
+                   *ngIf="!gasRefreshClicked" (click)="refreshGasLevel(rightDetailsContent)"></i>
+                  <i class="fa fa-spinner fa-spin" title="Refreshing Gas Levels" 
+                  *ngIf="gasRefreshClicked" style="font-size:20px;right:10px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative"></i>
+                  <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null" style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
+                    Last Updated Time: {{rightDetailsContent?.gasLastUpdatedDate}} </p>
                  </div>
           <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
 
@@ -1320,9 +1327,18 @@
             </div>
             <div class="ui-g-12 margin-top" id="individual-chart">
                 <p-card styleClass="ui-card-shadow">
-                    <div style="width: 100%">
-                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important">Fuel Inventory (Gallons)</div>
+                      <div style="width: 100%">
+                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
                           </div>
+                          
+                          <i class="fa fa-eye" title="Set Gas Levels" style="font-size:24px;float: right;cursor: pointer;z-index: 1000;position: relative"
+                           (click)="showGasLevelWindow(rightDetailsContent)"></i>
+                           <i class="fa fa-refresh" title="Refresh Gas Levels" style="font-size:20px;right:10px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative"
+                           *ngIf="!gasRefreshClicked" (click)="refreshGasLevel(rightDetailsContent)"></i>
+                          <i class="fa fa-spinner fa-spin" title="Refreshing Gas Levels" 
+                          *ngIf="gasRefreshClicked" style="font-size:20px;right:10px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative"></i>
+                          <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null" style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
+                            Last Updated Time: {{rightDetailsContent?.gasLastUpdatedDate}} </p>
                          </div>
                   <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
     
@@ -1646,14 +1662,15 @@
           &times;
         </button>
       </div>
-      <div class="modal-body income-expenditure-model">
+      <div class="modal-body income-expenditure-model" style="font-size: 13px;">
         <p-tabView (onChange)="getIncomeExpenditureReport($event)" #incomeExpensesTab [activeIndex]="incomeTabIndex">
            
           
           <p-tabPanel header="Income">
             <!-- table start -->
-            <div class="ui-g" style="margin-top: 10px;" *ngIf="actualServerData?.clientContact !== null">
-                <div class="ui-g-12"><h6 *ngIf="actualServerData?.clientContact !== null"> Fetch Income Details:</h6></div>
+            <p-fieldset *ngIf="getIncomeDetailsTitle() != ''" legend="{{getIncomeDetailsTitle()}}">
+            <div class="ui-g" *ngIf="actualServerData?.clientContact !== null">
+                <!-- <div class="ui-g-12"><h6 *ngIf="actualServerData?.clientContact !== null"> Fetch Income Details:</h6></div> -->
                 <div class="ui-g-12"><div class="ui-g-5">
                 <div>Start Date:</div>
                 <p-calendar [(ngModel)]="incomeModal.startDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
@@ -1669,8 +1686,8 @@
               </div>
             </div>
             <h6 *ngIf="actualServerData?.clientContact !== null && todayIncome?.length>0">Income Details:</h6>
-            <h6 *ngIf="actualServerData?.clientContact === null &&todayIncome?.length>0">Today's Income Details:</h6>
-            <div style="font-size: 12px;" *ngIf="todayIncome?.length>0">
+            <!-- <h6 *ngIf="actualServerData?.clientContact === null &&todayIncome?.length>0">Today's Income Details:</h6> -->
+            <div *ngIf="todayIncome?.length>0">
               <p-table [value]="todayIncome" scrollHeight="150px" [scrollable]="true">
               <ng-template pTemplate="header">
                 <tr>
@@ -1687,15 +1704,15 @@
               </ng-template>
               <ng-template pTemplate="body" let-income>
                 <tr>
-                  <td>{{income.fromDateString | date:'d/MM/yyyy'}}</td>
-                  <td>{{income.toDateString | date:'dd/MM/yyyy'}}</td>
-                  <td>{{income.gallonsSold}}</td>
+                  <td class="no-wrap-text">{{income.fromDateString | date:'MM/dd/yyyy'}}</td>
+                  <td class="no-wrap-text">{{income.toDateString | date:'MM/dd/yyyy'}}</td>
+                  <td class="no-wrap-text">{{income.gallonsSold}}</td>
                   <!-- <td>{{user.admin}}</td> -->
-                  <td>{{income.gasAmount}}</td>
-                  <td>{{income.insideSalesAmount}}</td>
-                  <td>{{income.lotteryAmount}}</td>
-                  <td>{{income.scratchOffSold}}</td>
-                  <td>{{income.tax}}</td>
+                  <td class="no-wrap-text">{{income.gasAmount}}</td>
+                  <td class="no-wrap-text">{{income.insideSalesAmount}}</td>
+                  <td class="no-wrap-text">{{income.lotteryAmount}}</td>
+                  <td class="no-wrap-text">{{income.scratchOffSold}}</td>
+                  <td class="no-wrap-text">{{income.tax}}</td>
                   <td> <a style="color:blue;cursor: pointer;font-size: 15px;"><i class="fa fa-edit" (click)="editIncomeRecord(income)" title="Edit"></i></a>
                     <a style="color:red;cursor: pointer;font-size: 15px;"><i class="fa fa-close" (click)="deleteIncomeRecord(income)" title="Delete"></i></a>
                   </td>
@@ -1703,6 +1720,7 @@
               </ng-template>
             </p-table>
           </div>
+          </p-fieldset>
             <!-- table end -->
             <br />
             <h6>Enter Income Details</h6>
@@ -1764,8 +1782,11 @@
           </p-tabPanel>
           <p-tabPanel header="expenditure">
             <!-- table start -->
-            <div class="ui-g" style="margin-top: 10px;" *ngIf="actualServerData?.clientContact !== null">
-                <div class="ui-g-12"><h6 *ngIf="actualServerData?.clientContact !== null">Fetch Expenses Details:</h6></div>
+           
+            <p-fieldset *ngIf="getExpensesDetailsTitle() != ''" legend="{{getExpensesDetailsTitle()}}">
+            <div class="ui-g" *ngIf="actualServerData?.clientContact !== null">
+               
+                <!-- <div class="ui-g-12"><h6 *ngIf="actualServerData?.clientContact !== null">Fetch Expenses Details:</h6></div> -->
                 <div class="ui-g-12"><div class="ui-g-5">
                 <div>Start Date:</div>
                 <p-calendar [(ngModel)]="expenditureModel.startDateForAdmin" [showIcon]="true" appendTo="body"></p-calendar>
@@ -1779,9 +1800,10 @@
                 <button type="button" class="btn btn-primary" (click)="fetchExpensesValuesForAdmin()">Fetch</button>
               </div>
               </div>
+
             </div>
             <h6 *ngIf="actualServerData?.clientContact !== null && todayExpenses?.length>0">Expenses Details:</h6>
-            <h6 *ngIf="actualServerData?.clientContact === null &&todayExpenses?.length>0">Today's Expenses Details:</h6>
+            <!-- <h6 *ngIf="actualServerData?.clientContact === null &&todayExpenses?.length>0">Today's Expenses Details:</h6> -->
             <div style="font-size: 12px;" *ngIf="todayExpenses?.length>0">
               <p-table [value]="todayExpenses" scrollHeight="300px" [scrollable]="true">
               <ng-template pTemplate="header">
@@ -1796,12 +1818,12 @@
               </ng-template>
               <ng-template pTemplate="body" let-expense>
                 <tr>
-                  <td>{{expense.dateString | date:'d/MM/yyyy'}}</td>
-                  <td>{{expense.checkNo}}</td>
+                  <td class="no-wrap-text">{{expense.dateString | date:'MM/dd/yyyy'}}</td>
+                  <td class="no-wrap-text">{{expense.checkNo}}</td>
                   <!-- <td>{{user.admin}}</td> -->
-                  <td>{{expense.amount}}</td>
-                  <td>{{expense.vendor}}</td>
-                  <td>{{expense.others}}</td>
+                  <td class="no-wrap-text">{{expense.amount}}</td>
+                  <td class="no-wrap-text">{{expense.vendor}}</td>
+                  <td class="no-wrap-text">{{expense.others}}</td>
                   <td> <a style="color:blue;cursor: pointer;font-size: 15px;"><i class="fa fa-edit" (click)="editExpenses(expense)" title="Edit"></i></a>
                     <a style="color:red;cursor: pointer;font-size: 15px;"><i class="fa fa-close" (click)="deleteExpensesRecord(expense)" title="Delete"></i></a>
                   </td>
@@ -1809,7 +1831,8 @@
               </ng-template>
             </p-table>
           </div>
-            <!-- table end -->
+        </p-fieldset>
+          <!-- table end -->
             <br />
             <h6>Enter Expenses Details</h6>
 
@@ -1962,15 +1985,15 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-income>
                   <tr>
-                    <td>{{income.fromDateString | date:'d/MM/yyyy'}}</td>
-                    <td>{{income.toDateString | date:'dd/MM/yyyy'}}</td>
-                    <td *ngIf="isChartSpecficItem('Gallons Sold')">{{income.gallonsSold}}</td>
+                    <td class="no-wrap-text">{{income.fromDateString | date:'MM/dd/yyyy'}}</td>
+                    <td class="no-wrap-text">{{income.toDateString | date:'MM/dd/yyyy'}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Gallons Sold')">{{income.gallonsSold}}</td>
                     <!-- <td>{{user.admin}}</td> -->
-                    <td *ngIf="isChartSpecficItem('Gas Amount')">{{income.gasAmount}}</td>
-                    <td *ngIf="isChartSpecficItem('Inside Sales Amount')">{{income.insideSalesAmount}}</td>
-                    <td *ngIf="isChartSpecficItem('Lottery Amount')">{{income.lotteryAmount}}</td>
-                    <td *ngIf="isChartSpecficItem('Scratch Off Sold')">{{income.scratchOffSold}}</td>
-                    <td *ngIf="isChartSpecficItem('Tax')">{{income.tax}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Gas Amount')">{{income.gasAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Inside Sales Amount')">{{income.insideSalesAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Lottery Amount')">{{income.lotteryAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Scratch Off Sold')">{{income.scratchOffSold}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Tax')">{{income.tax}}</td>
                   </tr>
                 </ng-template>
               </p-table>
@@ -2006,12 +2029,12 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-expense>
                     <tr>
-                      <td>{{expense.dateString | date:'d/MM/yyyy'}}</td>
-                      <td>{{expense.amount}}</td>
+                      <td class="no-wrap-text">{{expense.dateString | date:'MM/dd/yyyy'}}</td>
+                      <td class="no-wrap-text">{{expense.amount}}</td>
                       <!-- <td>{{user.admin}}</td> -->
-                      <td>{{expense.checkNo}}</td>
-                      <td >{{expense.vendor}}</td>
-                      <td>{{expense.others}}</td>
+                      <td class="no-wrap-text">{{expense.checkNo}}</td>
+                      <td class="no-wrap-text" >{{expense.vendor}}</td>
+                      <td class="no-wrap-text">{{expense.others}}</td>
                     </tr>
                   </ng-template>
                 </p-table>

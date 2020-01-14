@@ -1,11 +1,19 @@
 package com.customerportal.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -13,8 +21,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.net.telnet.TelnetClient;
+import org.apache.xmlbeans.impl.common.IOUtil;
+import org.stringtemplate.v4.compiler.CodeGenerator.list_return;
 
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.Gaslevel;
+import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.User;
@@ -23,8 +39,6 @@ public class CustomerPortalUtil {
 	static Properties imageProperties = new Properties();
 
 	private static void fetchURLProperties() {
-		if (imageProperties != null && imageProperties.size() > 0)
-			return;
 		try {
 			imageProperties.load(CustomerPortalFileUpload.class.getResourceAsStream("/imageURL.properties"));
 		} catch (Exception e1) {
@@ -176,5 +190,133 @@ public class CustomerPortalUtil {
 	private static Date localDateTimeToDate(LocalDateTime localDateTime) {
 		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
+	public static Facilities getGasLevelsFromStation(String userid, String fid, String facilityId) throws IOException, InterruptedException {
 
+		TelnetClient telnet = null;
+
+		try {
+			String ipaddress = fetchIpaddressUsingFacilityId(fid);
+			telnet = new TelnetClient();
+//			telnet.connect("23.118.150.22", 10001);
+			if(ipaddress == null)
+				return null;
+			telnet.connect(ipaddress, 10001);
+		} catch (IOException e) {
+			System.out.println("There is a problem we need to reconnect "+e.getMessage());
+			return null;
+		}
+		Writer w = new OutputStreamWriter(telnet.getOutputStream());
+		w.write(1);
+		w.write("200\r\n");
+		w.flush();
+		System.out.println("ctrl+A typed");
+		int i;
+		char c;
+		String fileName = "InventoryReport_" + new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date());
+		final File file = new File("c:/test/" + fileName);
+		if (file.exists())
+			file.delete();
+		file.deleteOnExit();
+		Thread.sleep(500);
+		final InputStream inputStream = telnet.getInputStream();
+		Thread fileWriter = new Thread() {
+
+			@Override
+			public void run() {
+				char c = 0;
+				int r = 0;
+				try {
+					while ((r = inputStream.read()) != -1) {
+						c = (char) r;
+						PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+						out.print(c);
+						out.close();
+					}
+				} catch (IOException ex) {
+					Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+				}
+
+			}
+		};
+		fileWriter.start();
+		Thread.sleep(8000);
+		System.out.println("done");
+
+		BufferedReader inputFile = new BufferedReader(new FileReader(file));
+
+		String lineOfText = inputFile.readLine();
+		List<String> fileLineList = new ArrayList<>();
+
+		while (lineOfText != null) {
+			if (!lineOfText.isEmpty()) {
+				fileLineList.add(lineOfText);
+			}
+			lineOfText = inputFile.readLine();
+		}
+		System.out.println(fileLineList);
+		telnet.disconnect();
+		
+		String updatedDate= new Date(fileLineList.get(6)).toString();
+		List<InventoryReport> inventoryReportList = new ArrayList<>();
+		for (int index = 8; index <fileLineList.size(); index++) {
+		String dataFirstRow[] =fileLineList.get(index).trim().split("\\s+");
+		if(dataFirstRow.length>0 && dataFirstRow.length >= 6) {
+			InventoryReport report = new InventoryReport();
+			report.setName("InventoryReport");
+			report.setDate(updatedDate);
+			int reportIndex = 0;
+			report.setTank(dataFirstRow[reportIndex]);
+			String productName="";
+			if(dataFirstRow.length <= 7) {
+				productName = dataFirstRow[++reportIndex];
+			}else if(dataFirstRow.length == 8) {
+				productName = dataFirstRow[++reportIndex] +" "+dataFirstRow[++reportIndex];
+			}else if(dataFirstRow.length == 9) {
+				productName = dataFirstRow[++reportIndex] +" "+dataFirstRow[++reportIndex]+" "+dataFirstRow[++reportIndex];
+			}
+			
+			report.setProduct(productName);
+			report.setGallons(dataFirstRow[++reportIndex]);
+			report.setInches(dataFirstRow[++reportIndex]);
+			if(dataFirstRow.length == 6) {
+				report.setWater(0+"");
+			}else
+			report.setWater(dataFirstRow[++reportIndex]);
+			report.setDefg(dataFirstRow[++reportIndex]);
+			report.setUllage(dataFirstRow[++reportIndex]);
+			report.setFid(fid);
+			report.setId(facilityId);
+			report.setFacility(facilityId);
+			inventoryReportList.add(report);
+		}	
+		}
+		DBUtil.getInstance().saveInventory(inventoryReportList);
+		List<Facilities> facilityList = DBUtil.getInstance().getSpecificFacility(userid, facilityId);
+		if(facilityList.size()>0) {
+			Facilities facility = facilityList.get(0);
+			List<KeyValue>  keyvalues = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
+			facility.setConsolidateReport(keyvalues);
+			return facility;
+		}
+		return null;
+	}
+
+	private static String fetchIpaddressUsingFacilityId(String facilityId) throws IOException {
+		fetchURLProperties();
+		String filePath = DBUtil.getInstance().getUserPreferences("tankMonitorPath");
+		if (filePath == null)
+			filePath = imageProperties.getProperty("defultTankMonitorPath");
+		File fout = new File(filePath + "\\" + imageProperties.getProperty("tankMonitorFile"));
+		if (fout.exists()) {
+			FileInputStream  inputFile = new FileInputStream(fout);
+			Properties properties = new Properties();
+			properties.load(inputFile);
+			for(String key : properties.stringPropertyNames()) {
+				  String value = properties.getProperty(key);
+				  if(value.trim().equalsIgnoreCase(facilityId))
+					  return key;
+				}
+		}
+		return null;
+	}
 }
