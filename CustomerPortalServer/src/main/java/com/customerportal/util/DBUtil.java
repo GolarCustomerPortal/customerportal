@@ -1,6 +1,7 @@
 package com.customerportal.util;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,12 +9,11 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.ws.rs.QueryParam;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -2095,7 +2095,7 @@ public String getIncomeExpenseUpdates(Facilities facility) {
 		List rows = query.list();
 		trx.commit();
 		session.close();
-		if (rows == null)
+		if (rows == null || rows.size() == 0)
 			return "false";
 		else
 			return rows.get(0).toString().equalsIgnoreCase("false")?"true":"false";
@@ -3302,13 +3302,13 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 	Session session = HibernateUtil.getSession();
 	Transaction t = session.beginTransaction();
 	Query query = session.createNativeQuery(
-			"SELECT sum(Amount__C), DATE_FORMAT(Date__C, '%M') AS month  FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY) \r\n" + 
+			"SELECT sum(Amount__C), DATE_FORMAT(Date__C, '%M') AS month,  DATE_FORMAT(Date__C, '%Y') AS year  FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY) \r\n" + 
 			"AND Date__C< date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
 	for (Object[] object : lst) {
 		KeyValue rep = new KeyValue();
-		rep.setKey(object[1].toString());
+		rep.setKey(object[1].toString()+" "+object[2].toString());
 		rep.setValue(object[0].toString());
 		rep.setName(object[1].toString());
 		expensesList.add(rep);
@@ -3350,10 +3350,10 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 	Transaction t = session.beginTransaction();
 
 	Query query = session.createNativeQuery(
-			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gallons_Sold__c) as Gallons_Sold__c ,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
+			"select DATE_FORMAT(from_Date__c, '%M') AS month,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
-			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY)  AND "
-					+ "DATE(To_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,DATE_FORMAT(from_Date__c, '%Y') AS year  FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY)  AND "
+					+ "DATE(To_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c, To_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3364,10 +3364,12 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 		totalValue = object[2] !=null ?totalValue+Double.parseDouble(object[2].toString()):totalValue;
 		totalValue = object[3] !=null ?totalValue+Double.parseDouble(object[3].toString()):totalValue;
 		totalValue = object[4] !=null ?totalValue+Double.parseDouble(object[4].toString()):totalValue;
-		totalValue = object[5] !=null ?totalValue+Double.parseDouble(object[5].toString()):totalValue;
 		
-		rep.setKey(object[0].toString());
-		rep.setValue(Double. toString(totalValue));
+		rep.setKey(object[0].toString()+" "+object[5].toString());
+		DecimalFormat df = new DecimalFormat("#.00");
+	    String totalStringValue = df.format(totalValue);
+		rep.setValue(totalStringValue);
+
 		rep.setName(object[0].toString());
 		expensesList.add(rep);
 	}
@@ -3383,11 +3385,11 @@ public List<IncomeReportData> getIncomeForUserByType(String userId,String facili
 	Transaction t = session.beginTransaction();
 
 	Query query = session.createNativeQuery(
-			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gallons_Sold__c) as Gallons_Sold__c ,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
+			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
-			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
+			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,DATE_FORMAT(from_Date__c, '%Y') AS year FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
 			"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND "
-					+ "DATE(To_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%Y-%m')  order by from_Date__c, To_Date__c;\r\n" + 
+					+ "DATE(To_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c, To_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3395,13 +3397,13 @@ public List<IncomeReportData> getIncomeForUserByType(String userId,String facili
 	int index = 0;
 	for (Object[] object : lst) {
 		IncomeReportData data = new IncomeReportData();
-		data.setMonth(object[0].toString());
+		data.setMonth(object[0].toString() +" "+object[5].toString());
 		data.setLabel(labelsList.get(index));
-		data.setGallonsSold(object[1] !=null ?Double.parseDouble(object[1].toString()):0);
-		data.setGasAmount(object[2] !=null ?Double.parseDouble(object[2].toString()):0);
-		data.setInsideSalesAmount(object[3] !=null ?Double.parseDouble(object[3].toString()):0);
-		data.setLotteryAmount(object[4] !=null ?Double.parseDouble(object[4].toString()):0);
-		data.setScratchOffSold(object[5] !=null ?Double.parseDouble(object[5].toString()):0);
+//		data.setGallonsSold(object[1] !=null ?Double.parseDouble(object[1].toString()):0);
+		data.setGasAmount(object[1] !=null ?Double.parseDouble(object[1].toString()):0);
+		data.setInsideSalesAmount(object[2] !=null ?Double.parseDouble(object[2].toString()):0);
+		data.setLotteryAmount(object[3] !=null ?Double.parseDouble(object[3].toString()):0);
+		data.setScratchOffSold(object[4] !=null ?Double.parseDouble(object[4].toString()):0);
 		expensesList.add(data);
 	}
 	
@@ -3465,14 +3467,25 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		session.close();
 		return lst;
 	}
-	public List<SiteIncome> getIncomeDetailsOnChartClick(String userId,String facilityId, Date startDate, Date endDate, String month){
+	public List<SiteIncome> getIncomeDetailsOnChartClick(String userId,String facilityId, Date startDate, Date endDate, String monthAndYear){
+	String month,year;
+	if(monthAndYear.indexOf(" ")>0) {
+		String monthArray[] = monthAndYear.split(" ");
+		month = monthArray[0];
+		year = monthArray[1];
+	}else {
+		month = monthAndYear;
+		year = (startDate.getYear()+1900)+"";
+	}
 		List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
 		Session session = HibernateUtil.getSession();
 		Transaction t = session.beginTransaction();
+	
 
 		Query query = session.createNativeQuery(
 				"select * FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
-				"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND DATE_FORMAT(from_Date__c, '%M') ='"+month+"' order by from_Date__c",SiteIncome.class);
+				"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND "
+						+ "DATE_FORMAT(from_Date__c, '%M') ='"+month+"' and "+"DATE_FORMAT(from_Date__c, '%Y') ='"+year+"' order by from_Date__c",SiteIncome.class);
 		List<SiteIncome> incomeList = query.list();
 		System.out.println(incomeList.size());
 		if (incomeList != null) {
@@ -3489,17 +3502,26 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		return incomeList;
 	}
 	public List<SiteExpenses> getExpensesChartCick(String userId, String facilityId, Date startDate,
-			Date endDate, String month) {
+			Date endDate, String monthAndYear) {
+		String month,year;
 		if (startDate == null)
 			startDate = new Date();
 		if (endDate == null)
 			endDate = new Date();
+		if(monthAndYear.indexOf(" ")>0) {
+			String monthArray[] = monthAndYear.split(" ");
+			month = monthArray[0];
+			year = monthArray[1];
+		}else {
+			month = monthAndYear;
+			year = (startDate.getYear()+1900)+"";
+		}
 		Session session = HibernateUtil.getSession();
 		Transaction t = session.beginTransaction();
 		Query query = session.createNativeQuery("SELECT * FROM site_expenses__c WHERE Account_ID__c ='" + facilityId
 				+ "' and  Created_Date__C >=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
 				+ "\", INTERVAL 0 DAY) \r\n" + "AND Created_Date__C< date_add(\""
-				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 1 DAY)  AND DATE_FORMAT(Date__c, '%M') ='"+month+"' order by Date__C;",
+				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 1 DAY)  AND DATE_FORMAT(Date__c, '%M') ='"+month+"' AND DATE_FORMAT(Date__c, '%Y') ='"+year+"' order by Date__C;",
 				SiteExpenses.class);
 		List<SiteExpenses> lst = query.list();
 		System.out.println(lst.size());

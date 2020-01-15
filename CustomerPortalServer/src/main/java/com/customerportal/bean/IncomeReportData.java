@@ -3,19 +3,12 @@ package com.customerportal.bean;
 public class IncomeReportData {
 
 
-	private double gallonsSold ;
 	private double gasAmount ;
 	private double insideSalesAmount ;
 	private double lotteryAmount ;
 	private double scratchOffSold ;
 	private String month;
 	private String label;
-	public double getGallonsSold() {
-		return gallonsSold;
-	}
-	public void setGallonsSold(double gallonsSold) {
-		this.gallonsSold = gallonsSold;
-	}
 	public double getGasAmount() {
 		return gasAmount;
 	}

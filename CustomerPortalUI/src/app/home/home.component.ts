@@ -946,14 +946,14 @@ gasRefreshClicked=false;
          display: true,
          align: '100',
          anchor: 'top',
-         font: { weight: 'bold',size:'10' }
+         font: { weight: 'bold',size:'8' }
       }
    },
     scales: {
       xAxes: [{
         stacked: true,
                  ticks: {
-            fontSize: 9
+            fontSize: 6
           }
  // this should be set to make the bars stacked
       }],

@@ -191,7 +191,8 @@ public class CustomerPortalUtil {
 		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
 	public static Facilities getGasLevelsFromStation(String userid, String fid, String facilityId) throws IOException, InterruptedException {
-
+		final String fileName = "InventoryReport_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+".txt";
+		System.out.println("fileName----"+fileName);
 		TelnetClient telnet = null;
 
 		try {
@@ -212,7 +213,6 @@ public class CustomerPortalUtil {
 		System.out.println("ctrl+A typed");
 		int i;
 		char c;
-		String fileName = "InventoryReport_" + new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date());
 		final File file = new File("c:/test/" + fileName);
 		if (file.exists())
 			file.delete();
@@ -223,6 +223,7 @@ public class CustomerPortalUtil {
 
 			@Override
 			public void run() {
+				System.out.println("reading ----"+fileName);
 				char c = 0;
 				int r = 0;
 				try {
@@ -235,7 +236,8 @@ public class CustomerPortalUtil {
 				} catch (IOException ex) {
 					Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
 				}
-
+				System.out.println("writing done----"+fileName);
+				
 			}
 		};
 		fileWriter.start();

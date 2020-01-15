@@ -1733,12 +1733,12 @@
             <div class="ui-g">
               <div class="ui-g-6">
                 <div>Start Date:</div>
-                <p-calendar [(ngModel)]="incomeModal.fromDate" [showIcon]="true" [maxDate]="maxDateValue"
+                <p-calendar [(ngModel)]="incomeModal.fromDate" [showIcon]="true"  [maxDate]="maxDateValue"
                   appendTo="body" [readonlyInput]="true"></p-calendar>
               </div>
               <div class="ui-g-6">
                 <div>End Date:</div>
-                <p-calendar [(ngModel)]="incomeModal.toDate" [showIcon]="true" [maxDate]="maxDateValue"
+                <p-calendar [(ngModel)]="incomeModal.toDate" [showIcon]="true" [minDate] ="incomeModal.fromDate" [maxDate]="maxDateValue"
                   [readonlyInput]="true" appendTo="body"></p-calendar>
               </div>
               <div class="ui-g-6">
@@ -1900,7 +1900,7 @@
               </div>
               <div class="ui-g-5">
                 <div>End Date:</div>
-                <p-calendar [(ngModel)]="incomeChartModel.endDate" [showIcon]="true" [maxDate]="maxDateValue"
+                <p-calendar [(ngModel)]="incomeChartModel.endDate" [minDate] ="incomeChartModel.startDate"  [showIcon]="true" [maxDate]="maxDateValue"
                   appendTo="body"></p-calendar>
               </div>
               <div class="ui-g-2">
@@ -1925,7 +1925,7 @@
               </div>
               <div class="ui-g-5">
                 <div>End Date:</div>
-                <p-calendar [(ngModel)]="expensesModel.endDate" [showIcon]="true" appendTo="body"></p-calendar>
+                <p-calendar [(ngModel)]="expensesModel.endDate" [minDate] ="expensesModel.startDate"   [showIcon]="true" appendTo="body"></p-calendar>
               </div>
               <div class="ui-g-2">
                 <div>&nbsp;</div>
