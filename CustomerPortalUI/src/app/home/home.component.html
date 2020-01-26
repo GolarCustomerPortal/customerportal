@@ -344,6 +344,8 @@
                   <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null" style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
                     Last Updated Time: {{rightDetailsContent?.gasLastUpdatedDate}} </p>
                  </div>
+      <div *ngIf="rightDetailsContent?.stationConnectError === true" class="alert alert-danger" style="float: left;"> Could not make connection with the site at this time!! Please try again later.</div>
+      
           <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
 
       </p-card>
@@ -1328,7 +1330,7 @@
             <div class="ui-g-12 margin-top" id="individual-chart">
                 <p-card styleClass="ui-card-shadow">
                       <div style="width: 100%">
-                        <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
+                        <div > <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Fuel Inventory (Gallons)</div>
                           </div>
                           
                           <i class="fa fa-eye" title="Set Gas Levels" style="font-size:24px;float: right;cursor: pointer;z-index: 1000;position: relative"
@@ -1340,7 +1342,8 @@
                           <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null" style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
                             Last Updated Time: {{rightDetailsContent?.gasLastUpdatedDate}} </p>
                          </div>
-                  <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
+                <div *ngIf="rightDetailsContent?.stationConnectError === true" class="alert alert-danger" style="float: left;"> Could not make connection with the site at this time!! Please try again later.</div>
+              <p-chart [width]="400" [height]="400" type="bar" [data]="rightDetailsContent.consolidateReport" [options]="noLegendtOptions"></p-chart>
     
               </p-card>
             </div>

@@ -602,9 +602,11 @@ gasRefreshClicked=false;
     this.rightDetailsContent.projectManager = fdata.projectManager;
     this.rightDetailsContent.projectManagerPhone = fdata.projectManagerPhone;
     this.rightDetailsContent.tankPm = fdata.tankPm;
-    
     this.rightDetailsContent.compliance = fdata.compliance;
     this.rightDetailsContent.backConsolidateReport = fdata.consolidateReport;
+    this.rightDetailsContent.stationConnectError = false;
+    this.rightDetailsContent.stationConnectErrorMessage = "";
+
     this.rightDetailsContent.consolidateReport = [];
     if(fdata.consolidateReport!=null)
     this.rightDetailsContent.consolidateReport = this.generateInventoryReportForRightSideData(fdata.consolidateReport, this.rightDetailsContent.consolidateReport,fdata.gasLevel);
@@ -1903,9 +1905,15 @@ gasRefreshClicked=false;
     .subscribe(
       facility => {
         this.gasRefreshClicked = false;
+
         if (facility !== null || facility.consolidateReport.length>0) {
+          this.selectedFacility.consolidateReport =facility.consolidateReport;
           this.rightDetailsContent.consolidateReport =  this.generateInventoryReportForRightSideData(facility.consolidateReport, facility.consolidateReport,this.rightDetailsContent.gasLevel);
           this.rightDetailsContent.gasLastUpdatedDate = facility.gasLevelUpdatedDate;
+          this.selectedFacility.gasLevelUpdatedDate = facility.gasLevelUpdatedDate;
+          this.rightDetailsContent.stationConnectError = facility.stationConnectError;
+          this.rightDetailsContent.stationConnectErrorMessage = facility.stationConnectErrorMessage;
+ 
         }
       },
       error => {

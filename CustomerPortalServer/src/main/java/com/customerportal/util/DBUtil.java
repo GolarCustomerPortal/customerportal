@@ -355,6 +355,10 @@ public class DBUtil {
 			else
 				query.setString("tankService", "false");
 			List<Facilities> lst = query.list();
+			for (Facilities facilities : lst) {
+				if(facilities.getClientContact() !=null && !facilities.getClientContact().equalsIgnoreCase(userId))
+					facilities.setClientContact(null);
+			}
 			setGasLevels(lst);
 			trx.commit();
 			session.close();
@@ -393,7 +397,12 @@ public class DBUtil {
 					Facilities.class);
 			query.setString("userId", userId);
 			query.setString("facilityId", facilityID);
-			List lst = query.list();
+			List<Facilities> lst = query.list();
+			for (Facilities facilities : lst) {
+				if(facilities.getClientContact() !=null && !facilities.getClientContact().equalsIgnoreCase(userId))
+					facilities.setClientContact(null);
+			}
+
 			trx.commit();
 			session.close();
 			CustomerPortalUtil.fillImageURL(lst);
@@ -3353,7 +3362,7 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 			"select DATE_FORMAT(from_Date__c, '%M') AS month,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
 			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,DATE_FORMAT(from_Date__c, '%Y') AS year  FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY)  AND "
-					+ "DATE(To_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c, To_Date__c;\r\n" + 
+					+ "DATE(from_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3389,7 +3398,7 @@ public List<IncomeReportData> getIncomeForUserByType(String userId,String facili
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
 			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,DATE_FORMAT(from_Date__c, '%Y') AS year FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
 			"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND "
-					+ "DATE(To_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c, To_Date__c;\r\n" + 
+					+ "DATE(from_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3451,8 +3460,8 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		Query query = session.createNativeQuery("select * FROM site_income__c WHERE Account_ID__c ='" + facilityId
 				+ "' and DATE(Created_Date__C)>=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
 				+ "\" , INTERVAL 0 DAY)  AND " + "DATE(Created_Date__C) <=  date_add(\""
-				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate)
-				+ "\" , INTERVAL 1 DAY) order by from_Date__c, To_Date__c;\r\n" + "", SiteIncome.class);
+				+ new SimpleDateFormat("yyyy-MM-dd").format(startDate)
+				+ "\" , INTERVAL 1 DAY) order by from_Date__c;\r\n" + "", SiteIncome.class);
 		List<SiteIncome> lst = query.list();
 		System.out.println(lst.size());
 		if (lst != null) {

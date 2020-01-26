@@ -134,7 +134,7 @@ public class CustomerPortalUtil {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
 			for (int i = 0; i < tankMonitorSignup.size(); i++) {
-				bw.write(tankMonitorSignup.get(i).getIpAddress() + " " + tankMonitorSignup.get(i).getFid());
+				bw.write(tankMonitorSignup.get(i).getFid()+ " " + tankMonitorSignup.get(i).getIpAddress() );
 				bw.newLine();
 			}
 
@@ -194,17 +194,29 @@ public class CustomerPortalUtil {
 		final String fileName = "InventoryReport_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+".txt";
 		System.out.println("fileName----"+fileName);
 		TelnetClient telnet = null;
-
+		Facilities facility =null;
+		List<Facilities> facilityList = DBUtil.getInstance().getSpecificFacility(userid, facilityId);
+		if(facilityList.size()>0) {
+			facility = facilityList.get(0);
+			List<KeyValue>  keyvalues = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
+			facility.setConsolidateReport(keyvalues);
+		}else {
+			return null;
+		}
 		try {
 			String ipaddress = fetchIpaddressUsingFacilityId(fid);
 			telnet = new TelnetClient();
 //			telnet.connect("23.118.150.22", 10001);
 			if(ipaddress == null)
 				return null;
-			telnet.connect(ipaddress, 10001);
+			connectToStation(telnet,ipaddress,10001,1);
 		} catch (IOException e) {
 			System.out.println("There is a problem we need to reconnect "+e.getMessage());
-			return null;
+			if(facility == null)
+			facility = new Facilities();
+			facility.setStationConnectError(true);
+			facility.setStationConnectErrorMessage("Unable to connect to sation at this time");
+			return facility;
 		}
 		Writer w = new OutputStreamWriter(telnet.getOutputStream());
 		w.write(1);
@@ -266,6 +278,7 @@ public class CustomerPortalUtil {
 			InventoryReport report = new InventoryReport();
 			report.setName("InventoryReport");
 			report.setDate(updatedDate);
+			facility.setGasLevelUpdatedDate(updatedDate);
 			int reportIndex = 0;
 			report.setTank(dataFirstRow[reportIndex]);
 			String productName="";
@@ -293,14 +306,24 @@ public class CustomerPortalUtil {
 		}	
 		}
 		DBUtil.getInstance().saveInventory(inventoryReportList);
-		List<Facilities> facilityList = DBUtil.getInstance().getSpecificFacility(userid, facilityId);
-		if(facilityList.size()>0) {
-			Facilities facility = facilityList.get(0);
-			List<KeyValue>  keyvalues = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
-			facility.setConsolidateReport(keyvalues);
-			return facility;
+		List<KeyValue>  keyvalues = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
+		facility.setConsolidateReport(keyvalues);
+		return facility;
+	}
+
+	private static void connectToStation(TelnetClient telnet, String ipaddress, int port, int tries) throws IOException {
+		
+			try {
+				telnet.connect(ipaddress, 10001);
+			}catch (IOException e) {
+				System.out.println("There is a problem we need to reconnect "+e.getMessage());
+				if(tries == 1) {
+					throw e;
+				}else {
+				connectToStation(telnet, ipaddress, port, ++tries);
+				}
 		}
-		return null;
+		
 	}
 
 	private static String fetchIpaddressUsingFacilityId(String facilityId) throws IOException {
@@ -313,11 +336,15 @@ public class CustomerPortalUtil {
 			FileInputStream  inputFile = new FileInputStream(fout);
 			Properties properties = new Properties();
 			properties.load(inputFile);
-			for(String key : properties.stringPropertyNames()) {
-				  String value = properties.getProperty(key);
-				  if(value.trim().equalsIgnoreCase(facilityId))
-					  return key;
-				}
+			System.out.println("the ip address is "+properties.get(facilityId));
+			if(properties.get(facilityId) !=null)
+			return properties.get(facilityId).toString();
+			return null;
+//			for(String key : properties.stringPropertyNames()) {
+//				  String value = properties.getProperty(key);
+//				  if(key.trim().equalsIgnoreCase(facilityId))
+//					  return value;
+//				}
 		}
 		return null;
 	}

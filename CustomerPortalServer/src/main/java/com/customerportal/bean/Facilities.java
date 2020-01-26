@@ -38,6 +38,8 @@ public class Facilities {
 	private String incomeExpenseUpdatesButtonEnable;
 	private String clientContact;
 	private String gasLevelUpdatedDate;
+	private boolean stationConnectError = false;
+	private String stationConnectErrorMessage;
 
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
@@ -303,5 +305,17 @@ public class Facilities {
 	}
 	public String getGasLevelUpdatedDate() {
 		return gasLevelUpdatedDate;
+	}
+	public void setStationConnectError(boolean stationConnectError) {
+		this.stationConnectError = stationConnectError;
+	}
+	public boolean isStationConnectError() {
+		return stationConnectError;
+	}
+	public void setStationConnectErrorMessage(String stationConnectErrorMessage) {
+		this.stationConnectErrorMessage = stationConnectErrorMessage;
+	}
+	public String getStationConnectErrorMessage() {
+		return stationConnectErrorMessage;
 	}
 }
