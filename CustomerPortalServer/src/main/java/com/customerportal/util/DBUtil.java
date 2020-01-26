@@ -355,13 +355,14 @@ public class DBUtil {
 			else
 				query.setString("tankService", "false");
 			List<Facilities> lst = query.list();
+			setGasLevels(lst);
+			trx.commit();
+			session.close();
 			for (Facilities facilities : lst) {
 				if(facilities.getClientContact() !=null && !facilities.getClientContact().equalsIgnoreCase(userId))
 					facilities.setClientContact(null);
 			}
-			setGasLevels(lst);
-			trx.commit();
-			session.close();
+
 			CustomerPortalUtil.fillImageURL(lst);
 
 			return lst;
@@ -398,13 +399,12 @@ public class DBUtil {
 			query.setString("userId", userId);
 			query.setString("facilityId", facilityID);
 			List<Facilities> lst = query.list();
+			trx.commit();
+			session.close();
 			for (Facilities facilities : lst) {
 				if(facilities.getClientContact() !=null && !facilities.getClientContact().equalsIgnoreCase(userId))
 					facilities.setClientContact(null);
 			}
-
-			trx.commit();
-			session.close();
 			CustomerPortalUtil.fillImageURL(lst);
 			return lst;
 		} catch (
