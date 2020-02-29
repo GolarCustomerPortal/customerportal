@@ -16,7 +16,7 @@ export class CRMConstants {
     public static USSBOAVENDORS = "USSBOA Vendors";
     public static BACKTOSHOWALL = "Back to show all";
     public static MYFACALITIES = "My Facilities";
-    public static MYCOMPANIES = "My companies";
+    public static MYCOMPANIES = "My Companies";
     public static MYINVENTORY = "My Inventory";
     public static MYCOMPLIANCE = "Facility Status";
     public static MANAGED = "Managed";
@@ -30,6 +30,9 @@ export class CRMConstants {
     public static JOB_NAME = 'jobName';
     public static VENDOR_TYPE = 'vendorType';
     public static FACILITY_ID = "facilityId";
+    public static REPORT_TYPE = "reportType";
+    public static TANK_REPORT_KEY_CODE ="keyCode"
+    public static SPECIFIC_FACILITY_ID = "facilityID";
     public static FID = "fId";
     public static STARTDATE = "startDate";
     public static ENDDATE = "endDate";
@@ -37,5 +40,6 @@ export class CRMConstants {
     public static MONTH = "month";
     public static SETTINGS ="Settings";
     public static SITE_INCOME_ID ="incomeId";
+    public static COMPANY_NAME = "companyName";
     public static LOGOUT_TIME =1800
     }

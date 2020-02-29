@@ -21,7 +21,7 @@
                     <a class="dropdown-item" routerLink="settings">{{crmConst.SETTINGS}}</a>
                 <a class="dropdown-item" routerLink="users">{{crmConst.lISTOFUSERS}}</a>
                 <a class="dropdown-item" routerLink="newuser">{{crmConst.ADDUSER}}</a>
-                <a class="dropdown-item" routerLink="tankmonitorsignup">{{crmConst.TANK_MONITOR_SIGNUP}}</a>
+                <!-- <a class="dropdown-item" routerLink="tankmonitorsignup">{{crmConst.TANK_MONITOR_SIGNUP}}</a> -->
                 <a *ngIf="!commonService?.isUserManager()" class="dropdown-item" routerLink="schedule">{{crmConst.SCHEDULE}}</a>
             </div>
         </li>
@@ -100,7 +100,7 @@
         </div>
     </div>
 </div>
-<i class="fa fa-bars nav-bar-bars"  (click)="visibleSidebar=true"></i>
+<i class="fa fa-bars nav-bar-bars"  (click)="visibleSidebar=true" *ngIf="!facilityReport"></i>
 <p-sidebar [(visible)]="visibleSidebar" styleClass="p-sidebar" position="left" [baseZIndex]="10000">
   &nbsp;
   <p-accordion id="leftpanel">

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.customerportal.bean.FacilityReports"
+		table="FacilityReports">
+		<composite-id>
+			<key-property name="fid" column="FID_c" />
+			<key-property name="reportType" column="Report_Type_c" />
+		</composite-id>
+		<property name="id" column="ID" />
+		<property name="content" column="Content" />
+		<property name="createdBy" column="CreatedBy" />
+		<property name="updatedBy" column="UpdatedBy" />
+		<property name="createdDate" column="createdDate" />
+		<property name="updatedDate" column="updatedDate" />
+	</class>
+</hibernate-mapping>

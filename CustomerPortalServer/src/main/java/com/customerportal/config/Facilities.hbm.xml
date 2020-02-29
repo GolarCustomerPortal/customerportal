@@ -24,5 +24,10 @@
 		<property name="projectManagerPhone" column="GT_Project_Manager_Phone__c" />
 		<property name="projectManager" column="GT_Project_Manager__c" />
 		<property name="clientContact" column="Client_Contact__c" />
+		<property name="tankMonitorStaticIP" column="Tank_Monitor_Static_IP__c" />
+		<property name="tankMonitorBrand" column="Tank_Monitor_Brand__c" />
+		<property name="tankMonitorModel" column="Tank_Monitor_Model__c" />
+		
+		
 	</class>
 </hibernate-mapping>

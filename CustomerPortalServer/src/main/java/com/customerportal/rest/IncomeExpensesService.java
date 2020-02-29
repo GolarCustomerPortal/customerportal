@@ -67,6 +67,18 @@ public class IncomeExpensesService {
 		return Response.status(200).entity(result).build();
 
 	}
+	@Path("/netIncome")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getIncomeChartByNetIncome(@QueryParam("userId")String userId, @QueryParam("facilityId")String facilityId,
+			@QueryParam("startDate") Date startDate, @QueryParam("endDate") Date endDate, @QueryParam("chartType") String chartType) {
+		List<KeyValue> result =  DBUtil.getInstance().getIncomeForUserByNetIncome(userId,facilityId,startDate,endDate,chartType);
+		
+		return Response.status(200).entity(result).build();
+
+	}
+
 	@Path("/expenses/chart/detail")
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)

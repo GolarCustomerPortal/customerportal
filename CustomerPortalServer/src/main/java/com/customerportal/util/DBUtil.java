@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -27,6 +27,8 @@ import com.customerportal.bean.Csldtestresult;
 import com.customerportal.bean.CustomAttachments;
 import com.customerportal.bean.CustomerPortalAttachments;
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.FacilityProductMap;
+import com.customerportal.bean.FacilityReports;
 import com.customerportal.bean.Gaslevel;
 import com.customerportal.bean.IncomeReportData;
 import com.customerportal.bean.InventoryReport;
@@ -200,7 +202,7 @@ public class DBUtil {
 				queryString += " where Contact__c= '" + userId + "'";
 			Query query = session.createNativeQuery(queryString, Facilities.class);
 			List<Facilities>  lst = query.list();
-			setGasLevels(lst);
+//			setGasLevels(lst);
 			trx.commit();
 			session.close();
 			return lst;
@@ -222,7 +224,34 @@ public class DBUtil {
 
 		}
 	}
+	public List<Facilities> fetchFacilitiesWithIpAddress(String userId) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			String queryString = "SELECT * FROM Facility_Management__c where Tank_Monitor_Brand__c is not null && Tank_Monitor_Model__c is not null && Tank_Monitor_Static_IP__c is not null and Contact__c= '" + userId + "'";
+			Query query = session.createNativeQuery(queryString, Facilities.class);
+			List<Facilities>  lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
 
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in fetchFacilitiesWithIpAddress method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+	}
 	private void setGasLevels(List<Facilities> lst) {
 		for (Facilities facility : lst) {
 			if(facility== null)continue;
@@ -355,7 +384,7 @@ public class DBUtil {
 			else
 				query.setString("tankService", "false");
 			List<Facilities> lst = query.list();
-			setGasLevels(lst);
+//			setGasLevels(lst);
 			trx.commit();
 			session.close();
 			for (Facilities facilities : lst) {
@@ -391,12 +420,20 @@ public class DBUtil {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
+			String queryString;
 			// Transaction t = session.beginTransaction();
+			User user = getSpecificUser(userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager() )
+				queryString = "SELECT * "
+						+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Facility__c =:facilityId";
+			else
+				queryString = "SELECT * "
+						+ "FROM Facility_Management__c f where f.Facility__c =:facilityId";
 			Query query = session.createNativeQuery(
-					"SELECT * "
-							+ "FROM Facility_Management__c f where f.Contact__c =:userId and f.Facility__c =:facilityId",
+					queryString,
 					Facilities.class);
-			query.setString("userId", userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager() )
+				query.setString("userId", userId);
 			query.setString("facilityId", facilityID);
 			List<Facilities> lst = query.list();
 			trx.commit();
@@ -405,6 +442,11 @@ public class DBUtil {
 				if(facilities.getClientContact() !=null && !facilities.getClientContact().equalsIgnoreCase(userId))
 					facilities.setClientContact(null);
 			}
+//			for (Facilities facility : lst) {
+//				List<String> tankMonitorLabels = fetchTankMonitorLabels(facility);
+//				facility.setTankMonitorLabels(tankMonitorLabels);
+//			}
+			setGasLevels(lst);
 			CustomerPortalUtil.fillImageURL(lst);
 			return lst;
 		} catch (
@@ -425,6 +467,53 @@ public class DBUtil {
 
 		}
 
+	}
+
+	public List<KeyValue> fetchTankMonitorLabels(Facilities facility) {
+		List<KeyValue> tankMonitorLabelAndValueList = new ArrayList<KeyValue>();
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			// Transaction t = session.beginTransaction();
+			String queryString = "SELECT Report_Label__c, Telnet_Code__c FROM tank_monitor_reports__c f";
+				queryString += " where f.Tank_Monitor_Brand__c =:brand and f.Tank_Monitor_Model__c =:model order by UI_Priority__c ASC";
+			Query query = session.createNativeQuery(queryString);
+			query.setString("brand", facility.getTankMonitorBrand());
+			query.setString("model", facility.getTankMonitorModel());
+			// query.setString("contactId", userId);
+			List<Object[]> lst = query.list();
+			trx.commit();
+			session.close();
+			if(lst.size()>0) {
+			for (Object[]  row : lst) {
+				if(row[0] !=null) {
+				KeyValue keyValue = new KeyValue();
+				keyValue.setName(row[0].toString());
+				if(row[1] !=null) {
+					keyValue.setValue(row[1].toString());
+				}
+				tankMonitorLabelAndValueList.add(keyValue);
+				}
+			}
+			}
+			return tankMonitorLabelAndValueList;
+		} catch (
+
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in fetchCompanies method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
 	}
 
 	public List<Company> fetchCompanies(String userId) {
@@ -461,15 +550,16 @@ public class DBUtil {
 
 	}
 
-	public List<Company> fetchCompany(String userId, String companyID) {
+	public List<Company> fetchCompany(String userId,String companyId) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery(
-					"SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c FROM affiliate_company__c where Company_Owner__c='"
-							+ userId + "' and Company_Name__c ='" + companyID + "'",
-					Company.class);
+			String queryString = "SELECT Company_Name__c,Company_Owner__c,Existing_Client__c,External_ID__c,Name,Owner_Name__c,Company_Address__c,Company__c FROM affiliate_company__c";
+			User user = getSpecificUser(userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager())
+				queryString += " where Company_Owner__c='" + userId + "'";
+			Query query = session.createNativeQuery(queryString, Company.class);
 			// query.setString("contactId", userId);
 			List lst = query.list();
 			trx.commit();
@@ -494,6 +584,8 @@ public class DBUtil {
 
 	}
 
+	
+	
 	public int fetchComplianceFacilities(String userId, String facilitiesIdString, String compliance) {
 		if (facilitiesIdString == null || facilitiesIdString.length() == 0) {
 			return 0;
@@ -549,7 +641,7 @@ public class DBUtil {
 					"OR (Is_Operator_Lease_Agreement__c = 'true' AND Operator_Lease_Agreement_new__c IS NULL) \r\n" + 
 					"OR (Is_Financial_Responsibility__c = 'true' AND Financial_Responsibility__c IS NULL) \r\n" + 
 					"OR (Is_Deed_or_LC_Required__c = 'true' AND Deed_or_Land_Contract__c IS NULL)\r\n" + 
-					"OR (Is_Facility_Site_Map__c IS NOT NULL AND Facility_Site_Map__c IS NULL) and  MGT_Paid_Service__c = 'true') ";
+					"OR (Is_Facility_Site_Map__c  = 'true' AND Facility_Site_Map__c IS NULL) and  MGT_Paid_Service__c = 'true') ";
 
 			if (facilitiesIdString != null && facilitiesIdString.length() > 0) {
 				queryString += "and id in (" + facilitiesIdString + " )";
@@ -764,9 +856,17 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery(
-					"SELECT * FROM "
-							+ "Facility_Management__c where contact__c =:userId",
+			String queryString="";
+			User user = getSpecificUser(userId);
+			if (user == null || !user.isAdmin() && !user.isUserManager() )
+				queryString="SELECT * FROM "
+						+ "Facility_Management__c where contact__c =:userId";
+				
+			else
+				queryString = "SELECT * FROM "
+						+ "Facility_Management__c";
+			Query query = session.createNativeQuery(queryString
+					,
 					Facilities.class);
 			// if (compliance.equalsIgnoreCase("compliance")) {
 			// query.setString("compliance", "true");
@@ -775,6 +875,7 @@ public class DBUtil {
 			// query.setString("compliance", "false");
 			// query.setString("tankService", "true");
 			// }
+			if (user == null || !user.isAdmin() && !user.isUserManager() )
 			query.setString("userId", userId);
 			List<Facilities> lst = query.list();
 			trx.commit();
@@ -824,8 +925,8 @@ public class DBUtil {
 		;
 		Transaction t = session.beginTransaction();
 		Query query = session.createNativeQuery(
-				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone, a.USSBOA_Documents_Link__c "
-						+ "FROM account a, contact c where a.Parent_Name__c = 'USSBOA Preferred Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id");
+				"SELECT a.Name,a.Is_Active__c,a.BillingStreet,a.BillingCity,a.BillingState,	a.BillingPostalCode,c.name as vendorName,c.email__c,c.Phone,c.mobilephone, b.G360_URL__c "
+						+ "FROM account a, contact c,custom_attachments__c b where a.Parent_Name__c = 'USSBOA Preferred Vendors' and a.Is_Active__c = 'True' AND a.Company_Contact__c = c.Id and a.id = b.facility__C and type__C ='Vendor Contract' ");
 //		if(vendorType.equalsIgnoreCase("preferred"))
 //			query.setString("vendorType", "Preferred Vendor");
 //		else
@@ -1357,12 +1458,30 @@ public class DBUtil {
 
 	}
 
+	public List<FacilityProductMap> getSpecificFacilityProductMap(String facilityId) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+		Query query = session.createNativeQuery("SELECT * FROM facility_product_map__c where Facility__C =:facilityId", FacilityProductMap.class);
+		query.setString("facilityId", facilityId);
+		List lst = query.list();
+		t.commit();
+		session.close();
+		 
+		if(lst != null)
+			return lst;
+		return null;
+	}
+	
 	public List<KeyValue> retrieveConsolidateReport(List<Facilities> facilitiesList) {
 		// Map<String, Object> consolidateMap = new HashMap<String, Object>();
 		List<KeyValue> consolidateList = new ArrayList<KeyValue>();
+		List<KeyValue> consolidateFinalList = new ArrayList<KeyValue>();
 		for (Facilities facilities : facilitiesList) {
 			if (facilities == null)
 				continue;
+			consolidateList = new ArrayList<KeyValue>();
+			List<FacilityProductMap> facilityProductMap =  getSpecificFacilityProductMap(facilities.getFacilityId());
 			Session session = HibernateUtil.getSession();
 			Transaction t = session.beginTransaction();
 
@@ -1373,6 +1492,9 @@ public class DBUtil {
 							+ facilities.getFacilityId()
 							+ "' )  group by Tank__C order by Date__C DESC;");
 			List<Object[]> lst = query.list();
+			t.commit();
+			session.close();
+
 			System.out.println(lst.size());
 			if (lst.size() > 0) {
 				for (Object[] row : lst) {
@@ -1409,13 +1531,85 @@ public class DBUtil {
 					System.out.println(iReport);
 				}
 			}
-			t.commit();
-			session.close();
-		}
+			
+			for (KeyValue keyvalue : consolidateList) {	
+			
+				boolean productFound = false;
+				FacilityProductMap selectedProductMap=null;
+				for (FacilityProductMap productMap : facilityProductMap) {
+					if(productMap.getProduct().trim().equalsIgnoreCase(keyvalue.getKey().trim())) {
+						productFound = true;
+						selectedProductMap = productMap;
+						break;
+				}
+				
+			}
+				if(productFound) {
+					KeyValue selectedKeyValue = null;
+					boolean finalProductFound = false;
+					
+					for (KeyValue finalKeyValue : consolidateFinalList) {
+						if (finalKeyValue.getKey().trim().equalsIgnoreCase(selectedProductMap.getFuelType())) {
+							finalProductFound = true;
+							selectedKeyValue = finalKeyValue;
+							break;
+						}
+					}
+						if(finalProductFound) {
+							int gallonsIntValue = (int) Double.parseDouble(selectedKeyValue.getValue());
+							gallonsIntValue += (int) Double.parseDouble(keyvalue.getValue());
+							selectedKeyValue.setValue(gallonsIntValue + "");
+						} else {
+							KeyValue kv = new KeyValue();
+							kv.setKey(selectedProductMap.getFuelType().toUpperCase());
+							kv.setName(keyvalue.getName());
+							kv.setValue(keyvalue.getValue());
+							consolidateFinalList.add(kv);
+						}
+							
+						}else {
+							KeyValue kv = new KeyValue();
+							kv.setKey(keyvalue.getKey().trim().toUpperCase());
+							kv.setName(keyvalue.getName());
+							kv.setValue(keyvalue.getValue());
+							consolidateFinalList.add(kv);
+						}
+					
+					
+				}
+					
+//					KeyValue selectedKeyValue = null;
+//					for (KeyValue keyvalue : consolidateList) {
+//						if (keyvalue.getKey().equalsIgnoreCase(productMap.getProduct())) {
+//							productFound = true;
+//							selectedKeyValue = keyvalue;
+//							break;
+//						}
+//
+//					}
+//					if (productFound) {
+//						for (KeyValue keyValue : consolidateFinalList) {
+//							
+//						}
+//						
+//						int gallonsIntValue = (int) Double.parseDouble(selectedKeyValue.getValue());
+////						gallonsIntValue += (int) Double.parseDouble();
+//						selectedKeyValue.setValue(gallonsIntValue + "");
+//					} else {
+//						KeyValue kv = new KeyValue();
+//						kv.setKey(productMap.getProduct().toUpperCase());
+//						kv.setName(selectedKeyValue.getName());
+//						kv.setValue(selectedKeyValue.getValue());
+//						consolidateFinalList.add(kv);
+//					}
+					
+				}
+				
+		
 
 		// query.setString("userId", userId);
 	
-		return consolidateList;
+		return consolidateFinalList;
 	}
 
 	public List<KeyValue> retrieveSpecifiFacilityConsolidateReport(Facilities facilities) {
@@ -1460,17 +1654,29 @@ public class DBUtil {
 					selectedKeyValue.setValue(gallonsIntValue + "");
 				} else {
 					KeyValue kv = new KeyValue();
-					kv.setKey(iReport.getProduct().toUpperCase());
+					kv.setKey(iReport.getProduct().trim().toUpperCase());
 					kv.setValue(iReport.getGallons());
 					consolidateList.add(kv);
 				}
 				if(facilities.getGasLevelUpdatedDate()== null) {
-					SimpleDateFormat df=new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
-					SimpleDateFormat df1=new SimpleDateFormat("E MMM dd hh:mm:ss aa z yyyy");
+					SimpleDateFormat df=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+					df.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+					SimpleDateFormat df1=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+					df1.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 				try {
-					facilities.setGasLevelUpdatedDate(df1.format(df.parse(iReport.getDateTime()+"")));
+					facilities.setGasLevelUpdatedDate(df1.format(df.parse(iReport.getDateTime()+"")).toUpperCase());
 				} catch (ParseException e) {
-					facilities.setGasLevelUpdatedDate("");
+					if(facilities.getGasLevelUpdatedDate()== null) {
+						SimpleDateFormat df2=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+						df2.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+						SimpleDateFormat df3=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+						df3.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+					try {
+						facilities.setGasLevelUpdatedDate(df3.format(df2.parse(iReport.getDateTime()+"")).toUpperCase());
+					} catch (ParseException e1) {
+						facilities.setGasLevelUpdatedDate("");
+					}
+				}
 				}
 				}
 				//				System.out.println(iReport);
@@ -3129,6 +3335,7 @@ public boolean resetTankreportDeatils(String type, String facilitiesId) {
 				income.setGasAmount(siteIncome.getGasAmount());
 				income.setInsideSalesAmount(siteIncome.getInsideSalesAmount());
 				income.setLotteryAmount(siteIncome.getLotteryAmount());
+				income.setCigaretteSalesAmount(siteIncome.getCigaretteSalesAmount());
 				income.setScratchOffSold(siteIncome.getScratchOffSold());
 				income.setTax(siteIncome.getTax());
 				income.setDataModifiedBy(siteIncome.getDataEnteredBy());
@@ -3312,7 +3519,7 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 	Transaction t = session.beginTransaction();
 	Query query = session.createNativeQuery(
 			"SELECT sum(Amount__C), DATE_FORMAT(Date__C, '%M') AS month,  DATE_FORMAT(Date__C, '%Y') AS year  FROM site_expenses__c WHERE Account_ID__c ='" +facilityId+"' and  Date__C >=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY) \r\n" + 
-			"AND Date__C< date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
+			"AND Date__C< date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 0 DAY) GROUP BY DATE_FORMAT(Date__C, '%Y-%m')  order by Date__C;");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
 	for (Object[] object : lst) {
@@ -3339,7 +3546,7 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 		Query query = session.createNativeQuery("SELECT * FROM site_expenses__c WHERE Account_ID__c ='" + facilityId
 				+ "' and  Created_Date__C >=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
 				+ "\", INTERVAL 0 DAY) \r\n" + "AND Created_Date__C< date_add(\""
-				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 1 DAY) order by Date__C;",
+				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 0 DAY) order by Date__C;",
 				SiteExpenses.class);
 		List<SiteExpenses> lst = query.list();
 		System.out.println(lst.size());
@@ -3362,7 +3569,7 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 			"select DATE_FORMAT(from_Date__c, '%M') AS month,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
 			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
 			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,DATE_FORMAT(from_Date__c, '%Y') AS year  FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY)  AND "
-					+ "DATE(from_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 1 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
+					+ "DATE(from_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 0 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
@@ -3387,6 +3594,42 @@ public List<KeyValue> getExpensesForUserForYear(String userId,String facilityId,
 	session.close();
 	return expensesList;
 }
+	
+	public List<KeyValue> getIncomeForUserByNetIncome(String userId,String facilityId, Date startDate, Date endDate, String chartType){
+		List<KeyValue> expensesList = new ArrayList<KeyValue>();
+		Session session = HibernateUtil.getSession();
+		Transaction t = session.beginTransaction();
+
+		Query query = session.createNativeQuery(
+				"select DATE_FORMAT(from_Date__c, '%M') AS month,SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
+				"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
+				"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,SUM(Tax__c) as Tax__c, DATE_FORMAT(from_Date__c, '%Y') AS year  FROM site_income__c WHERE Account_ID__c ='" +facilityId+"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\", INTERVAL 0 DAY)  AND "
+						+ "DATE(from_Date__c) <= date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\", INTERVAL 0 DAY)  GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
+				"");
+		List<Object[]> lst = query.list();
+		System.out.println(lst.size());
+		for (Object[] object : lst) {
+			double totalValue=0;
+			KeyValue rep = new KeyValue();
+			totalValue = object[1] !=null ?totalValue+((Double.parseDouble(object[1].toString())*10)/100):totalValue;
+			totalValue = object[2] !=null ?totalValue+((Double.parseDouble(object[2].toString())*35)/100):totalValue;
+			totalValue = object[3] !=null ?totalValue+((Double.parseDouble(object[3].toString())*6)/100):totalValue;
+			totalValue = object[4] !=null ?totalValue+((Double.parseDouble(object[4].toString())*6)/100):totalValue;
+			totalValue = object[5] !=null ?totalValue-Double.parseDouble(object[5].toString()):totalValue;
+			rep.setKey(object[0].toString()+" "+object[6].toString());
+			DecimalFormat df = new DecimalFormat("#.00");
+		    String totalStringValue = df.format(totalValue);
+			rep.setValue(totalStringValue);
+
+			rep.setName(object[0].toString());
+			expensesList.add(rep);
+		}
+		
+		t.commit();
+		session.close();
+		return expensesList;
+	}
+	
 
 public List<IncomeReportData> getIncomeForUserByType(String userId,String facilityId, Date startDate, Date endDate, String chartType){
 	List<IncomeReportData> expensesList = new ArrayList<IncomeReportData>();
@@ -3395,24 +3638,25 @@ public List<IncomeReportData> getIncomeForUserByType(String userId,String facili
 
 	Query query = session.createNativeQuery(
 			"select DATE_FORMAT(from_Date__c, '%M') AS month, SUM(Gas_Amount__c) as Gas_Amount__c ,\r\n" + 
-			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c ,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
+			"SUM(Inside_Sales_Amount__c) as Inside_Sales_Amount__c , SUM(Cigarette_Sales_Amount__c) as Cigarette_Sales_Amount__c,SUM(Lottery_Amount__c) as Lottery_Amount__c ,\r\n" + 
 			"SUM(Scratch_Off_Sold__c) as Scratch_Off_Sold__c,DATE_FORMAT(from_Date__c, '%Y') AS year FROM site_income__c WHERE Account_ID__c ='" +facilityId+ 
 			"' and DATE(from_Date__c)>=date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(startDate)+"\" , INTERVAL 0 DAY)  AND "
-					+ "DATE(from_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 1 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
+					+ "DATE(from_Date__c) <=  date_add(\""+new SimpleDateFormat("yyyy-MM-dd").format(endDate)+"\" , INTERVAL 0 DAY) GROUP BY DATE_FORMAT(from_Date__c, '%M')  order by from_Date__c;\r\n" + 
 			"");
 	List<Object[]> lst = query.list();
 	System.out.println(lst.size());
-	List<String> labelsList = Arrays.asList("Gallons Sold","Gas Amount","Inside Sales Amount","Lottery Amount","Scratch Off Sold");
+	List<String> labelsList = Arrays.asList("Gallons Sold","Gas Amount","Inside Sales Amount","Cigarette Sales Amount","Lottery Amount","Scratch Off Sold");
 	int index = 0;
 	for (Object[] object : lst) {
 		IncomeReportData data = new IncomeReportData();
-		data.setMonth(object[0].toString() +" "+object[5].toString());
+		data.setMonth(object[0].toString() +" "+object[6].toString());
 		data.setLabel(labelsList.get(index));
 //		data.setGallonsSold(object[1] !=null ?Double.parseDouble(object[1].toString()):0);
 		data.setGasAmount(object[1] !=null ?Double.parseDouble(object[1].toString()):0);
 		data.setInsideSalesAmount(object[2] !=null ?Double.parseDouble(object[2].toString()):0);
-		data.setLotteryAmount(object[3] !=null ?Double.parseDouble(object[3].toString()):0);
-		data.setScratchOffSold(object[4] !=null ?Double.parseDouble(object[4].toString()):0);
+		data.setCigaretteSalesAmount(object[3] !=null ?Double.parseDouble(object[3].toString()):0);
+		data.setLotteryAmount(object[4] !=null ?Double.parseDouble(object[3].toString()):0);
+		data.setScratchOffSold(object[5] !=null ?Double.parseDouble(object[4].toString()):0);
 		expensesList.add(data);
 	}
 	
@@ -3461,7 +3705,7 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 				+ "' and DATE(Created_Date__C)>=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
 				+ "\" , INTERVAL 0 DAY)  AND " + "DATE(Created_Date__C) <=  date_add(\""
 				+ new SimpleDateFormat("yyyy-MM-dd").format(startDate)
-				+ "\" , INTERVAL 1 DAY) order by from_Date__c;\r\n" + "", SiteIncome.class);
+				+ "\" , INTERVAL 0 DAY) order by from_Date__c;\r\n" + "", SiteIncome.class);
 		List<SiteIncome> lst = query.list();
 		System.out.println(lst.size());
 		if (lst != null) {
@@ -3530,7 +3774,7 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		Query query = session.createNativeQuery("SELECT * FROM site_expenses__c WHERE Account_ID__c ='" + facilityId
 				+ "' and  Created_Date__C >=date_add(\"" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
 				+ "\", INTERVAL 0 DAY) \r\n" + "AND Created_Date__C< date_add(\""
-				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 1 DAY)  AND DATE_FORMAT(Date__c, '%M') ='"+month+"' AND DATE_FORMAT(Date__c, '%Y') ='"+year+"' order by Date__C;",
+				+ new SimpleDateFormat("yyyy-MM-dd").format(endDate) + "\", INTERVAL 0 DAY)  AND DATE_FORMAT(Date__c, '%M') ='"+month+"' AND DATE_FORMAT(Date__c, '%Y') ='"+year+"' order by Date__C;",
 				SiteExpenses.class);
 		List<SiteExpenses> lst = query.list();
 		System.out.println(lst.size());
@@ -3554,5 +3798,42 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 				trx.commit();
 			}
 		
+	}
+	public FacilityReports getFacilityReport(String fid,String reportType) {
+
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			System.out.println("fid-------" + fid + " ---------" + reportType);
+			Query query = session.createNativeQuery("SELECT * FROM facilityReports d where d.fid_C =:fid and d.report_Type_C =:reportType",
+					FacilityReports.class);
+			query.setString("fid", fid);
+			query.setString("reportType", reportType);
+			List list = query.list();
+			System.out.println("list-------" + list);
+			FacilityReports report =null;
+			if (list != null && list.size() > 0)
+				report = (FacilityReports) list.get(0);
+			trx.commit();
+			session.close();
+			return report;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			System.out.println("Exception occred while getFacilityReport: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
+
+		}
+	}
+	
+	public void saveFacilityReport(FacilityReports report) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		session.saveOrUpdate(report);
+		trx.commit();
 	}
 }

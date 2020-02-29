@@ -1,7 +1,10 @@
 package com.customerportal.rest;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -19,6 +23,7 @@ import com.customerportal.bean.Account;
 import com.customerportal.bean.Company;
 import com.customerportal.bean.Csldtestresult;
 import com.customerportal.bean.Facilities;
+import com.customerportal.bean.FacilityReports;
 import com.customerportal.bean.Gaslevel;
 import com.customerportal.bean.JobSchedule;
 import com.customerportal.bean.JobScheduleHistory;
@@ -152,6 +157,17 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response facilitiesData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
+//		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
+		
+
+		return Response.status(200).entity(facilitiesList).build();
+
+	}
+	@Path("/facilitiesWithFullDetails")	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response facilitiesDatawithFullDetails(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
+		List<Facilities> facilitiesList = DBUtil.getInstance().getSpecificFacilitiesForUser(userId,facilitiesType);
 		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 		
 
@@ -174,12 +190,21 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response companiesData(@QueryParam("userId") String userId) {
 		List<Company> companiesList = DBUtil.getInstance().fetchCompanies(userId);
-		for (Company company : companiesList) {
-			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
-			CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
-			company.setFacilities(facilitiesList);	
-		}
+//		for (Company company : companiesList) {
+//			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(company.getCompanyName(),company.getCompanyOwner());
+////			CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
+//			company.setFacilities(facilitiesList);	
+//		}
 		return Response.status(200).entity(companiesList).build();
+
+	}
+	@Path("/companies/facilities")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response companiesFacilityData(@QueryParam("userId") String userId,@QueryParam("companyName") String companyName) {
+			List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesForCompany(companyName,userId);
+			CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
+		return Response.status(200).entity(facilitiesList).build();
 
 	}
 	@Path("/company")
@@ -201,7 +226,7 @@ public class DashBoardService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response complianceData(@QueryParam("userId") String userId,@QueryParam("facilitiesType") String facilitiesType) {
 		List<Facilities> facilitiesList = DBUtil.getInstance().fetchFacilitiesFCompliance(userId,facilitiesType);
-		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
+//		CustomerPortalUtil.getActualFacilitiesList(facilitiesList,userId);
 		return Response.status(200).entity(facilitiesList).build();
 
 	}
@@ -421,7 +446,8 @@ public class DashBoardService {
 		
 		Facilities facility = null;
 		try {
-			facility = CustomerPortalUtil.getGasLevelsFromStation(userId,fid,facilityId);
+			final String fileName = "InventoryReport_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".txt";
+			facility = CustomerPortalUtil.getGasLevelsFromStation(userId,fid,facilityId,"inventory",fileName,false);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -429,6 +455,25 @@ public class DashBoardService {
 		return Response.status(200).entity(facility).build();
 		
 	}
+	
+	@Path("/facilityReportFromStation")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getTankTestReportFromStation (@QueryParam("userId") String userId,@QueryParam("fId") String fid,@QueryParam("facilityId") String facilityId
+			,@QueryParam("reportType") String reportType,@QueryParam("keyCode") String keyCode) {
+		
+		FacilityReports report = null;
+		try {
+			report = CustomerPortalUtil.getTankTestFromStation(userId,fid,facilityId,reportType,keyCode);
+			return Response.ok(report).header("Cache-Control", "no-cache").build();
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Response.status(200).entity(report).header("Cache-Control", "no-cache").build();
+		
+	}
+	
 	@Path("/gaslevel")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })

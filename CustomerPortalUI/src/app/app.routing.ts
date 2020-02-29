@@ -7,6 +7,7 @@ import { ScheduleComponent } from './schedule/schedule.component';
 import { UssboaComponent } from './ussboa/ussboa.component';
 import { TankMonitorSignupComponent } from './tank-monitor-signup/tank-monitor-signup.component';
 import { SettingsComponent } from './settings/settings.component';
+import { FacilityReportComponent } from './facility-report/facility-report.component';
 
 
 
@@ -20,8 +21,9 @@ const appRoutes: Routes = [
     { path: 'schedule', component: ScheduleComponent },
     { path: 'ussboa', component: UssboaComponent },
     { path: 'tankmonitorsignup', component: TankMonitorSignupComponent },
+    { path: 'facilityReport', component: FacilityReportComponent },
     // otherwise redirect to home
     { path: '**', redirectTo: 'login' } 
 ];
 
-export const routing = RouterModule.forRoot(appRoutes);
+export const routing = RouterModule.forRoot(appRoutes,{ useHash: true });

@@ -41,6 +41,7 @@ import {TabViewModule} from 'primeng/tabview';
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import {CustomDatePipe} from './services/custom.datepipe';
 import { SettingsComponent } from './settings/settings.component';
+import { FacilityReportComponent } from './facility-report/facility-report.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { SettingsComponent } from './settings/settings.component';
     TankMonitorSignupComponent,
     SafePipe,
     CustomDatePipe,
-    SettingsComponent
+    SettingsComponent,
+    FacilityReportComponent
   ],  
   imports: [
     routing,
@@ -91,7 +93,7 @@ import { SettingsComponent } from './settings/settings.component';
     ImportService,
     HttpService,
     CustomDatePipe,
-    {provide: LocationStrategy, useClass: HashLocationStrategy},
+    // {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
   bootstrap: [AppComponent]
 })

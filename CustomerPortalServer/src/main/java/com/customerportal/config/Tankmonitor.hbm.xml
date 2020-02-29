@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.customerportal.bean.TankMonitor" table="tank_monitor_reports__c">
+		<id name="id">
+			<column name="ID" />
+		</id>
+		<property name="label" column="Report_Label__c" />
+		<property name="monitorCode" column="Telnet_Code__c" />
+		<property name="brand" column="Tank_Monitor_Brand__c" />
+		<property name="model" column="Tank_Monitor_Model__c" />
+		<property name="externalID" column="External_ID__c" />
+		<property name="uiPriority" column="UI_Priority__c" />
+	</class>
+</hibernate-mapping>

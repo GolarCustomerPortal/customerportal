@@ -309,6 +309,23 @@ export class CommonService {
 
     }
   }
+  isloginUserManager(){
+    if (localStorage.getItem('secondaryUser')) {
+      var user = localStorage.getItem('secondaryUser');
+    if (user != null && user != undefined) {
+      var localuser = JSON.parse(user);
+      return localuser.userManager;
+
+    }
+    }
+    var user = localStorage.getItem('primaryUser');
+    if (user != null && user != undefined) {
+      var localuser = JSON.parse(user);
+      return localuser.userManager;
+
+    }
+  }
+
   getPrimaryUser() {
     if (localStorage.getItem('primaryUser')) {
       var localuser = localStorage.getItem('primaryUser');

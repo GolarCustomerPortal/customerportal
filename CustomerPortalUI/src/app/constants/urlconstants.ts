@@ -16,8 +16,10 @@ export class URLConstants {
 
     public static DASHBOARD_URL = environment.server+'/CustomerPortalServer/rest/dashboard';
     public static FACILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilities';
+    public static FACILITIES_FULL_DETAILS_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilitiesWithFullDetails';
     public static FACILITY_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facility';
     public static COMPANIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies';
+    public static COMPANIES_FACILITIES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/companies/facilities';
     public static COMPLIANCE_URL = environment.server+'/CustomerPortalServer/rest/dashboard/compliance';
     public static  FACILITIES_NOTIFICATION_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/notificationdetails';
     public static  FACILITIES_UST_COMPLIANCE_DETAILS= environment.server+'/CustomerPortalServer/rest/dashboard/ustcompliance';
@@ -31,10 +33,12 @@ export class URLConstants {
     public static JOB_SCHEDULE_HISTORY = environment.server+'/CustomerPortalServer/rest/dashboard/jobschedulehistory';
     public static GASLEVES_URL = environment.server+'/CustomerPortalServer/rest/dashboard/gaslevel';
     public static GASLEVES_FROM_STATION_URL = environment.server+'/CustomerPortalServer/rest/dashboard/gaslevelFromStation';
+    public static TANK_RESULT_FROM_STATION_URL = environment.server+'/CustomerPortalServer/rest/dashboard/facilityReportFromStation';
     public static LEAKTANK_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/leaktestDetails';
     public static TANK_STATUS_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/tankstatusDetails';
     public static CSLD_TEST_DETAILS = environment.server+'/CustomerPortalServer/rest/dashboard/csldtestDetails';
     public static SITE_INCOME = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income';
+    public static SITE_NET_INCOME = environment.server+'/CustomerPortalServer/rest/incomeExpenses/netIncome';
     public static SITE_INCOME_TYPE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/type';
     public static SITE_INCOME_MONTHLY_CUSTOM_DATE = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/detail';
     public static SITE_INCOME_PICKLIST = environment.server+'/CustomerPortalServer/rest/incomeExpenses/income/pickList';

@@ -66,7 +66,8 @@
       </div>
     <div *ngIf="newsFeedVisible==false">
       <p-panel id="rightPanel" header="{{rightPanelTitle}}" styleClass="height-center" *ngIf="showRightContent">
-        <div style="height:calc(100vh - 138px);overflow-y: auto">
+        <div style="overflow-y: auto" 
+        id="middle-panel" [ngClass]="getMiddlePanelHeightClass()">
           <div *ngIf="facilitiesRightdata.length>0">
             <div *ngFor="let fdata of facilitiesRightdata; let i = index;" style="padding:10px;">
               <div *ngIf="i%3 == 0" class="ui-g-12">
@@ -121,9 +122,9 @@
           </div>
 <!-- companies start -->
 <div *ngIf="companiesRightdata.length>0">
-<p-accordion>
+<p-accordion (onOpen)="onComapnyTabOpen($event)">
   <p-accordionTab header="{{companyData.name}}" *ngFor="let companyData of companiesRightdata;">
-    <div *ngIf="companyData.facilities.length>0">
+    <div *ngIf="companyData?.facilities?.length>0">
       <div *ngFor="let fdata of companyData.facilities; let i = index; let even = even;" style="padding:10px;">
           <div *ngIf="i%3 == 0" class="ui-g-12">
               <div *ngFor="let number of [0,1,2] let j = index;">
@@ -152,7 +153,7 @@
                         </div>
                         <div class="ui-g no-padding">
                           <div class="ui-g-4 no-padding"><div class="ui-g-12 text-align-center">Compliance</div>
-                          <div class="ui-g-12 no-padding text-align-center">
+                           <div class="ui-g-12 no-padding text-align-center">
                             <p-inputSwitch onLabel="Yes" offLabel="No" [(ngModel)]="companyData.facilities[i+j].compliance" [disabled]="true"></p-inputSwitch>
                           </div>
                         </div>
@@ -174,7 +175,9 @@
 
           </div>
       </div>
+
     </div>
+   
   </p-accordionTab>
 </p-accordion>
 </div>
@@ -236,11 +239,30 @@
           </div>
         </div>
       </p-panel>
+      <div class="ui-g" *ngIf="tempfacilitiesRightdata?.length>middleFacilityDisplayCount && selectedChart !== 'companies'" >
+        <div class="ui-g-1" style="padding: 0px;"><i class="fa fa-angle-double-left" style="font-size:36px;margin-left: 10px;cursor: pointer;
+              font-weight: bold;" title="Previous Page" (click)="previousFacilitiesPage()"></i></div>
+        <div class="ui-g-10" style="padding: 0px;"></div> 
+        <div class="ui-g-1" style="padding: 0px;"><i class="fa fa-angle-double-right" 
+          style="font-size:36px;float: right;margin-right: 10px;cursor: pointer;    font-weight: bold;"
+          title="Next Page"(click)="nextFacilitiesPage()"></i></div>
+        
+      </div>
     </div>
+    <div class="ui-g" *ngIf="tempCompaniesRightdata?.length>middleFacilityDisplayCount && selectedChart === 'companies'" >
+      <div class="ui-g-1" style="padding: 0px;"><i class="fa fa-angle-double-left" style="font-size:36px;margin-left: 10px;cursor: pointer;
+            font-weight: bold;" title="Previous Companies Page" (click)="previousCompaniesPage()"></i></div>
+      <div class="ui-g-10" style="padding: 0px;"></div> 
+      <div class="ui-g-1" style="padding: 0px;"><i class="fa fa-angle-double-right" 
+        style="font-size:36px;float: right;margin-right: 10px;cursor: pointer;    font-weight: bold;"
+        title="Next Companies Page"(click)="nextCompaniesPage()"></i></div>
+      
+    </div>
+        
   </split-area>
   <split-area [visible]="area.rightVisible" [size]="area.right" order="3" style="overflow: hidden;">
       <div class="right-content-error" *ngIf="rightDetailsContent.facilityTankPaidMessage != null">{{rightDetailsContent.facilityTankPaidMessage}}</div>
-    <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="rightDetailsContent.tankPaidService == true  && rightDetailsContent.facilityTankPaidMessage == null">
+    <p-panel id="rightDetailsPanel" styleClass="height-center" *ngIf="rightDetailsContent.facilityTankPaidMessage == null">
       <p-header ngClass="header-padding-left">
           <div style="width: 100%"> {{rightPaneDetailslTitle}}
         <i style="float:right;cursor: pointer;" class="fa fa-times" aria-hidden="true" title="Click to hide the details" (click)="hideRightContentDetails(rightDetailsContent)"></i>
@@ -289,42 +311,19 @@
       </div>
           </p-card>
         </div>
-        <div class="ui-g-12 margin-top" id="tank-report">
-          <p-card styleClass="ui-card-shadow">
+        <div class="ui-g-12 margin-top" id="tank-report" id="tankReports">
+          <p-card styleClass="ui-card-shadow" [style]="{height:getTankReportsHeight()}">
               <div style="width: 100%">
-                  <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Tank Reports</div>
+                  <div> <div ngClass="header-padding-left ui-card-header" style="padding-left:20px !important;float: left;">Facility Reports</div>
                     </div>
                    </div>
-                   <div class="ui-g-12">
-                    <div class="ui-g-4">
-                      <button type="button" class="btn btn-default btn-tank-circle btn-lg"  ngClass="{{ getTankLeakTestButtonClass(rightDetailsContent)}}"
-                       data-toggle="modal" data-target="#tankReportsModal"
-                      (click)="getTankLeakModalData(rightDetailsContent.facilityId)">
-                      {{rightDetailsContent?.leakTankTestCount}}
-                      </button>
-                    </div>
-                    <div class="ui-g-4">
-                      <button type="button" class="btn btn-default btn-tank-circle btn-lg"  ngClass="{{ getTankStatusButtonClass(rightDetailsContent)}}"
-                       data-toggle="modal" (click)="getTankStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal">
-                       {{rightDetailsContent?.tankStatusCount}}
-                        </button>
-                    </div>
-                    <div class="ui-g-4">
-                      <button type="button" class="btn btn-default btn-tank-circle btn-lg" ngClass="{{ getCSCLTestButtonClass(rightDetailsContent)}}" 
-                      data-toggle="modal" (click)="getCSCLStatusModalData(rightDetailsContent.facilityId)" data-target="#tankReportsModal">
-                      {{rightDetailsContent?.csldCount}}</button>
-                    </div>
-                  </div>
-                  <div class="ui-g-12  margin-top">
-                    <div class="ui-g-4">
-                      Leak Test
-                    </div>
-                    <div class="ui-g-4">
-                      Tank Status
-                    </div>
-                    <div class="ui-g-4">
-                      CSLD Test
-                    </div>
+                   <div class="ui-g-12" style="margin:5px">
+                    <div *ngFor="let tankLabel of rightDetailsContent.tankMonitorLabelsAndValues; let i = index; let even = even;">
+                      <div class="ui-g-3 tank-report-tile" data-toggle="modal" (click)="getTankMonitorData(rightDetailsContent,tankLabel.name,tankLabel.value)" data-target="#tankReportsModal" >
+                        {{tankLabel.name}}
+                      </div>
+                      <div class="ui-g-1"></div>
+                      </div>
                   </div>
 
         </p-card>
@@ -341,7 +340,7 @@
                    *ngIf="!gasRefreshClicked" (click)="refreshGasLevel(rightDetailsContent)"></i>
                   <i class="fa fa-spinner fa-spin" title="Refreshing Gas Levels" 
                   *ngIf="gasRefreshClicked" style="font-size:20px;right:10px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative"></i>
-                  <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null" style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
+                  <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null && rightDetailsContent?.gasLastUpdatedDate != '' " style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
                     Last Updated Time: {{rightDetailsContent?.gasLastUpdatedDate}} </p>
                  </div>
       <div *ngIf="rightDetailsContent?.stationConnectError === true" class="alert alert-danger" style="float: left;"> Could not make connection with the site at this time!! Please try again later.</div>
@@ -370,7 +369,7 @@
           </div>
           <div class="ui-g-3">
             <button type="button" class="btn btn-default btn-circle btn-lg" ngClass="{{ getIncomeExpenseUpdatesButtonEnable(rightDetailsContent)}}" 
-            data-toggle="modal" (click)="getIncomeexpenditureDetails(rightDetailsContent.facilityId)" data-target="#incomeAndexpenditureModal">Income<br>expenditure<br>Report </button>
+            data-toggle="modal" [disabled]="commonService.isloginUserManager()" (click)="getIncomeexpenditureDetails(rightDetailsContent.facilityId)" data-target="#incomeAndexpenditureModal">Income<br>expenditure<br>Report </button>
           </div>
         </div>
 
@@ -1339,7 +1338,7 @@
                            *ngIf="!gasRefreshClicked" (click)="refreshGasLevel(rightDetailsContent)"></i>
                           <i class="fa fa-spinner fa-spin" title="Refreshing Gas Levels" 
                           *ngIf="gasRefreshClicked" style="font-size:20px;right:10px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative"></i>
-                          <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null" style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
+                          <p *ngIf="rightDetailsContent?.gasLastUpdatedDate !== null && rightDetailsContent?.gasLastUpdatedDate != '' " style="font-size:15px;right:20px;top:2px;float: right;cursor: pointer;z-index: 1000;position: relative">
                             Last Updated Time: {{rightDetailsContent?.gasLastUpdatedDate}} </p>
                          </div>
                 <div *ngIf="rightDetailsContent?.stationConnectError === true" class="alert alert-danger" style="float: left;"> Could not make connection with the site at this time!! Please try again later.</div>
@@ -1584,68 +1583,21 @@
 
   <!-- notification form start -->
 <div class="modal fade" id="tankReportsModal" tabindex="-1" role="dialog" aria-labelledby="tankReportsModal" aria-hidden="true">
-  <div class="modal-dialog  modal-md">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title modal-header-round" id="exampleModalCenterTitle">{{tankReportsModalTitle}}</div>
+        <div class="modal-title modal-header-round" id="exampleModalCenterTitle">Facility Reports</div>
         <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal" aria-label="Close"  >
             &times;
         </button>
       </div>
       <div class="modal-body file-upload-model">
-        <p-tabView>
-          <p-tabPanel header="{{tankReportTab1Title1}}">
-            <div class="simple-border"  [ngClass]="{'hidden-clsss':tankDetailsFirstTabKeys?.length ==0 }">
-
-                <div *ngFor="let key of tankDetailsFirstTabKeys; let i = index;" >
-                    <div class="ui-g"><span>{{key}}</span></div>
-                    <div class="ui-g">
-                        <div class="ui-g-4 bold-class">Result</div>
-                        <div class="ui-g-8 bold-class">Date</div>
-                      </div>
-                    <div *ngFor="let data of tankDetailsFirstTabData[key]; let i = index;" class="ui-g">
-                        <div class="ui-g-4" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.result__c}}</div>
-                        <div class="ui-g-8" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.date__c}}</div>
-                      </div>
-                </div>
-          
-          </div>
-          </p-tabPanel>
-          <p-tabPanel header="{{tankReportTab1Title2}}">
-              <div class="simple-border" [ngClass]="{'hidden-clsss':tankDetailsSecondTabKeys?.length ==0 }">
-
-                  <div *ngFor="let key of tankDetailsSecondTabKeys; let i = index;" >
-                      <div class="ui-g"><span>{{key}}</span></div>
-                      <div class="ui-g">
-                          <div class="ui-g-4 bold-class">Result</div>
-                          <div class="ui-g-8 bold-class">Date</div>
-                        </div>
-                      <div *ngFor="let data of tankDetailsSecondTabData[key]; let i = index;" class="ui-g">
-                          <div class="ui-g-4" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.result__c}}</div>
-                          <div class="ui-g-8" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.date__c}}</div>
-                        </div>
-                  </div>
-            
-            </div>
-          </p-tabPanel>
-          <p-tabPanel header="{{tankReportTab1Title3}}" >
-              <div class="simple-border" [ngClass]="{'hidden-clsss':tankDetailsThirdTabKeys?.length ==0 }">
-
-                  <div *ngFor="let key of tankDetailsThirdTabKeys; let i = index;" >
-                      <div class="ui-g"><span>{{key}}</span></div>
-                      <div class="ui-g">
-                          <div class="ui-g-4 bold-class">Result</div>
-                          <div class="ui-g-8 bold-class">Date</div>
-                        </div>
-                      <div *ngFor="let data of tankDetailsThirdTabData[key]; let i = index;" class="ui-g">
-                          <div class="ui-g-4" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.result__c}}</div>
-                          <div class="ui-g-8" [ngStyle]="{'font-weight':getFontWeight(data?.viewed)}">{{data.date__c}}</div>
-                        </div>
-                  </div>
-                  </div>
-          </p-tabPanel>
-        </p-tabView>
-      </div>
+        <div *ngIf="tankreportData?.stationConnectError === true" class="alert alert-danger">{{tankreportData?.stationConnectErrorMessage}}</div>
+    
+        <i *ngIf="tankreportData != null && tankreportData?.contentAsText?.length > 0" class="fa fa-print" style="font-size:24px;cursor: pointer;float:right; right: 23px;" (click)="printFacilityReport()" title="Print Facility Report"></i>
+        <p *ngIf="tankreportData == null">Loading Facility report....<i class="fa fa-spinner fa-spin" style="font-size:50px"></i></p>
+        <div><pre id="facilityReportId" *ngIf="tankreportData?.contentAsText?.length > 0">{{tankreportData.contentAsText}}</pre></div>
+         </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
        </div>
@@ -1697,10 +1649,11 @@
                   <th class="no-break-word">Start Date</th>
                   <th class="no-break-word">End Date</th>
                   <th class="no-break-word">Gallons Sold</th>
-                  <th class="no-break-word">Gas Amount</th>
-                  <th class="no-break-word">Inside Sales Amount</th>
-                  <th class="no-break-word">Lottery Amount</th>
-                  <th class="no-break-word">Scratch Off Sold</th>
+                  <th class="no-break-word">Gas Sales</th>
+                  <th class="no-break-word">Inside Sales</th>
+                  <th class="no-break-word">Cigarette Sales</th>
+                  <th class="no-break-word">Lottery Sales</th>
+                  <th class="no-break-word">Scratch-Off Sales</th>
                   <th class="no-break-word">Tax</th>
                   <th class="no-break-word">Action</th>
                 </tr>
@@ -1713,6 +1666,7 @@
                   <!-- <td>{{user.admin}}</td> -->
                   <td class="no-wrap-text">{{income.gasAmount}}</td>
                   <td class="no-wrap-text">{{income.insideSalesAmount}}</td>
+                  <td class="no-wrap-text">{{income.cigaretteSalesAmount}}</td>
                   <td class="no-wrap-text">{{income.lotteryAmount}}</td>
                   <td class="no-wrap-text">{{income.scratchOffSold}}</td>
                   <td class="no-wrap-text">{{income.tax}}</td>
@@ -1750,22 +1704,27 @@
                   [options]="numberMask" />
               </div>
               <div class="ui-g-6">
-                <div>Gas Amount:</div>
+                <div>Gas Sales:</div>
                 <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.gasAmount"
                   [options]="currencyMask" />
               </div>
               <div class="ui-g-6">
-                <div>Inside Sales Amount:</div>
+                <div>Inside Sales:</div>
                 <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.insideSalesAmount"
                   [options]="currencyMask" />
               </div>
               <div class="ui-g-6">
-                <div>Lottery Amount:</div>
+                <div>Cigarette Sales:</div>
+                <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.cigaretteSalesAmount"
+                  [options]="currencyMask" />
+              </div>
+              <div class="ui-g-6">
+                <div>Lottery Sales:</div>
                 <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.lotteryAmount"
                   [options]="currencyMask" />
               </div>
               <div class="ui-g-6">
-                <div>Scratch Off Sold:</div>
+                <div>Scratch-Off Sales:</div>
                 <input currencyMask class="currency-textfield" [(ngModel)]="incomeModal.scratchOffSold"
                   [options]="currencyMask" />
               </div>
@@ -1979,10 +1938,11 @@
                     <th class="no-break-word">Start Date</th>
                     <th class="no-break-word">End Date</th>
                     <th class="no-break-word" *ngIf="isChartSpecficItem('Gallons Sold')">Gallons Sold</th>
-                    <th class="no-break-word" *ngIf="isChartSpecficItem('Gas Amount')">Gas Amount</th>
-                    <th class="no-break-word" *ngIf="isChartSpecficItem('Inside Sales Amount')">Inside Sales Amount</th>
-                    <th class="no-break-word" *ngIf="isChartSpecficItem('Lottery Amount')">Lottery Amount</th>
-                    <th class="no-break-word" *ngIf="isChartSpecficItem('Scratch Off Sold')">Scratch Off Sold</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Gas Sales')">Gas Sales</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Inside Sales')">Inside Sales</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Cigarette Sales')">Cigarette Sales</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Lottery Sales')">Lottery Sales</th>
+                    <th class="no-break-word" *ngIf="isChartSpecficItem('Scratch-Off Sales')">Scratch-Off Sales</th>
                     <th class="no-break-word" *ngIf="isChartSpecficItem('Tax')">Tax</th>
                   </tr>
                 </ng-template>
@@ -1992,10 +1952,11 @@
                     <td class="no-wrap-text">{{income.toDateString | date:'MM/dd/yyyy'}}</td>
                     <td class="no-wrap-text" *ngIf="isChartSpecficItem('Gallons Sold')">{{income.gallonsSold}}</td>
                     <!-- <td>{{user.admin}}</td> -->
-                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Gas Amount')">{{income.gasAmount}}</td>
-                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Inside Sales Amount')">{{income.insideSalesAmount}}</td>
-                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Lottery Amount')">{{income.lotteryAmount}}</td>
-                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Scratch Off Sold')">{{income.scratchOffSold}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Gas Sales')">{{income.gasAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Inside Sales')">{{income.insideSalesAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Cigarette Sales')">{{income.cigaretteSalesAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Lottery Sales')">{{income.lotteryAmount}}</td>
+                    <td class="no-wrap-text" *ngIf="isChartSpecficItem('Scratch-Off Sales')">{{income.scratchOffSold}}</td>
                     <td class="no-wrap-text" *ngIf="isChartSpecficItem('Tax')">{{income.tax}}</td>
                   </tr>
                 </ng-template>

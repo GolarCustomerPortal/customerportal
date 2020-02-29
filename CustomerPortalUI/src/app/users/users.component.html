@@ -1,18 +1,18 @@
 <p-table [value]="users">
     <ng-template pTemplate="header">
         <tr>
-            <th>User Name</th>
             <th>First Name</th>
             <th>Last Name</th>
+            <th>User Name</th>
             <th [hidden]="commonService.isSecondaryUserPresent()">Login</th>
             <th>Login History</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-user>
         <tr>
-            <td>{{user.username}}</td>
             <td>{{user.firstName}}</td>
             <td>{{user.lastName}}</td>
+            <td>{{user.username}}</td>
             <!-- <td>{{user.admin}}</td> -->
             <td [hidden]="commonService.isSecondaryUserPresent()">
                 <button class="btn btn-primary" type="button" [disabled]="commonService.checkForSameUser(user)" [ngClass]="{disabled :  commonService.checkForSameUser(user)}"

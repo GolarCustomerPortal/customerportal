@@ -34,5 +34,8 @@
 		<mapping resource="com/customerportal/config/siteExpendature.hbm.xml" />
 		<mapping resource="com/customerportal/config/siteIncome.hbm.xml" />
 		<mapping resource="com/customerportal/config/settings.hbm.xml" />
+		<mapping resource="com/customerportal/config/FacilitiesReports.hbm.xml" />
+		<mapping resource="com/customerportal/config/Tankmonitor.hbm.xml" />
+		<mapping resource="com/customerportal/config/facilityproductmap.hbm.xml" />
 		</session-factory>
 </hibernate-configuration> 

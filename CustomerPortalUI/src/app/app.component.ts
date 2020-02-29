@@ -17,6 +17,7 @@ export class AppComponent implements OnInit{
   alertList;
   alarmHistory;
   activeIndex=0;
+  facilityReport=false;
   @ViewChild('tankAccordian') tankAccordian: any; 
   constructor(private router: Router,public commonService: CommonService,public  authService:AuthenticationService,private dashboardService: DashboardService){
   console.log("AppComponent---");
@@ -42,6 +43,11 @@ selectedSearchOption = this.searchOptions[0];
       self.resetTankAlert();
     })
     this.commonService.removeEditUser();
+    if(window.location.href.indexOf("facilityReport")>0){
+      this.facilityReport =true;
+      return;
+    }
+
     if(!this.commonService.checkValidLogin())
      this.router.navigate(['/login']);
     

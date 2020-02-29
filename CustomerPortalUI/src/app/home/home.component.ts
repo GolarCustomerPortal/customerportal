@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit {
     thousands: '',
     precision: '0'
   };
-  incomeModal:any={fromDate:new Date,toDate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
+  incomeModal:any={fromDate:new Date,toDate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,cigaretteSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
   expenditureModel:any={checkdate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date(),vendor:{name: 'Others', value: 'Others'}};
   vendorsList:any=[];;
   incomeData: any;
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   siteExpensesSubmitted=false;
   siteIncomeSubmitted=false;
   incomeChartByList:any=[{name: 'Monthly Income', value: 'MonthlyIncome'},
-  {name: 'By Item', value: 'ByItem'}];;
+  {name: 'By Item', value: 'ByItem'},{name: 'Net Income', value: 'netIncome'}];;
   expensesModel:any={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date()};
   incomeChartModel:any={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date(),incomeChartByItem:{name: 'Monthly Income', value: 'MonthlyIncome'}};
   @ViewChild('incomeExpensesTab') tabView: TabView;
@@ -328,6 +328,7 @@ tankDetailsDataKeys;
 documentURL=null;
 selectedTankReportTTab;
 gasRefreshClicked=false;
+tankreportData;
 // tank reports panel variables end
 
   //app component code start
@@ -384,6 +385,10 @@ gasRefreshClicked=false;
   facilitiesLabel = [];
   totalFacilities;
   facilitiesRightdata = [];
+  tempfacilitiesRightdata=[];
+  middleFacilityDisplayCount=24;
+  tempCompaniesRightdata=[];
+  middleFacilityCurrentPage=1;
   nonManagedfacilitiesRightdata = [];
   showMobileFacilities=false;
   showMobileFacilityDetails=false
@@ -449,6 +454,9 @@ gasRefreshClicked=false;
     this.dashboardService.getFacilitiesList(this.commonService.getUserName(), this.facilitiesLabel[event]) // retrieve all thd parent folders
       .subscribe(
         facilitiesList => {
+          this.facilitiesRightdata=[];
+          this.tempfacilitiesRightdata=[];
+          this.middleFacilityCurrentPage=1;
           for (var i = 0; i < facilitiesList.length; i++) {
             var faciData = facilitiesList[i];
             if (this.facilitiesLabel[event] == this.dashboardConst.UNMANAGED)
@@ -462,9 +470,18 @@ gasRefreshClicked=false;
             // faciData.image = "assets/images/gasstation/"+image;
             // this.getFacilityConsolidateReport(faciData.consolidateReport);
             faciData.image = environment.server + faciData.imageURL;
-            this.facilitiesRightdata.push(faciData);
+            this.tempfacilitiesRightdata.push(faciData);
           }
-
+        if(facilitiesList.length<this.middleFacilityDisplayCount){
+          this.facilitiesRightdata = this.tempfacilitiesRightdata;
+        }
+          else{
+            for (let index = 0; index < this.middleFacilityDisplayCount; index++) {
+              this.facilitiesRightdata.push(this.tempfacilitiesRightdata[index]);
+              
+            }
+          }
+        
         },
         error => {
           console.log(error);
@@ -566,8 +583,20 @@ gasRefreshClicked=false;
   }
   compliance = true;
   selectedFacility;
-  showSpecificfacilityDetails(fdata) {
-    console.log(fdata);
+  showSpecificfacilityDetails(facilitydata) {
+    this.gasRefreshClicked = false
+    // this.showRightContent = false;
+    if (facilitydata.tankPaidService == false) {
+      this.showRightDetailPanel();
+      this.rightDetailsContent.facilityTankPaidMessage = facilitydata.facilityTankPaidMessage;
+      return;
+    }
+    this.dashboardService.getFacilityDetails(this.commonService.getUserName(), facilitydata.facilityId) // retrieve all thd parent folders
+    .subscribe(
+      resultFdata => {
+        console.log(resultFdata);
+        var fdata = resultFdata[0];
+       
     this.rightDetailsContent.facilityTankPaidMessage = null;
     this.showRightDetailPanel();
     // this.showRightContent = false;
@@ -578,12 +607,13 @@ gasRefreshClicked=false;
     this.selectedFacility = fdata;
     this.rightDetailsContent.facilityId = fdata.facilityId;
     this.rightPaneDetailslTitle = fdata.name;
-    this.rightDetailsContent.image = fdata.image;
+    this.rightDetailsContent.image = environment.server + fdata.imageURL;
     this.rightDetailsContent.facilityName = fdata.name;
     this.rightDetailsContent.docUpdateDate = new Date();
     this.rightDetailsContent.city = fdata.city;
     this.rightDetailsContent.fid = fdata.fid;
-    this.rightDetailsContent.img = fdata.img;
+    
+    this.rightDetailsContent.img = environment.server + fdata.imageURL;
     this.rightDetailsContent.notificationFormButtonEnable = fdata.notificationFormButtonEnable;
     this.rightDetailsContent.complianceButtonEnable = fdata.complianceButtonEnable;
     this.rightDetailsContent.certificationButtonEnable = fdata.certificationButtonEnable;
@@ -596,16 +626,17 @@ gasRefreshClicked=false;
     this.rightDetailsContent.csldButtonStatus = fdata.csldButtonStatus;
     this.rightDetailsContent.incomeExpenseUpdatesButtonEnable = fdata.incomeExpenseUpdatesButtonEnable;
     this.rightDetailsContent.address = fdata.address;
-    this.rightDetailsContent.tankPaidService = fdata.tankPaidService;
-    this.rightDetailsContent.paidService = fdata.paidService;
+    this.rightDetailsContent.tankPaidService = fdata.tankPaidService == "true";;
+    this.rightDetailsContent.paidService = fdata.paidService == "true";;
     this.rightDetailsContent.storeManager = fdata.storeManager;
     this.rightDetailsContent.projectManager = fdata.projectManager;
     this.rightDetailsContent.projectManagerPhone = fdata.projectManagerPhone;
     this.rightDetailsContent.tankPm = fdata.tankPm;
-    this.rightDetailsContent.compliance = fdata.compliance;
+    this.rightDetailsContent.compliance = fdata.compliance == "true";;
     this.rightDetailsContent.backConsolidateReport = fdata.consolidateReport;
     this.rightDetailsContent.stationConnectError = false;
     this.rightDetailsContent.stationConnectErrorMessage = "";
+    this.rightDetailsContent.tankMonitorLabelsAndValues = fdata.tankMonitorLabelsAndValues;
 
     this.rightDetailsContent.consolidateReport = [];
     if(fdata.consolidateReport!=null)
@@ -622,6 +653,10 @@ gasRefreshClicked=false;
     this.actualServerData.requestFrom = "golarsTank";
     this.actualServerData.clientContact=fdata.clientContact;
 
+      },
+    error => {
+      console.log(error);
+    });
 
   }
 
@@ -674,28 +709,48 @@ gasRefreshClicked=false;
     this.companiesClass = "ui-g-12";
     this.showRightContent = false;
     this.showBack = true;
+    this.tempfacilitiesRightdata=[];
+    this.tempCompaniesRightdata=[];
+    this.middleFacilityCurrentPage=1;
     if (!this.commonService.getMobileAccess() &&($event == null || $event == undefined)) {
       this.fetchDashboardValues(false);
       return;
     }
     this.showRightContent = true;
     this.rightPanelTitle = this.dashboardConst.MYCOMPANIES + " -- " + " (" + this.totalCompanies + ")";
-    this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all thd parent folders
+    this.dashboardService.getCompaniesList(this.commonService.getUserName()) // retrieve all companies
       .subscribe(
         companiesList => {
-          for (var i = 0; i < companiesList.length; i++) {
-            var faciData = companiesList[i];
-            for (var j = 0; j < faciData.facilities.length; j++) {
-              if (faciData.facilities[j].compliance != null)
-                faciData.facilities[j].compliance = faciData.facilities[j].compliance == "true";
-                if (faciData.facilities[j].tankPaidService != null)
-                faciData.facilities[j].tankPaidService = faciData.facilities[j].tankPaidService == "true";
-                if (faciData.facilities[j].paidService != null)
-                faciData.facilities[j].paidService = faciData.facilities[j].paidService == "true";
-              faciData.facilities[j].image = environment.server + faciData.facilities[j].imageURL;
-            }
-            this.companiesRightdata.push(faciData);
+          for (let index = 0; index < companiesList.length; index++) {
+            this.tempCompaniesRightdata.push(companiesList[index]);
+            
           }
+          // this.tempCompaniesRightdata.concat(companiesList) ;
+          if(this.tempCompaniesRightdata.length <= this.middleFacilityDisplayCount){
+            for (let index = 0; index < this.tempCompaniesRightdata.length; index++) {
+              this.companiesRightdata.push(this.tempCompaniesRightdata[index]);
+              
+            }
+          }
+          
+          else
+          for (let index = 0; index < this.middleFacilityDisplayCount; index++) {
+            this.companiesRightdata.push(this.tempCompaniesRightdata[index]);
+            
+          }
+          // for (var i = 0; i < companiesList.length; i++) {
+          //   var faciData = companiesList[i];
+          //   for (var j = 0; j < faciData.facilities.length; j++) {
+          //     if (faciData.facilities[j].compliance != null)
+          //       faciData.facilities[j].compliance = faciData.facilities[j].compliance == "true";
+          //       if (faciData.facilities[j].tankPaidService != null)
+          //       faciData.facilities[j].tankPaidService = faciData.facilities[j].tankPaidService == "true";
+          //       if (faciData.facilities[j].paidService != null)
+          //       faciData.facilities[j].paidService = faciData.facilities[j].paidService == "true";
+          //     faciData.facilities[j].image = environment.server + faciData.facilities[j].imageURL;
+          //   }
+          //   this.companiesRightdata.push(faciData);
+          // }
 
         },
         error => {
@@ -782,6 +837,9 @@ gasRefreshClicked=false;
     this.dashboardService.getComplianceList(this.commonService.getUserName(), complianceParam) // retrieve all thd parent folders
       .subscribe(
         complianceList => {
+          this.complianceRightdata=[];
+          this.middleFacilityCurrentPage=1;
+          this.tempfacilitiesRightdata=[];
           if (complianceList !== null)
             for (var i = 0; i < complianceList.length; i++) {
               var faciData = complianceList[i];
@@ -790,8 +848,17 @@ gasRefreshClicked=false;
               faciData.tankPaidService = faciData.tankPaidService == "true";
               faciData.paidService = faciData.paidService == "true";
               faciData.image = environment.server + faciData.imageURL;
-              this.complianceRightdata.push(faciData);
+              this.tempfacilitiesRightdata.push(faciData);
+          }
+        if(complianceList.length<this.middleFacilityDisplayCount){
+          this.complianceRightdata = this.tempfacilitiesRightdata;
+        }
+          else{
+            for (let index = 0; index < this.middleFacilityDisplayCount; index++) {
+              this.complianceRightdata.push(this.tempfacilitiesRightdata[index]);
+              
             }
+          }
 
         },
         error => {
@@ -1065,8 +1132,8 @@ gasRefreshClicked=false;
       this.middlePaneClass = "ui-g-12";
     else
       this.middlePaneClass = "ui-g-6";
-    this.area.center = 40;
-    this.area.right = 40;
+    this.area.center = 30;
+    this.area.right = 50;
     this.area.rightVisible = true;
   }
   hideRightContentDetails(rightDetailsContent) {
@@ -1673,7 +1740,7 @@ gasRefreshClicked=false;
   resetIncomeExpenatureForm(){
   
     this.vendorsList=[];;
-    this.incomeModal={fromDate:new Date,toDate:new Date(),startDateForAdmin:new Date(),endDateForAdmin:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
+    this.incomeModal={fromDate:new Date,toDate:new Date(),startDateForAdmin:new Date(),endDateForAdmin:new Date(),gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,cigaretteSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
     this.expenditureModel={checkdate:new Date(),startDateForAdmin:new Date,endDateForAdmin:new Date()};
     this.incomeData={};
     this.expencesData={};
@@ -1689,7 +1756,7 @@ gasRefreshClicked=false;
     this.todayExpenses = [];
     this.todayIncome = [];
     this.incomeChartByList=[{name: 'Monthly Income', value: 'MonthlyIncome'},
-  {name: 'By Item', value: 'ByItem'}];;
+  {name: 'By Item', value: 'ByItem'},{name: 'Net Income', value: 'netIncome'}];;
   this.expensesModel={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date()};
   this.incomeChartModel={ startDate:new Date(new Date().setFullYear(new Date().getFullYear() -1)),endDate:new Date(),incomeChartByItem:"Monthly Income"};
   this.incomeTabIndex=0;
@@ -1724,6 +1791,10 @@ gasRefreshClicked=false;
         // var image = this.commonService.gasStationImage(feciData.brand)
         if (faciData.tankPaidService != null)
           faciData.tankPaidService = faciData.tankPaidService == "true";
+        if (faciData.compliance != null)
+          faciData.compliance = faciData.compliance == "true";
+        if (faciData.paidService != null)
+          faciData.paidService = faciData.paidService == "true";
         // feciData.image = "assets/images/gasstation/"+image;
         faciData.image = environment.server + faciData.imageURL;
       }
@@ -1736,6 +1807,10 @@ gasRefreshClicked=false;
           // var image = this.commonService.gasStationImage(feciData.brand)
           if (faciData.facilities[j].tankPaidService != null)
             faciData.facilities[j].tankPaidService = faciData.facilities[j].tankPaidService == "true";
+          if (faciData.facilities[j].compliance != null)
+            faciData.facilities[j].compliance = faciData.facilities[j].compliance == "true";
+          if (faciData.facilities[j].paidService != null)
+            faciData.facilities[j].paidService = faciData.facilities[j].paidService == "true";
           faciData.facilities[j].image = faciData.image = environment.server + faciData.facilities[j].imageURL;
         }
         this.companiesRightdata.push(faciData);
@@ -1847,7 +1922,7 @@ gasRefreshClicked=false;
     if (this.commonService.isAdmin())
       return;
     $('#consolidateFacilityModal').modal('show');
-    this.dashboardService.getFacilitiesList(this.commonService.getUserName(), "managed") // retrieve all thd parent folders
+    this.dashboardService.getFacilitiesListWithFullDetails(this.commonService.getUserName(), "managed") // retrieve all thd parent folders
       .subscribe(
         facilitiesList => {
           for (var i = 0; i < facilitiesList.length; i++) {
@@ -1898,6 +1973,7 @@ gasRefreshClicked=false;
         });
 
   }
+  
 
   refreshGasLevel(rightDetailsContent){
     this.gasRefreshClicked = true;
@@ -1905,7 +1981,8 @@ gasRefreshClicked=false;
     .subscribe(
       facility => {
         this.gasRefreshClicked = false;
-
+        if(facility.facilityId !== rightDetailsContent.facilityId)
+        return;
         if (facility !== null || facility.consolidateReport.length>0) {
           this.selectedFacility.consolidateReport =facility.consolidateReport;
           this.rightDetailsContent.consolidateReport =  this.generateInventoryReportForRightSideData(facility.consolidateReport, facility.consolidateReport,this.rightDetailsContent.gasLevel);
@@ -1997,29 +2074,80 @@ gasRefreshClicked=false;
         console.log(error);
       });
   }
-  getCSCLStatusModalData(facilityId){
-    this.setTankTitles(3);
-    this.tankDetailsData=[];
-
-    this.dashboardService.getCSLDTestDetails(this.commonService.getUserName(), facilityId) 
+  getTankMonitorData(rightDetailsContent,reportType,keycode){
+    this.tankreportData=null;
+    this.dashboardService.getFacilityReportDirectlyFromStation(this.commonService.getUserName(),rightDetailsContent.fid,rightDetailsContent.facilityId,reportType,keycode) 
     .subscribe(
-      leakTankDetails => {
-
-        this.tankDetailsData = leakTankDetails;
-        this.tankDetailsKeys =["UNLEADED","PREMIUM", "DIESEL"];
-        this.tankDetailsFirstTabData = this.tankDetailsData[this.tankDetailsKeys[0]];
-        this.tankDetailsSecondTabData = this.tankDetailsData[this.tankDetailsKeys[1]];
-        this.tankDetailsThirdTabData = this.tankDetailsData[this.tankDetailsKeys[2]];
-        this.tankDetailsFirstTabKeys = Object.keys(this.tankDetailsFirstTabData).sort();
-        this.tankDetailsSecondTabKeys = Object.keys(this.tankDetailsSecondTabData).sort();
-        this.tankDetailsThirdTabKeys = Object.keys(this.tankDetailsThirdTabData).sort();
-        this.selectedTankReportTTab = "CSLDTest";
-        console.log(leakTankDetails)
-
+      reportData => {
+        this.tankreportData = reportData;
+        console.log(this.tankreportData.contentAsText);
       },
       error => {
+        this.gasRefreshClicked = false;
         console.log(error);
       });
+  }
+  printFacilityReport(){
+    // const printContent = document.getElementById("facilityReportId");
+// const WindowPrt = window.open('', '', 'left=0,top=0,width=900,height=900,toolbar=0,scrollbars=0,status=0');
+// WindowPrt.document.write('<pre>'+this.tankreportData+'</pre>');
+var uniqueName = new Date();
+var windowName = 'Print' + uniqueName.getTime();
+
+var printWindow = window.open("_blank", windowName, 'left=200,top=200,width=800,height=600');               
+
+printWindow.document.write('<html>\n'); 
+printWindow.document.write('<head>\n');                
+
+printWindow.document.write('<script>\n');
+         
+printWindow.document.write('function winPrint()\n');
+printWindow.document.write('{\n');
+printWindow.document.write('window.focus();\n');  
+
+
+if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1)
+{
+printWindow.document.write('printChrome();\n');             
+}
+else
+{       
+   printWindow.document.write('window.print();\n');
+}
+
+        
+printWindow.document.write('}\n');
+
+
+printWindow.document.write('function chkstate()\n');
+printWindow.document.write('{\n');
+printWindow.document.write('setTimeout("chkstate();",3000);\n');
+printWindow.document.write('}\n');
+
+printWindow.document.write('function printChrome()\n');
+printWindow.document.write('{\n');        
+printWindow.document.write('if(document.readyState=="complete")');
+printWindow.document.write('{\n');                                                     
+printWindow.document.write('window.print();\n');
+printWindow.document.write('}\n');
+printWindow.document.write('else{\n');                      
+printWindow.document.write('setTimeout("printChrome();",3000);\n');
+printWindow.document.write('}\n');
+printWindow.document.write('}\n');
+
+
+printWindow.document.write('</scr');
+printWindow.document.write('ipt>');        
+
+printWindow.document.write('</head>');
+printWindow.document.write('<body onload="winPrint()" >');            
+printWindow.document.write('<div style="height: 100%;"><pre>');
+printWindow.document.write(this.tankreportData.contentAsText);
+printWindow.document.write('</pre></div>');
+printWindow.document.write('</body>'); 
+printWindow.document.write('</html>'); 
+printWindow.document.close();
+
   }
   setTankTitles(index){
 if(index == 1){
@@ -2156,7 +2284,7 @@ fetchTodaysExpensesData(fromDate,toDate){
             this.showSiteIncomeFailureMessage=false;
             this.siteIncomeSuccessMessage = "Site Income Saved Successfully.";
             this.siteIncomeFailureMessage = ""
-            this.incomeModal={fromDate:new Date,toDate:new Date(),startDateForAdmin:this.incomeModal.startDateForAdmin,endDateForAdmin:this.incomeModal.endDateForAdmin,gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
+            this.incomeModal={fromDate:new Date,toDate:new Date(),startDateForAdmin:this.incomeModal.startDateForAdmin,endDateForAdmin:this.incomeModal.endDateForAdmin,gallonsSold:0,gasAmount:0.0,insideSalesAmount:0.0,cigaretteSalesAmount:0.0,lotteryAmount:0.0,scratchOffSold:0.0,tax:0.0};
             if(this.actualServerData.clientContact === null)
               this.fetchTodaysIncomeData(this.incomeModal.fromDate,this.incomeModal.toDate);
               else
@@ -2305,13 +2433,47 @@ fetchTodaysExpensesData(fromDate,toDate){
     });
   
   }
+  fetchIncomeValuesForChartByNetIncome(){
+    this.incomeChartModel.accountID=this.rightDetailsContent.facilityId;
+    this.incomeChartModel.fID = this.rightDetailsContent.fid;
+    this.incomeChartModel.id = this.commonService.getUserName();
+    this.incomeChartModel.fromFormatedDate =this.customDatePipe.transform(this.incomeChartModel.startDate);
+    this.incomeChartModel.endFormatedDate =this.customDatePipe.transform(this.incomeChartModel.endDate);
+    this.incomeChartModel.chartType =this.incomeChartModel.incomeChartByItem;
+    
+    this.dashboardService.getIncomeDataByNetIncome(this.incomeChartModel)
+   .subscribe( incomeData => {
+    this.incomeData = {
+      labels: [],
+      datasets: [
+        {
+          data: [],
+          label: 'Income',
+          backgroundColor: '#42A5F5',
+          borderColor: '#1E88E5',
+        }
+      ]
+    };
+
+    for (var i = 0; i < incomeData.length; i++) {
+      this.incomeData.labels.push(incomeData[i].key);
+      this.incomeData.datasets[0].data.push(Number(incomeData[i].value));
+    }
+    },
+    error => {
+      console.log(error);
+    });
+  
+  }
   fetchIncomeChartValues(){
     // console.log($event.value.value)
     if(this.incomeChartModel.incomeChartByItem === 'Monthly Income'||this.incomeChartModel.incomeChartByItem.value === 'MonthlyIncome'){
       this.fetchIncomeValuesForChartByMonthly();
     }
-      else{
+      else if(this.incomeChartModel.incomeChartByItem === 'By Item'||this.incomeChartModel.incomeChartByItem.value === 'ByItem'){
       this.fetchIncomeValuesForChartByType();
+    } else{
+      this.fetchIncomeValuesForChartByNetIncome();
     }
     }
     fetchIncomeValuesForChartByType(){
@@ -2329,12 +2491,13 @@ fetchTodaysExpensesData(fromDate,toDate){
         datasets: [
         ]
       };
-      var labelsList = ["Gallons Sold","Gas Amount","Inside Sales Amount","Lottery Amount","Scratch Off Sold"];
-      var backgroundColorsList = ['#3A90DB','#6E8342','#563A5E','#F4AA60','#858585'];
+      var labelsList = ["Gallons Sold","Gas Sales","Inside Sales","Cigarette Sales","Lottery Sales","Scratch-Off Sales"];
+      var backgroundColorsList = ['#3A90DB','#6E8342','#563A5E','#A0A488','#F4AA60','#858585'];
       this.incomeData.labels=[];
       var gallonsSold=[];
       var gasAmount=[];
       var insideSalesAmount=[];
+      var cigaretteSalesAmount=[];
       var lotteryAmount=[];
       var scratchOffSold=[];
 
@@ -2345,6 +2508,7 @@ fetchTodaysExpensesData(fromDate,toDate){
         gallonsSold.push(Number(incomeData[i].gallonsSold));
         gasAmount.push(Number(incomeData[i].gasAmount));
         insideSalesAmount.push(Number(incomeData[i].insideSalesAmount));
+        cigaretteSalesAmount.push(Number(incomeData[i].cigaretteSalesAmount));
         lotteryAmount.push(Number(incomeData[i].lotteryAmount));
         scratchOffSold.push(Number(incomeData[i].scratchOffSold));
       }
@@ -2356,8 +2520,9 @@ fetchTodaysExpensesData(fromDate,toDate){
       this.incomeData.datasets[0].data=gallonsSold
       this.incomeData.datasets[1].data=gasAmount
       this.incomeData.datasets[2].data=insideSalesAmount
-      this.incomeData.datasets[3].data=lotteryAmount
-      this.incomeData.datasets[4].data=scratchOffSold
+      this.incomeData.datasets[3].data=cigaretteSalesAmount
+      this.incomeData.datasets[4].data=lotteryAmount
+      this.incomeData.datasets[5].data=scratchOffSold
       },
       error => {
         console.log(error);
@@ -2370,6 +2535,7 @@ fetchTodaysExpensesData(fromDate,toDate){
       this.incomeModal.gallonsSold = incomeRec.gallonsSold;
       this.incomeModal.gasAmount = incomeRec.gasAmount;
       this.incomeModal.insideSalesAmount = incomeRec.insideSalesAmount;
+      this.incomeModal.cigaretteSalesAmount = incomeRec.cigaretteSalesAmount;
       this.incomeModal.lotteryAmount = incomeRec.lotteryAmount;
       this.incomeModal.scratchOffSold = incomeRec.scratchOffSold;
       this.incomeModal.id = incomeRec.id;
@@ -2434,7 +2600,9 @@ fetchTodaysExpensesData(fromDate,toDate){
   month;
   chartTypeSelected;
   isChartSpecficItem(item) {
-    if (this.incomeChartModel.incomeChartByItem.value == "ByItem" && this.chartTypeSelected == item || (this.incomeChartModel.incomeChartByItem == 'Monthly Income' ||this.incomeChartModel.incomeChartByItem.value == 'MonthlyIncome')) {
+    if (this.incomeChartModel.incomeChartByItem.value == "ByItem" && this.chartTypeSelected == item || 
+    (this.incomeChartModel.incomeChartByItem == 'Monthly Income' ||this.incomeChartModel.incomeChartByItem.value == 'MonthlyIncome')
+    ||(this.incomeChartModel.incomeChartByItem == 'Net Income' ||this.incomeChartModel.incomeChartByItem.value == 'netIncome')) {
       return true;
     }
     return false;
@@ -2507,7 +2675,8 @@ fetchTodaysExpensesData(fromDate,toDate){
 
   checkIncomeFormValues(){
     if(this.incomeModal.fromDate ==null || this.incomeModal.toDate ==null ||this.incomeModal.gallonsSold ==null|| 
-      this.incomeModal.gasAmount ==null||this.incomeModal.insideSalesAmount ==null|| this.incomeModal.lotteryAmount ==null|| this.incomeModal.scratchOffSold ==null
+      this.incomeModal.gasAmount ==null||this.incomeModal.insideSalesAmount ==null
+      ||this.incomeModal.cigaretteSalesAmount ==null|| this.incomeModal.lotteryAmount ==null|| this.incomeModal.scratchOffSold ==null
       || this.siteIncomeSubmitted)
     return true;
   return false;
@@ -2528,4 +2697,130 @@ fetchTodaysExpensesData(fromDate,toDate){
         return consolidateReport[index].value;
     return null;
   }
+  getTankReportsHeight(){
+    if(this.rightDetailsContent == null || this.rightDetailsContent.tankMonitorLabelsAndValues == null ||
+      this.rightDetailsContent.tankMonitorLabelsAndValues.length <=6 )
+      return 200+"px";
+      return (this.rightDetailsContent.tankMonitorLabelsAndValues.length/3)*100+"px";
+  }
+  getMiddlePanelHeightClass(){
+    if(this.tempfacilitiesRightdata !=null && this.tempfacilitiesRightdata.length > this.middleFacilityDisplayCount||
+      this.tempCompaniesRightdata !=null && this.tempCompaniesRightdata.length > this.middleFacilityDisplayCount)
+    return "middle-panel-hight-include-footer";
+    return "middle-panel-hight-include-without-footer";
+  }
+  previousFacilitiesPage() {
+    if (this.middleFacilityCurrentPage <=1)
+      return;
+      this.hideRightContentDetails(this.rightDetailsContent);
+    if (this.middleFacilityCurrentPage > 1) {
+      this.middleFacilityCurrentPage--;
+
+      this.facilitiesRightdata = [];
+      var startIndex = this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1);
+      var endIndex = this.middleFacilityCurrentPage * this.middleFacilityDisplayCount;
+      console.log(this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1), "<--startIndex ---endIndex-->", endIndex)
+      for (let index = startIndex; index < endIndex; index++) {
+
+        if (this.tempfacilitiesRightdata[index] == null)
+          break;
+        this.facilitiesRightdata.push(this.tempfacilitiesRightdata[index]);
+
+      }
+      console.log("this.facilitiesRightdata ", this.facilitiesRightdata.length)
+    }
+  }
+
+  nextFacilitiesPage() {
+    if (this.middleFacilityCurrentPage * this.middleFacilityDisplayCount >= this.tempfacilitiesRightdata.length)
+      return;
+      this.hideRightContentDetails(this.rightDetailsContent);
+    if (this.middleFacilityCurrentPage >= 1) {
+      this.middleFacilityCurrentPage++;
+
+      this.facilitiesRightdata = [];
+      var startIndex = this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1);
+      var endIndex = this.middleFacilityCurrentPage * this.middleFacilityDisplayCount;
+      console.log(this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1), "<--startIndex ---endIndex-->", endIndex)
+      for (let index = startIndex; index < endIndex; index++) {
+
+        if (this.tempfacilitiesRightdata[index] == null)
+          break;
+        this.facilitiesRightdata.push(this.tempfacilitiesRightdata[index]);
+
+      }
+      console.log("this.facilitiesRightdata ", this.facilitiesRightdata.length)
+    }
+  }
+  onComapnyTabOpen($event){
+    const index = $event.index;
+    const company = this.companiesRightdata[index];
+    var companyName = company.companyName;
+  console.log("The selected company is "+company.name);
+    company.facilities=[];
+    this.dashboardService.getFacilitiesForCompany(this.commonService.getUserName(),companyName) // retrieve all companies
+    .subscribe(
+      facitiesList => {
+        console.log("The selected company facility size  is "+facitiesList.length);
+        for (var j = 0; j < facitiesList.length; j++) {
+          if (facitiesList[j].compliance != null)
+          facitiesList[j].compliance = facitiesList[j].compliance == "true";
+            if (facitiesList[j].tankPaidService != null)
+            facitiesList[j].tankPaidService = facitiesList[j].tankPaidService == "true";
+            if (facitiesList[j].paidService != null)
+            facitiesList[j].paidService = facitiesList[j].paidService == "true";
+            facitiesList[j].image = environment.server + facitiesList[j].imageURL;
+            company.facilities.push(facitiesList[j])
+        }
+        
+      },
+      error => {
+        console.log(error);
+      });
+
+  }
+  previousCompaniesPage() {
+    if (this.middleFacilityCurrentPage <=1)
+      return;
+      this.hideRightContentDetails(this.rightDetailsContent);
+    if (this.middleFacilityCurrentPage > 1) {
+      this.middleFacilityCurrentPage--;
+
+      this.companiesRightdata = [];
+      var startIndex = this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1);
+      var endIndex = this.middleFacilityCurrentPage * this.middleFacilityDisplayCount;
+      console.log(this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1), "<--startIndex ---endIndex-->", endIndex)
+      for (let index = startIndex; index < endIndex; index++) {
+
+        if (this.tempCompaniesRightdata[index] == null)
+          break;
+        this.companiesRightdata.push(this.tempCompaniesRightdata[index]);
+
+      }
+      console.log("this.companiesRightdata ", this.companiesRightdata.length)
+    }
+  }
+
+  nextCompaniesPage() {
+    if (this.middleFacilityCurrentPage * this.middleFacilityDisplayCount >= this.tempCompaniesRightdata.length)
+      return;
+      this.hideRightContentDetails(this.rightDetailsContent);
+    if (this.middleFacilityCurrentPage >= 1) {
+      this.middleFacilityCurrentPage++;
+
+      this.companiesRightdata = [];
+      var startIndex = this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1);
+      var endIndex = this.middleFacilityCurrentPage * this.middleFacilityDisplayCount;
+      console.log(this.middleFacilityDisplayCount * (this.middleFacilityCurrentPage - 1), "<--startIndex ---endIndex-->", endIndex)
+      for (let index = startIndex; index < endIndex; index++) {
+
+        if (this.tempCompaniesRightdata[index] == null)
+          break;
+        this.companiesRightdata.push(this.tempCompaniesRightdata[index]);
+
+      }
+      console.log("this.companiesRightdata ", this.companiesRightdata.length)
+    }
+  }
+ 
 }

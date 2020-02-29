@@ -37,9 +37,13 @@ public class Facilities {
 	private String facilityTankPaidMessage;
 	private String incomeExpenseUpdatesButtonEnable;
 	private String clientContact;
+	private String tankMonitorStaticIP;
+	private String tankMonitorBrand;
+	private String tankMonitorModel;
 	private String gasLevelUpdatedDate;
 	private boolean stationConnectError = false;
 	private String stationConnectErrorMessage;
+	private List<KeyValue> tankMonitorLabelsAndValues =new ArrayList<>();
 
 	private List<KeyValue> consolidateReport = new ArrayList<KeyValue>();
 
@@ -317,5 +321,35 @@ public class Facilities {
 	}
 	public String getStationConnectErrorMessage() {
 		return stationConnectErrorMessage;
+	}
+
+	public String getTankMonitorStaticIP() {
+		return tankMonitorStaticIP;
+	}
+
+	public void setTankMonitorStaticIP(String tankMonitorStaticIP) {
+		this.tankMonitorStaticIP = tankMonitorStaticIP;
+	}
+
+	public String getTankMonitorBrand() {
+		return tankMonitorBrand;
+	}
+
+	public void setTankMonitorBrand(String tankMonitorBrand) {
+		this.tankMonitorBrand = tankMonitorBrand;
+	}
+
+	public String getTankMonitorModel() {
+		return tankMonitorModel;
+	}
+
+	public void setTankMonitorModel(String tankMonitorModel) {
+		this.tankMonitorModel = tankMonitorModel;
+	}
+	public void setTankMonitorLabelsAndValues(List<KeyValue> tankMonitorLabelsAndValues) {
+		this.tankMonitorLabelsAndValues = tankMonitorLabelsAndValues;
+	}
+	public List<KeyValue> getTankMonitorLabelsAndValues() {
+		return tankMonitorLabelsAndValues;
 	}
 }

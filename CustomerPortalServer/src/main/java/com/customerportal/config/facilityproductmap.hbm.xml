@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+ <class name="com.customerportal.bean.FacilityProductMap" table="facility_product_map__c">
+ 		<id name="id">
+			<column name="Id" />
+		</id>
+  <property name="facility" column="Facility__c"  />
+  <property name="product" column="Product__c"  />
+  <property name="fuelType" column="Fuel_Type__c"  />	
+ </class>
+</hibernate-mapping>

@@ -1,7 +1,12 @@
 package com.customerportal.util;
 
+import java.io.FileInputStream;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -11,6 +16,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.io.IOUtils;
 
 import com.customerportal.bean.User;
 
@@ -23,13 +30,13 @@ public class MailUtil {
 		user.setUsername("test");
 		user.setPassword("test");
 		user.setEmailAddress("avsrinivasa3@gmail.com,avsrinivasa@gmail.com");
-		new MailUtil().sendEmail(user, false);
+		new MailUtil().sendEmailWithContent("cdondeti@golars.com,avsrinivasa@gmail.com","c:\\test\\InventoryReport_20200222195243.txt","I20100","inventory",null);
 
 	}
 
 	static Properties emailProperties = new Properties();
 
-	Message fetchEmailProperties() {
+	Message fetchEmailProperties(boolean isAddCC) {
 
 		try {
 			Class<MailUtil> cl = MailUtil.class;
@@ -58,6 +65,8 @@ public class MailUtil {
 		try {
 
 			message.setFrom(new InternetAddress(fromAddress));
+			if(isAddCC)
+				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(fromAddress));
 		} catch (MessagingException e) {
 			System.out.println("Exception occured during mail send --" + e.getMessage());
 		}
@@ -67,7 +76,7 @@ public class MailUtil {
 	public void sendEmail(User userobj, boolean isEdit) {
 
 		try {
-			Message message = fetchEmailProperties();
+			Message message = fetchEmailProperties(false);
 			if(emailProperties.getProperty("sendEmail").equalsIgnoreCase("false")){
 				System.out.println("Sending Email is disabled. To enable change 'sendEmail' property value to true in emailconfig.properties and restart the server");
 				return;
@@ -98,7 +107,7 @@ public class MailUtil {
 
 	public void sendforgotPasswordEmail(String toAddress, String username, String link) {
 		try {
-			Message message = fetchEmailProperties();
+			Message message = fetchEmailProperties(false);
 
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddress));
 			String messageText = "<h4> Golars 360 </h4>Reset Password <p>Please use the <a href=" + link + "?username="
@@ -115,10 +124,48 @@ public class MailUtil {
 		}
 
 	}
+	private Date yesterday() {
+	    final Calendar cal = Calendar.getInstance();
+	    cal.add(Calendar.DATE, -1);
+	    return cal.getTime();
+	}
+	public void sendEmailWithContent(String toAddress, String filename,String keycode, String type, User user) {
+		try {
+			Message message = fetchEmailProperties(true);
+
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddress));
+			
+			FileInputStream fileContnt;
+			try {
+				fileContnt = new FileInputStream(filename);
+				String fileContntString = IOUtils.toString(fileContnt, "UTF-8");
+				if(fileContntString !=null && fileContntString.length()>0 && keycode !=null)
+				fileContntString = fileContntString.replaceAll(keycode, "");
+				String messageText = "<html><body style='font-size:6px;'><pre>"+fileContntString+"</pre></body></html>";
+				DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				if (type.equalsIgnoreCase("inventory"))
+					message.setSubject("Inventory Report for the date "+dateFormat.format(yesterday()));
+				else
+					message.setSubject("Tank Alarm (Priority) for the date "+dateFormat.format(yesterday()));
+					
+				message.setContent(messageText, "text/html; charset=utf-8");
+				Transport.send(message);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("sendEmailWithAttachment failure "+e.getMessage());
+				return;
+			} 
+			System.out.println("Mail sent succesfully to : " + toAddress);
+
+		} catch (MessagingException e) {
+			System.out.println("Exception occured during mail send --" + e.getMessage());
+		}
+
+	}
 
 	public void bulkImportEmail(User userobj, int totalURLCount) {
 		try {
-			Message message = fetchEmailProperties();
+			Message message = fetchEmailProperties(false);
 
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userobj.getEmailAddress()));
 			String messageText = "";

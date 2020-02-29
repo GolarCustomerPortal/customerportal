@@ -21,6 +21,13 @@ export class HttpService {
             .catch(this.handleError);
     }
 
+    getReport(url, options?) {
+        return this.http.get(url, options)
+            .map(res => res)
+            .retry(1)
+            .catch(this.handleError);
+    }
+
     post(url, data, options?) {
         var result = this.commonService.checkAndUpdateLoginTime();
         if (result == false)

@@ -155,16 +155,23 @@ background: #ebf7ec !important;
     background-color: #afe1b6 !important;
     color: #2c347e !important; 
 }
+.tank-report-tile{
+    background-color: #007bff;
+    color: white !important;
+    min-height: 50px;
+    padding-top: 10px !important;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 10px;
+}
 .btn-tank-circle {
-    width: 70px;
-    height: 70px;
-    padding: 6px 0px;
-    border-radius: 50px !important;
+    height: 60px;
     text-align: center;
     font-size: 12px;
     line-height: 1.42857;
-    background-color: transparent !important;
-    color: #2c347e !important;
+    color: white !important;
+    border-radius: 20px !important;
 }
 .facility-button-background-notification-red{
     background-color: #ef4136  !important;
@@ -346,6 +353,10 @@ text-align: center;
     padding-left: 20px !important;
 }
 .ui-card-shadow{
+    border-radius: 15px;
+    min-height: 200px;
+}
+#tankReports .ui-card-shadow{
     border-radius: 15px;
     min-height: 200px;
 }
@@ -627,4 +638,23 @@ legend {
 }
 #incomeAndexpenditureModal .btn{
     min-height: 28px !important;
+}
+.multi_lines_text { 
+    white-space: pre-line; 
+    background-color: black;
+    color: white;
+}
+@media print {
+    @page { margin: 0; }
+  }
+  .middle-panel-hight-include-without-footer{
+    overflow-y: auto;
+    height:calc(100vh - 138px)
+  }
+  .middle-panel-hight-include-footer{
+    overflow-y: auto;
+    height:calc(100vh - 178px)
+  }
+.modal-lg {
+    max-width: 900px;
 }

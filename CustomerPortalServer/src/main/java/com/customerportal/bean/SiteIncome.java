@@ -17,6 +17,7 @@ public class SiteIncome {
 	private double gallonsSold;
 	private double gasAmount;
 	private double insideSalesAmount;
+	private double cigaretteSalesAmount;
 	private double lotteryAmount;
 	private double scratchOffSold;
 	private Date toDate;
@@ -172,4 +173,11 @@ public class SiteIncome {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public void setCigaretteSalesAmount(double cigaretteSalesAmount) {
+		this.cigaretteSalesAmount = cigaretteSalesAmount;
+	}
+
+	public double getCigaretteSalesAmount() {
+		return cigaretteSalesAmount;
+	}
 }
