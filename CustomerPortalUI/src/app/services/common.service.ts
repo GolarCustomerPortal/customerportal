@@ -310,6 +310,13 @@ export class CommonService {
     }
   }
   isloginUserManager(){
+    var user = localStorage.getItem('primaryUser');
+    if (user != null && user != undefined) {
+      var localuser = JSON.parse(user);
+        if(localuser.userManager)
+      return true;
+
+    }
     if (localStorage.getItem('secondaryUser')) {
       var user = localStorage.getItem('secondaryUser');
     if (user != null && user != undefined) {
