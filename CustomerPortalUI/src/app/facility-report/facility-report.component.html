@@ -1,9 +1,9 @@
 <div *ngIf="tankreportData?.stationConnectError === true" class="alert alert-danger">
   {{tankreportData?.stationConnectErrorMessage}}</div>
 
-<i *ngIf="tankreportData != null && tankreportData?.contentAsText?.length > 0" class="fa fa-print"
+  <!-- <a href="#"><i class="fa fa-print"
   style="font-size:24px;cursor: pointer;float:right; right: 23px;" (click)="printFacilityReport()"
-  title="Print Facility Report"></i>
+  title="Print Facility Report"></i></a> -->
 <p *ngIf="tankreportData == null">Loading Facility report....<i class="fa fa-spinner fa-spin"
     style="font-size:50px"></i></p>
 <div>
