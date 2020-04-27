@@ -1486,11 +1486,11 @@ public class DBUtil {
 			Transaction t = session.beginTransaction();
 
 			Query query = session.createNativeQuery(
-					"SELECT MAX(Date__c) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
+					"SELECT MAX(STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p')) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
 							+ facilities.getFacilityId()
-							+ "' and Date__c  = (SELECT MAX(Date__c) FROM inventoryreport__c where Facility__c='"
+							+ "' and STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p')  = (SELECT MAX(STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p')) FROM inventoryreport__c where Facility__c='"
 							+ facilities.getFacilityId()
-							+ "' )  group by Tank__C order by Date__C DESC;");
+							+ "' )  group by Tank__C order by STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p') DESC;");
 			List<Object[]> lst = query.list();
 			t.commit();
 			session.close();
@@ -1620,11 +1620,11 @@ public class DBUtil {
 
 		Query query = session
 				.createNativeQuery(
-						"SELECT MAX(Date__c) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
+						"SELECT MAX(STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p')) as DATETIME, PRODUCT__c, GALLONS__c, TANK__c FROM inventoryreport__c where Facility__c='"
 								+ facilities.getFacilityId()
-								+ "' and Date__c  = (SELECT MAX(Date__c ) FROM inventoryreport__c where Facility__c='"
+								+ "' and STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p')  = (SELECT MAX(STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p') ) FROM inventoryreport__c where Facility__c='"
 								+ facilities.getFacilityId()
-								+ "' )  group by Tank__C order by Date__C  DESC   ;");
+								+ "' )  group by Tank__C order by STR_TO_DATE(Date__c, '%b %d, %Y %l:%i %p')  DESC   ;");
 		List<Object[]> lst = query.list();
 		System.out.println(lst.size());
 		if (lst.size() > 0) {
@@ -1659,17 +1659,21 @@ public class DBUtil {
 					consolidateList.add(kv);
 				}
 				if(facilities.getGasLevelUpdatedDate()== null) {
-					SimpleDateFormat df=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+					SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 					df.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-					SimpleDateFormat df1=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+					SimpleDateFormat df1=new SimpleDateFormat("MMM dd, yyyy h:mm aa");
 					df1.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 				try {
-					facilities.setGasLevelUpdatedDate(df1.format(df.parse(iReport.getDateTime()+"")).toUpperCase());
+					String dateTime = iReport.getDateTime()+"";
+					if(dateTime.endsWith(".0")) {
+						dateTime = dateTime.substring(0,dateTime.indexOf(".0"));
+					}
+					facilities.setGasLevelUpdatedDate(df1.format(df.parse(dateTime)).toUpperCase());
 				} catch (ParseException e) {
 					if(facilities.getGasLevelUpdatedDate()== null) {
-						SimpleDateFormat df2=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+						SimpleDateFormat df2=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 						df2.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-						SimpleDateFormat df3=new SimpleDateFormat("MMM dd, yyyy kk:mm aa");
+						SimpleDateFormat df3=new SimpleDateFormat("MMM dd, yyyy h:mm aa");
 						df3.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 					try {
 						facilities.setGasLevelUpdatedDate(df3.format(df2.parse(iReport.getDateTime()+"")).toUpperCase());
