@@ -19,7 +19,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -29,12 +28,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.xmlbeans.impl.common.IOUtil;
 
+import com.customerportal.bean.Account;
 import com.customerportal.bean.Facilities;
 import com.customerportal.bean.FacilityReports;
 import com.customerportal.bean.InventoryReport;
 import com.customerportal.bean.KeyValue;
 import com.customerportal.bean.TankMonitorSignup;
 import com.customerportal.bean.User;
+import com.sforce.soap.enterprise.Connector;
+import com.sforce.soap.enterprise.EnterpriseConnection;
+import com.sforce.soap.enterprise.SaveResult;
+import com.sforce.soap.enterprise.sobject.Monthly_Report__c;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 
 public class CustomerPortalUtil {
 	static Properties imageProperties = new Properties();
@@ -199,7 +205,7 @@ public class CustomerPortalUtil {
 		System.out.println("fileName----" + fileName);
 		final TelnetClient telnet = new TelnetClient();
 		Facilities facility = null;
-		
+
 		try {
 			// get the tank report id
 			Class<GolarsUtil> cl = GolarsUtil.class;
@@ -318,16 +324,16 @@ public class CustomerPortalUtil {
 		}
 		System.out.println(fileLineList);
 		telnet.disconnect();
-		if(reportType.equalsIgnoreCase("inventory")) {
-		List<InventoryReport> inventoryReportList = saveInventoryDataInDb(fid, facilityId, facility, fileLineList);
-		DBUtil.getInstance().saveInventory(inventoryReportList);
-		List<KeyValue> keyvalues = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
-		facility.setConsolidateReport(keyvalues);
-		}else {
-			reportType="Tank Alarm (Priority)";
+		if (reportType.equalsIgnoreCase("inventory")) {
+			List<InventoryReport> inventoryReportList = saveInventoryDataInDb(fid, facilityId, facility, fileLineList);
+			DBUtil.getInstance().saveInventory(inventoryReportList);
+			List<KeyValue> keyvalues = DBUtil.getInstance().retrieveSpecifiFacilityConsolidateReport(facility);
+			facility.setConsolidateReport(keyvalues);
+		} else {
+			reportType = "Tank Alarm (Priority)";
 			FacilityReports report = DBUtil.getInstance().getFacilityReport(fid, reportType);
 			saveReportAsWhole(userid, fid, reportType, tankReportId, report, file);
-	
+
 		}
 // append two files
 		if (append) {
@@ -354,10 +360,10 @@ public class CustomerPortalUtil {
 	private static List<InventoryReport> saveInventoryDataInDb(String fid, String facilityId, Facilities facility,
 			List<String> fileLineList) {
 		List<InventoryReport> inventoryReportList = new ArrayList<>();
-		if(fileLineList ==null || fileLineList.size() <= 1)
+		if (fileLineList == null || fileLineList.size() <= 1)
 			return inventoryReportList;
 		String updatedDate = fileLineList.get(1).toString();
-		
+
 		for (int index = 8; index < fileLineList.size(); index++) {
 			String dataFirstRow[] = fileLineList.get(index).trim().split("\\s+");
 			if (dataFirstRow.length > 0 && dataFirstRow.length >= 6) {
@@ -545,7 +551,7 @@ public class CustomerPortalUtil {
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 		long howMany = (c.getTimeInMillis() - System.currentTimeMillis());
-		if(howMany<0) {
+		if (howMany < 0) {
 			c.add(Calendar.DAY_OF_MONTH, 1);
 			howMany = (c.getTimeInMillis() - System.currentTimeMillis());
 		}
@@ -565,7 +571,151 @@ public class CustomerPortalUtil {
 
 	public static void main(String[] args) {
 		System.out.println(new Date());
-		System.out.println(new Date(System.currentTimeMillis()+millisecondsTill430()));
+		System.out.println(new Date(System.currentTimeMillis() + millisecondsTill430()));
+
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		 Date time = calendar.getTime();
+			System.out.println(calendar.getTime());
+			long howMany = (calendar.getTimeInMillis() - System.currentTimeMillis());
+			System.out.println(calendar.getTimeInMillis());
+	}
+
+	public static void startSalesForceFacilityReports() throws IOException, InterruptedException {
+		final List<Monthly_Report__c> monthlyReportList = new ArrayList<>();
+		List<Account> accountList = DBUtil.getInstance().fetchFacilitiesForSalesforce();
+		System.out.println("total salesforce reports are for :  " + accountList.size());
+		for (Account account : accountList) {
+			List list = DBUtil.getInstance().fetchMonthlyRecordsId(account.getId());
+			for (int i = 0; i < list.size(); i++) {
+				Object[] obj = (Object[]) list.get(i);
+				if (obj[0] == null || obj[1] == null || obj[2] == null)
+					continue;
+				String facilityId = obj[0].toString();
+				String reportLabel = obj[1].toString();
+				final String code = obj[2].toString();
+				String ipaddress = null;
+				final TelnetClient telnet = new TelnetClient();
+				try {
+					ipaddress = account.getTankMonitorStaticIP();
+					if (ipaddress == null)
+						continue;
+					connectToStation(telnet, ipaddress, 10001, 1);
+				} catch (IOException e) {
+					System.out.println("There is a problem we need to reconnect for Ip: " + ipaddress + " message is "
+							+ e.getMessage());
+					continue;
+				}
+				Writer w = new OutputStreamWriter(telnet.getOutputStream());
+				w.write(1);
+				w.write(code + "\r\n");
+				w.flush();
+				System.out.println("ctrl+A typed");
+				Thread.sleep(1000);
+				endOfThInventoryFile = false;
+				final StringBuffer fileContent = new StringBuffer();
+				Thread fileWriter = new Thread() {
+					@Override
+					public void run() {
+						try {
+							byte[] tmp = new byte[1024];
+							while (true) {
+								if (endOfThInventoryFile)
+									break;
+
+								int i = telnet.getInputStream().read(tmp, 0, 1);
+								if (new String(tmp, 0, i).equalsIgnoreCase(String.valueOf((char) 1))
+										|| new String(tmp, 0, i).equalsIgnoreCase(code + "\r\n")) {
+									System.out.println("---------"+new String(tmp, 0, i));
+									continue;
+								}
+
+								if (new String(tmp, 0, i).equalsIgnoreCase(String.valueOf((char) 3))) {
+									telnet.disconnect();
+									endOfThInventoryFile = true;
+									break;
+								}
+								fileContent.append(new String(tmp, 0, i));
+//								System.out.print(new String(tmp, 0, i));
+							}
+
+						} catch (Exception ex) {
+							Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+							endOfThInventoryFile = true;
+							try {
+								telnet.disconnect();
+							} catch (IOException e) {
+							}
+						} finally {
+						}
+						System.out.println("done  " + monthlyReportList.size());
+					}
+
+				};
+				fileWriter.start();
+				int counter = 0;
+				while (true) {
+					if (counter == 60 || endOfThInventoryFile)
+						break;
+					else
+						Thread.sleep(1000);
+				}
+
+				System.out.println("done--- " + java.lang.Thread.activeCount());
+
+				System.out.println(fileContent);
+				telnet.disconnect();
+				Monthly_Report__c report = new Monthly_Report__c();
+				report.setFacility__c(facilityId);
+				report.setReport_Label__c(reportLabel);
+				String content = fileContent.toString().replaceFirst(code, "");
+				report.setReport_Result__c("<pre>"+content+"</pre>");
+				Calendar reportDate = Calendar.getInstance();
+				reportDate.setTime(new Date());
+				report.setReport_Date__c(reportDate);
+				monthlyReportList.add(report);
+			}
+			System.out.println(monthlyReportList);
+			if(monthlyReportList.size()>0)
+				saveMonthlyReportInSalesForce(monthlyReportList);			
+		}
+	}
+	private static void saveMonthlyReportInSalesForce(List<Monthly_Report__c> monthlyReportList) {
+		EnterpriseConnection connection;
+		Properties salesforceProperties = new Properties();
+		try {
+
+			Class<GolarsUtil> cl = GolarsUtil.class;
+
+			salesforceProperties.load(cl.getResourceAsStream("/customerportal.properties"));
+		} catch (Exception e1) {
+			System.out.println("Unable to get the sales force details" + e1.getMessage());
+		}
+
+		final String USERNAME = salesforceProperties.getProperty("username");
+		final String PASSWORD = salesforceProperties.getProperty("password");
+		SaveResult[] montnlyReportResults = null;
+		try {
+			ConnectorConfig config = new ConnectorConfig();
+			config.setUsername(USERNAME);
+			config.setPassword(PASSWORD);
+			connection = Connector.newConnection(config);
+			Monthly_Report__c[] monthlyArray = new Monthly_Report__c[monthlyReportList.size()];
+			for (int i=0;i<monthlyReportList.size();i++) {
+				monthlyArray[i] = monthlyReportList.get(i);
+			}
+			montnlyReportResults = connection.create(monthlyArray);
+
+			System.out.println(montnlyReportResults + "--------saveResults the error length is "
+					+ montnlyReportResults[0].getErrors().length);
+
+		} catch (ConnectionException e) {
+			System.out.println("Exception in saveDocumentURLINTOSalesForce--" + e.getMessage());
+
+		}
+
 	}
 
 	public static void sendFacilityReports(String type) throws IOException, InterruptedException {
@@ -598,7 +748,7 @@ public class CustomerPortalUtil {
 					localTankReportId = "I20100";
 				}
 //				new MailUtil().sendEmailWithContent(user.getEmailAddress(), fileName, localTankReportId,type);
-				new MailUtil().sendEmailWithContent(user.getEmailAddress(), fileName, localTankReportId,type,user);
+				new MailUtil().sendEmailWithContent(user.getEmailAddress(), fileName, localTankReportId, type, user);
 			}
 		}
 

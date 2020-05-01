@@ -3840,4 +3840,63 @@ public List<SiteExpenses> deleteExpensesRecord(int incomeId, String userId, Stri
 		session.saveOrUpdate(report);
 		trx.commit();
 	}
+	
+	public List<Account> fetchFacilitiesForSalesforce() {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			String queryString = "SELECT * FROM account where Tank_Monitor_Brand__c is not null && Tank_Monitor_Model__c is not null && Tank_Monitor_Static_IP__c is not null";
+			Query query = session.createNativeQuery(queryString, Account.class);
+			List<Account>  lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in fetchFacilitiesForSalesforce method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+	}
+	public List fetchMonthlyRecordsId(String id) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			String queryString = "SELECT b.Id,a.Report_Label__c, Telnet_Code__c FROM monthly_report_config__c a, account b where a.Tank_Monitor_Brand__c = b.Tank_Monitor_Brand__c "
+					+ "&& a.Tank_Monitor_Model__C = b.Tank_Monitor_Model__C && b.id =:id";
+			Query query = session.createNativeQuery(queryString);
+			query.setString("id", id);
+			List lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (
+
+		Exception exception)
+
+		{
+			exception.printStackTrace();
+			System.out.println("Exception occred in fetchMonthlyRecordsId method -- " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally
+
+		{
+
+		}
+	}
 }

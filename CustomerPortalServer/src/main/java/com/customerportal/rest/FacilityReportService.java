@@ -1,5 +1,6 @@
 package com.customerportal.rest;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,6 +51,13 @@ public class FacilityReportService extends HttpServlet {
 					CustomerPortalUtil.sendFacilityReports("tankAlarm");
 				} catch (Exception e) {
 					System.out.println("Unable to start the startFacilityReportThread" + e.getMessage());
+					e.printStackTrace();
+				}
+				try {
+					System.out.println("startSalesForceFacilityReports Thread scheduled at " + new Date());
+					CustomerPortalUtil.startSalesForceFacilityReports();
+				} catch (Exception e) {
+					System.out.println("Unable to start the startSalesForceFacilityReports" + e.getMessage());
 					e.printStackTrace();
 				}
 

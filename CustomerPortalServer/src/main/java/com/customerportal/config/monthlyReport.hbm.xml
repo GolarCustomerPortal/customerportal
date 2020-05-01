@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.customerportal.bean.MonthlyReports"
+		table="monthly_report_config__c">
+		<id name="id">
+			<column name="Id" />
+		</id>
+		<property name="tankMonitorBrand" column="Tank_Monitor_Brand__c" />
+		<property name="tankMonitorModel" column="Tank_Monitor_Model__c" />
+		<property name="telnetCode" column="Telnet_Code__c" />
+		<property name="externalID" column="External_ID__c" />
+		<property name="reportLabel" column="Report_Label__c" />
+	</class>
+</hibernate-mapping>
