@@ -584,15 +584,17 @@ public class CustomerPortalUtil {
 	}
 
 	public static void startSalesForceFacilityReports() throws IOException, InterruptedException {
-		final List<Monthly_Report__c> monthlyReportList = new ArrayList<>();
+		List<Monthly_Report__c> monthlyReportList = new ArrayList<>();
 		List<Account> accountList = DBUtil.getInstance().fetchFacilitiesForSalesforce();
 		System.out.println("total salesforce reports are for :  " + accountList.size());
 		for (Account account : accountList) {
 			List list = DBUtil.getInstance().fetchMonthlyRecordsId(account.getId());
+			monthlyReportList = new ArrayList<>();
 			for (int i = 0; i < list.size(); i++) {
 				Object[] obj = (Object[]) list.get(i);
 				if (obj[0] == null || obj[1] == null || obj[2] == null)
 					continue;
+				
 				String facilityId = obj[0].toString();
 				String reportLabel = obj[1].toString();
 				final String code = obj[2].toString();
@@ -650,7 +652,7 @@ public class CustomerPortalUtil {
 							}
 						} finally {
 						}
-						System.out.println("done  " + monthlyReportList.size());
+//						System.out.println("done  " + monthlyReportList.size());
 					}
 
 				};
@@ -664,7 +666,7 @@ public class CustomerPortalUtil {
 				}
 
 				System.out.println("done--- " + java.lang.Thread.activeCount());
-
+				System.out.println("monthlyReportList size is   " + monthlyReportList.size());
 				System.out.println(fileContent);
 				telnet.disconnect();
 				Monthly_Report__c report = new Monthly_Report__c();
