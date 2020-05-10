@@ -30,11 +30,12 @@ public class MailUtil {
 		user.setUsername("test");
 		user.setPassword("test");
 		user.setEmailAddress("avsrinivasa3@gmail.com,avsrinivasa@gmail.com");
-		new MailUtil().sendEmailWithContent("cdondeti@golars.com,avsrinivasa@gmail.com","c:\\test\\InventoryReport_20200222195243.txt","I20100","inventory",null);
+		new MailUtil().sendEmailWithContent("avsrinivasa@gmail.com","c:\\test\\InventoryReport_20200427211532.txt","I20100","inventory",null);
 
 	}
 
 	static Properties emailProperties = new Properties();
+	private static final String MAIL_SPLIT="golars+";
 
 	Message fetchEmailProperties(boolean isAddCC) {
 
@@ -46,7 +47,8 @@ public class MailUtil {
 			System.out.println("Email Configuration fiele not found" + e1.getMessage());
 		}
 		final String username = emailProperties.getProperty("username");
-		final String password = emailProperties.getProperty("password");
+		final String password = new String(Base64.getDecoder().decode(emailProperties.getProperty("password").getBytes())).replace(MAIL_SPLIT, "");
+		
 		String fromAddress = emailProperties.getProperty("from.address");
 
 		Properties props = new Properties();

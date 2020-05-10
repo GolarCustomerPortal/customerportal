@@ -1,5 +1,6 @@
 package com.customerportal.util;
 
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
@@ -19,6 +20,7 @@ import com.sforce.ws.ConnectorConfig;
 public class GolarsUtil {
 	private static Properties salesforceProperties = new Properties();
 	static EnterpriseConnection connection;
+	private static final String SPLIT="golars+";
 
 	public static SaveResult[] saveExpensesIntoSalesForce(SiteExpenses siteExpense) {
 
@@ -31,12 +33,11 @@ public class GolarsUtil {
 		}
 
 		final String USERNAME = salesforceProperties.getProperty("username");
-		final String PASSWORD = salesforceProperties.getProperty("password");
 		SaveResult[] saveResults = null;
 		try {
 			ConnectorConfig config = new ConnectorConfig();
 			config.setUsername(USERNAME);
-			config.setPassword(PASSWORD);
+			config.setPassword(getSalesforcePassword(salesforceProperties));
 			connection = Connector.newConnection(config);
 			Site_Expenses__c[] expenses_Record = new Site_Expenses__c[1];
 			expenses_Record[0] = new Site_Expenses__c();
@@ -74,12 +75,11 @@ public class GolarsUtil {
 		}
 
 		final String USERNAME = salesforceProperties.getProperty("username");
-		final String PASSWORD = salesforceProperties.getProperty("password");
 		DeleteResult[] saveResults = null;
 		try {
 			ConnectorConfig config = new ConnectorConfig();
 			config.setUsername(USERNAME);
-			config.setPassword(PASSWORD);
+			config.setPassword(getSalesforcePassword(salesforceProperties));
 			connection = Connector.newConnection(config);
 			String[] expenses_Record = new String[1];
 			expenses_Record[0] = salesForceId;
@@ -103,12 +103,11 @@ public class GolarsUtil {
 		}
 
 		final String USERNAME = salesforceProperties.getProperty("username");
-		final String PASSWORD = salesforceProperties.getProperty("password");
 		SaveResult[] incomesaveResults = null, accountsaveResults = null;
 		try {
 			ConnectorConfig config = new ConnectorConfig();
 			config.setUsername(USERNAME);
-			config.setPassword(PASSWORD);
+			config.setPassword(getSalesforcePassword(salesforceProperties));
 			connection = Connector.newConnection(config);
 			Site_Income__c[] income_Record = new Site_Income__c[1];
 			income_Record[0] = new Site_Income__c();
@@ -202,6 +201,10 @@ public class GolarsUtil {
 	 */
 	public static boolean isToday(Date date) {
 		return isSameDay(date, Calendar.getInstance().getTime());
+	}
+	public static String getSalesforcePassword(Properties properties) {
+		return new String(Base64.getDecoder().decode(properties.getProperty("password").getBytes())).replace(SPLIT, "");
+	
 	}
 
 	

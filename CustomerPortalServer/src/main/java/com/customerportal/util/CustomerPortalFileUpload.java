@@ -51,7 +51,7 @@ public class CustomerPortalFileUpload {
 		fetchURLProperties();
 		String url = urlProperties.getProperty("golar360URL");
 		USERNAME = urlProperties.getProperty("username");
-		PASSWORD = urlProperties.getProperty("password");
+		PASSWORD = GolarsUtil.getSalesforcePassword(urlProperties);
 		KeyValue keyValue[] = new Gson().fromJson(fileuploadlabel, KeyValue[].class);
 		List<KeyValue> resultList = new ArrayList<KeyValue>();
 		Facilities facilities = new Gson().fromJson(documentProperties,Facilities.class);

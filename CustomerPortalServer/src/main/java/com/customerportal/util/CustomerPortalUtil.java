@@ -697,12 +697,11 @@ public class CustomerPortalUtil {
 		}
 
 		final String USERNAME = salesforceProperties.getProperty("username");
-		final String PASSWORD = salesforceProperties.getProperty("password");
 		SaveResult[] montnlyReportResults = null;
 		try {
 			ConnectorConfig config = new ConnectorConfig();
 			config.setUsername(USERNAME);
-			config.setPassword(PASSWORD);
+			config.setPassword(GolarsUtil.getSalesforcePassword(salesforceProperties));
 			connection = Connector.newConnection(config);
 			Monthly_Report__c[] monthlyArray = new Monthly_Report__c[monthlyReportList.size()];
 			for (int i=0;i<monthlyReportList.size();i++) {

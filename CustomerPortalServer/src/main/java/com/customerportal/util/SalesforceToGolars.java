@@ -55,7 +55,7 @@ public class SalesforceToGolars {
 		System.out.println("Started import-----------");
 		fetchURLProperties();
 		USERNAME = urlProperties.getProperty("username");
-		PASSWORD = urlProperties.getProperty("password");
+		PASSWORD = GolarsUtil.getSalesforcePassword(urlProperties);
 		golars360URL = urlProperties.getProperty("golar360URL");
 		hostAddress = urlProperties.getProperty("golars360BaseURL");
 		urlMappintFile = urlProperties.getProperty("sourceImportFile");

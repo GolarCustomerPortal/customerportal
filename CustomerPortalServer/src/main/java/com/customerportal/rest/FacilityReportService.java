@@ -1,6 +1,5 @@
 package com.customerportal.rest;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -63,7 +62,7 @@ public class FacilityReportService extends HttpServlet {
 
 			}
 
-		}, millsecoTillMidNight, ONCE_PER_DAY);
+		}, delayTillMidNight, ONCE_PER_DAY);
 
 	}
 
